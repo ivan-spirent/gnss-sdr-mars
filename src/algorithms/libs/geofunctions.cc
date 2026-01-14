@@ -16,6 +16,7 @@
  * -----------------------------------------------------------------------------
  */
 
+#include "planetary_parameters.h"
 #include "geofunctions.h"
 #include <array>
 #include <cmath>  // for sin, cos, sqrt, abs, pow
@@ -34,7 +35,7 @@ arma::mat Skew_symmetric(const arma::vec &a)
 double WGS84_g0(double Lat_rad)
 {
     const double k = 0.001931853;        // normal gravity constant
-    const double e2 = 0.00669438002290;  // the square of the first numerical eccentricity
+    const double e2 = 2.0 * PlanetaryParams::FLATTENING_F - PlanetaryParams::FLATTENING_F * PlanetaryParams::FLATTENING_F;
     const double nge = 9.7803253359;     // normal gravity value on the equator (m/sec^2)
     double b = sin(Lat_rad);             // Lat in degrees
     b = b * b;
@@ -45,12 +46,11 @@ double WGS84_g0(double Lat_rad)
 
 double WGS84_geocentric_radius(double Lat_geodetic_rad)
 {
-    // WGS84 earth model Geocentric radius (Eq. 2.88)
-    const double WGS84_A = 6378137.0;         // Semi-major axis of the Earth, a [m]
-    const double WGS84_IF = 298.257223563;    // Inverse flattening of the Earth
-    const double WGS84_F = (1.0 / WGS84_IF);  // The flattening of the Earth
-    // double WGS84_B=(WGS84_A*(1-WGS84_F));  // Semi-minor axis of the Earth [m]
-    double WGS84_E = (sqrt(2 * WGS84_F - WGS84_F * WGS84_F));  // Eccentricity of the Earth
+    // Planet model Geocentric radius
+    const double WGS84_A = PlanetaryParams::SEMI_MAJOR_A;         // Semi-major axis
+    const double WGS84_F = PlanetaryParams::FLATTENING_F;  // The flattening
+    // double WGS84_B=(WGS84_A*(1-WGS84_F));  // Semi-minor axis [m]
+    double WGS84_E = (sqrt(2 * WGS84_F - WGS84_F * WGS84_F));  // Eccentricity
 
     // transverse radius of curvature
     double R_E = WGS84_A / sqrt(1 - WGS84_E * WGS84_E * sin(Lat_geodetic_rad) * sin(Lat_geodetic_rad));  // (Eq. 2.66)
@@ -68,8 +68,8 @@ int topocent(double *Az, double *El, double *D, const arma::vec &x, const arma::
     double phi;
     double h;
     const double dtr = STRP_PI / 180.0;
-    const double a = 6378137.0;         // semi-major axis of the reference ellipsoid WGS-84
-    const double finv = 298.257223563;  // inverse of flattening of the reference ellipsoid WGS-84
+    const double a = PlanetaryParams::SEMI_MAJOR_A;         // semi-major axis
+    const double finv = 1.0 / PlanetaryParams::FLATTENING_F;  // inverse of flattening
 
     // Transform x into geodetic coordinates
     togeod(&phi, &lambda, &h, a, finv, x(0), x(1), x(2));
@@ -216,10 +216,10 @@ int togeod(double *dphi, double *dlambda, double *h, double a, double finv, doub
 arma::vec Gravity_ECEF(const arma::vec &r_eb_e)
 {
     // Parameters
-    const double R_0 = 6378137.0;         // WGS84 Equatorial radius in meters
-    const double mu = 3.986004418E14;     // WGS84 Earth gravitational constant (m^3 s^-2)
-    const double J_2 = 1.082627E-3;       // WGS84 Earth's second gravitational constant
-    const double omega_ie = 7.292115E-5;  // Earth rotation rate (rad/s)
+    const double R_0 = PlanetaryParams::SEMI_MAJOR_A;         // Equatorial radius in meters
+    const double mu = PlanetaryParams::MU;     // Gravitational constant (m^3 s^-2)
+    const double J_2 = PlanetaryParams::J2;       // Second gravitational constant
+    const double omega_ie = PlanetaryParams::OMEGA_DOT;  // Rotation rate (rad/s)
     // Calculate distance from center of the Earth
     double mag_r = sqrt(arma::as_scalar(r_eb_e.t() * r_eb_e));
     // If the input position is 0,0,0, produce a dummy output
@@ -332,8 +332,8 @@ arma::mat Euler_to_CTM(const arma::vec &eul)
 
 arma::vec cart2geo(const arma::vec &XYZ, int elipsoid_selection)
 {
-    const std::array<double, 5> a{6378388.0, 6378160.0, 6378135.0, 6378137.0, 6378137.0};
-    const std::array<double, 5> f{1.0 / 297.0, 1.0 / 298.247, 1.0 / 298.26, 1.0 / 298.257222101, 1.0 / 298.257223563};
+    const std::array<double, 5> a{6378388.0, 6378160.0, 6378135.0, 6378137.0, PlanetaryParams::SEMI_MAJOR_A};
+    const std::array<double, 5> f{1.0 / 297.0, 1.0 / 298.247, 1.0 / 298.26, 1.0 / 298.257222101, PlanetaryParams::FLATTENING_F};
 
     double lambda = atan2(XYZ[1], XYZ[0]);
     double ex2 = (2.0 - f[elipsoid_selection]) * f[elipsoid_selection] / ((1.0 - f[elipsoid_selection]) * (1.0 - f[elipsoid_selection]));
@@ -389,8 +389,8 @@ void ECEF_to_Geo(const arma::vec &r_eb_e, const arma::vec &v_eb_e, const arma::m
 void Geo_to_ECEF(const arma::vec &LLH, const arma::vec &v_eb_n, const arma::mat &C_b_n, arma::vec &r_eb_e, arma::vec &v_eb_e, arma::mat &C_b_e)
 {
     // Parameters
-    double R_0 = 6378137.0;      // WGS84 Equatorial radius in meters
-    double e = 0.0818191908425;  // WGS84 eccentricity
+    double R_0 = PlanetaryParams::SEMI_MAJOR_A;      // Equatorial radius in meters
+    double e = sqrt(2 * PlanetaryParams::FLATTENING_F - PlanetaryParams::FLATTENING_F * PlanetaryParams::FLATTENING_F);  // eccentricity
 
     // Calculate transverse radius of curvature using (2.105)
     double R_E = R_0 / sqrt(1.0 - (e * sin(LLH(0))) * (e * sin(LLH(0))));
@@ -420,8 +420,8 @@ void Geo_to_ECEF(const arma::vec &LLH, const arma::vec &v_eb_n, const arma::mat 
 void pv_Geo_to_ECEF(double L_b, double lambda_b, double h_b, const arma::vec &v_eb_n, arma::vec &r_eb_e, arma::vec &v_eb_e)
 {
     // Parameters
-    const double R_0 = 6378137.0;      // WGS84 Equatorial radius in meters
-    const double e = 0.0818191908425;  // WGS84 eccentricity
+    const double R_0 = PlanetaryParams::SEMI_MAJOR_A;      // Equatorial radius in meters
+    const double e = sqrt(2 * PlanetaryParams::FLATTENING_F - PlanetaryParams::FLATTENING_F * PlanetaryParams::FLATTENING_F);  // eccentricity
 
     // Calculate transverse radius of curvature using (2.105)
     double R_E = R_0 / sqrt(1 - pow(e * sin(L_b), 2));

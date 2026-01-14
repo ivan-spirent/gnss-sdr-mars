@@ -90,8 +90,8 @@ const int MAXSBSMSG = 32;    //!< max number of SBAS msg in RTK server
 const int MAXOBSBUF = 128;   //!< max number of observation data buffer
 
 const int FILEPATHSEP = '/';
-const double RE_WGS84 = 6378137.0;              //!< earth semimajor axis (WGS84) (m)
-const double FE_WGS84 = (1.0 / 298.257223563);  //!< earth flattening (WGS84)
+const double RE_WGS84 = PlanetaryParams::SEMI_MAJOR_A;              //!< earth semimajor axis (m)
+const double FE_WGS84 = PlanetaryParams::FLATTENING_F;  //!< earth flattening
 
 const double HION = 350000.0;    //!<  ionosphere height (m)
 const double PRN_HWBIAS = 1e-6;  //!<  process noise of h/w bias (m/MHz/sqrt(s))
