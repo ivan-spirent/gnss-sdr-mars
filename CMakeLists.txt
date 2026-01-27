@@ -158,6 +158,12 @@ option(ENABLE_EXTERNAL_MATHJAX "Use MathJax from an external CDN in HTML docs" O
 
 option(ENABLE_ORC "Use (if available) the Optimized Inner Loop Runtime Compiler (ORC)" OFF)
 
+# Planetary context
+option(ENABLE_MARS "Select Mars planetary parameters instead of Earth" OFF)
+if(ENABLE_MARS)
+    add_compile_definitions(GNSS_PLANETARY_CONTEXT_MARS)
+endif()
+
 ################################################################################
 # GNSS-SDR version information
 ################################################################################

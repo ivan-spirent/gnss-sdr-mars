@@ -133,11 +133,27 @@ GNSS-SDR-MARS focuses on **receiver-side adaptations**:
 ## Roadmap
 
 - [X] Centralized Mars constants module
+- [ ] Documentation of LNAV field reinterpretation
 - [ ] MCMF frame and transformation utilities
 - [ ] Mars-compatible geodetic conversion functions
-- [ ] Configuration flags for Earth/Mars model selection
-- [ ] Automated PVT consistency and regression tests
-- [ ] Documentation of LNAV field reinterpretation
+
+---
+
+## How to Compile for Mars
+
+To compile the application with Mars parameters, use the following command when configuring your build:
+
+```bash
+cmake -DENABLE_MARS=ON ..
+```
+
+To switch back to Earth (default):
+
+```bash
+cmake -DENABLE_MARS=OFF ..
+# or simply
+cmake ..
+```
 
 ---
 
