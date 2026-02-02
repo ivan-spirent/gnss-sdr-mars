@@ -30,6 +30,7 @@
  *----------------------------------------------------------------------------*/
 
 #include "rtklib_rtkcmn.h"
+#include "planetary_parameters.h"
 #include <array>
 #include <cassert>
 #include <cstring>
@@ -4463,6 +4464,9 @@ void dops(int ns, const double *azel, double elmin, double *dop)
 double ionmodel(gtime_t t, const double *ion, const double *pos,
     const double *azel)
 {
+#ifdef GNSS_PLANETARY_CONTEXT_MARS
+    return 0.0;
+#endif
     const double ion_default[] = {/* 2004/1/1 */
         0.1118E-07, -0.7451e-08, -0.5961e-07, 0.1192E-06,
         0.1167E+06, -0.2294E+06, -0.1311e+06, 0.1049E+07};
@@ -4588,6 +4592,9 @@ double ionppp(const double *pos, const double *azel, double re,
 double tropmodel(gtime_t time __attribute__((unused)), const double *pos, const double *azel,
     double humi)
 {
+#ifdef GNSS_PLANETARY_CONTEXT_MARS
+    return 0.0;
+#endif
     const double temp0 = 15.0; /* temperature  at sea level */
     double hgt;
     double pres;
@@ -4643,6 +4650,13 @@ double mapf(double el, double a, double b, double c)
 double nmf(gtime_t time, const double pos[], const double azel[],
     double *mapfw)
 {
+#ifdef GNSS_PLANETARY_CONTEXT_MARS
+    if (mapfw)
+        {
+            *mapfw = 0.0;
+        }
+    return 0.0;
+#endif
     /* ref [5] table 3 */
     /* hydro-ave-a,b,c, hydro-amp-a,b,c, wet-a,b,c at latitude 15,30,45,60,75 */
     const double coef[][5] = {

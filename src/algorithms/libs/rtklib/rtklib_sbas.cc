@@ -1104,8 +1104,13 @@ double sbstropcorr(gtime_t time, const double *pos, const double *azel,
     const double k1 = 77.604;
     const double k2 = 382000.0;
     const double rd = 287.054;
+#ifdef GNSS_PLANETARY_CONTEXT_MARS
+    const double gm = 3.722;     // Normal gravity for Mars (approx)
+    const double g = 3.711;      // Standard gravity for Mars (approx)
+#else
     const double gm = 9.784;
     const double g = 9.80665;
+#endif
     static double pos_[3] = {};
     static double zh = 0.0;
     static double zw = 0.0;

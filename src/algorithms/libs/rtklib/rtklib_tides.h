@@ -48,7 +48,7 @@
 #include "rtklib.h"
 
 
-const double GME = 3.986004415E+14; /* earth gravitational constant */
+const double GME = PlanetaryParams::MU; /* planetary gravitational constant */
 const double GMS = 1.327124E+20;    /* sun gravitational constant */
 const double GMM = 4.902801E+12;    /* moon gravitational constant */
 

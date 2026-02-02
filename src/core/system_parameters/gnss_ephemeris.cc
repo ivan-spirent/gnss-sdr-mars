@@ -44,8 +44,8 @@ double Gnss_Ephemeris::predicted_doppler(double rx_time_s,
     double vu,
     int band) const
 {
-    const double RE_WGS84 = 6378137.0;              //!< earth semimajor axis (WGS84) (m)
-    const double FE_WGS84 = (1.0 / 298.257223563);  //!< earth flattening (WGS84)
+    const double RE_WGS84 = PlanetaryParams::SEMI_MAJOR_A;              //!< earth semimajor axis (m)
+    const double FE_WGS84 = PlanetaryParams::FLATTENING_F;  //!< earth flattening
     const double lat_rad = lat * D2R;
     const double lon_rad = lon * D2R;
 

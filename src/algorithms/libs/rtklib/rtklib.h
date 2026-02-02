@@ -93,7 +93,11 @@ const int FILEPATHSEP = '/';
 const double RE_WGS84 = PlanetaryParams::SEMI_MAJOR_A;              //!< earth semimajor axis (m)
 const double FE_WGS84 = PlanetaryParams::FLATTENING_F;  //!< earth flattening
 
-const double HION = 350000.0;    //!<  ionosphere height (m)
+#ifdef GNSS_PLANETARY_CONTEXT_MARS
+const double HION = 130000.0;    //!<  Mars ionosphere peak height (m) approx
+#else
+const double HION = 350000.0;    //!<  earth ionosphere height (m)
+#endif
 const double PRN_HWBIAS = 1e-6;  //!<  process noise of h/w bias (m/MHz/sqrt(s))
 
 const double INT_SWAP_STAT = 86400.0;  //!<  swap interval of solution status file (s)

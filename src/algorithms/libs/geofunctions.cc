@@ -40,9 +40,16 @@ arma::mat Skew_symmetric(const arma::vec &a)
 
 double WGS84_g0(double Lat_rad)
 {
+#ifdef GNSS_PLANETARY_CONTEXT_MARS
+    const double k = 0.0052;             // Placeholder k for Mars
+    const double e2 = 2.0 * PlanetaryParams::FLATTENING_F - PlanetaryParams::FLATTENING_F * PlanetaryParams::FLATTENING_F;
+    const double nget = 3.711;           // Equatorial gravity for Mars (approx)
+    const double& nge = nget;
+#else
     const double k = 0.001931853;        // normal gravity constant
     const double e2 = 2.0 * PlanetaryParams::FLATTENING_F - PlanetaryParams::FLATTENING_F * PlanetaryParams::FLATTENING_F;
     const double nge = 9.7803253359;     // normal gravity value on the equator (m/sec^2)
+#endif
     double b = sin(Lat_rad);             // Lat in degrees
     b = b * b;
     double g0 = nge * (1 + k * b) / (sqrt(1 - e2 * b));
@@ -455,7 +462,11 @@ double great_circle_distance(double lat1, double lon1, double lat2, double lon2)
 {
     // The Haversine formula determines the great-circle distance between two points on a sphere given their longitudes and latitudes.
     // generally used geo measurement function
+#ifdef GNSS_PLANETARY_CONTEXT_MARS
+    double R = PlanetaryParams::SEMI_MAJOR_A / 1000.0;
+#else
     double R = 6378.137;  // Radius of earth in KM
+#endif
     double dLat = lat2 * STRP_PI / 180.0 - lat1 * STRP_PI / 180.0;
     double dLon = lon2 * STRP_PI / 180.0 - lon1 * STRP_PI / 180.0;
     double a = sin(dLat / 2.0) * sin(dLat / 2.0) +

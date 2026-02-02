@@ -37,11 +37,11 @@ constexpr double SPEED_OF_LIGHT_M_MS = 299792.4580;       //!< Speed of light in
 
 // Physical constants for GPS
 constexpr double GPS_GM = PlanetaryParams::MU;      //!< Universal gravitational constant times the mass of the Earth, [m^3/s^2] IS-GPS-200M, 20.3.3.3.3.1
-constexpr double GPS_F = -4.442807633e-10;  //!< Constant, [s/(m)^(1/2)], IS-GPS-200M, 20.3.3.3.3.1
+constexpr double GPS_F = -2.0 * std::sqrt(GPS_GM) / (SPEED_OF_LIGHT_M_S * SPEED_OF_LIGHT_M_S);  //!< Constant, [s/(m)^(1/2)], IS-GPS-200M, 20.3.3.3.3.1
 
 // Physical constants for Galileo
 constexpr double GALILEO_GM = PlanetaryParams::MU;   //!< Geocentric gravitational constant[m^3/s^2], OS SIS ICD v2.0, pag. 44
-constexpr double GALILEO_F = -4.442807309e-10;  //!< Constant, [s/(m)^(1/2)]. OS SIS ICD v2.0, pag. 47
+constexpr double GALILEO_F = -2.0 * std::sqrt(GALILEO_GM) / (SPEED_OF_LIGHT_M_S * SPEED_OF_LIGHT_M_S);  //!< Constant, [s/(m)^(1/2)]. OS SIS ICD v2.0, pag. 47
 
 // Physical constants for GLONASS
 constexpr double GLONASS_OMEGA_EARTH_DOT = PlanetaryParams::OMEGA_DOT;  //!< Earth rotation rate, [rad/s] ICD L1, L2 GLONASS Edition 5.1 2008 pag. 55
@@ -50,7 +50,7 @@ constexpr double GLONASS_GM = PlanetaryParams::MU;               //!< Universal 
 // Physical constants for Beidou
 constexpr double BEIDOU_OMEGA_EARTH_DOT = PlanetaryParams::OMEGA_DOT;  //!< Earth rotation rate, [rad/s] as defined in BDS-SIS-ICD-B1I-3.0 2019-02, pag. 3
 constexpr double BEIDOU_GM = PlanetaryParams::MU;             //!< Universal gravitational constant times the mass of the Earth, [m^3/s^2] as defined in CGCS2000
-constexpr double BEIDOU_F = -4.442807309e-10;            //!< Constant, [s/(m)^(1/2)] F=-2(GM)^.5/C^2
+constexpr double BEIDOU_F = -2.0 * std::sqrt(BEIDOU_GM) / (SPEED_OF_LIGHT_M_S * SPEED_OF_LIGHT_M_S);            //!< Constant, [s/(m)^(1/2)] F=-2(GM)^.5/C^2
 
 constexpr double GNSS_PI = 3.1415926535898;  //!< pi constant as defined for GNSS
 constexpr double HALF_PI = GNSS_PI / 2.0;    //!< pi/2

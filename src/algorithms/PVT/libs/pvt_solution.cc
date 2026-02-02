@@ -39,8 +39,8 @@ int Pvt_Solution::cart2geo(double X, double Y, double Z, int elipsoid_selection)
                  4. World Geodetic System 1984
      */
 
-    const std::array<double, 5> a = {6378388.0, 6378160.0, 6378135.0, 6378137.0, 6378137.0};
-    const std::array<double, 5> f = {1.0 / 297.0, 1.0 / 298.247, 1.0 / 298.26, 1.0 / 298.257222101, 1.0 / 298.257223563};
+    const std::array<double, 5> a = {6378388.0, 6378160.0, 6378135.0, 6378137.0, PlanetaryParams::SEMI_MAJOR_A};
+    const std::array<double, 5> f = {1.0 / 297.0, 1.0 / 298.247, 1.0 / 298.26, 1.0 / 298.257222101, PlanetaryParams::FLATTENING_F};
 
     const double lambda = atan2(Y, X);
     const double ex2 = (2.0 - f[elipsoid_selection]) * f[elipsoid_selection] / ((1.0 - f[elipsoid_selection]) * (1.0 - f[elipsoid_selection]));
