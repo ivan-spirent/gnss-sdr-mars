@@ -40,7 +40,7 @@ constexpr uint32_t GPS_L1_CA_CODE_PERIOD_MS = 1U;       //!< GPS L1 C/A code per
 constexpr uint32_t GPS_L1_CA_BIT_PERIOD_MS = 20U;       //!< GPS L1 C/A bit period [ms]
 
 /*!
- * \brief Maximum Time-Of-Arrival (TOA) difference between satellites for a receiver operated on Earth surface is 20 ms
+ * \brief Maximum Time-Of-Arrival (TOA) difference between satellites for a receiver operated on a planetary surface is 20 ms
  *
  * According to the GPS orbit model described in [1] Pag. 32.
  * It should be taken into account to set the buffer size for the PRN start timestamp in the pseudoranges block.

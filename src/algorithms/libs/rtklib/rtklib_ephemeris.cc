@@ -39,7 +39,7 @@
 /* constants -----------------------------------------------------------------*/
 
 const double RE_GLO = 6378136.0;      /* radius of earth (m)            ref [2] */
-const double MU_GPS = 3.9860050e14;   /* gravitational constant         ref [1] */
+const double MU_GPS = PlanetaryParams::MU;   /* gravitational constant         ref [1] */
 const double MU_GLO = 3.9860044e14;   /* gravitational constant         ref [2] */
 const double MU_GAL = 3.986004418e14; /* earth gravitational constant   ref [7] */
 const double MU_BDS = 3.986004418e14; /* earth gravitational constant   ref [9] */
