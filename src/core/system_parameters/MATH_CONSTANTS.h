@@ -25,6 +25,12 @@
 
 #include "planetary_parameters.h"
 
+#ifdef GNSS_PLANETARY_CONTEXT_MARS
+#warning ">>> Compilando MATH_CONSTANTS.h con PARAMETROS DE MARTE"
+#else
+#warning ">>> Compilando MATH_CONSTANTS.h con PARAMETROS DE TIERRA"
+#endif
+
 constexpr double GNSS_OMEGA_EARTH_DOT = PlanetaryParams::OMEGA_DOT;  //!< Default Earth rotation rate, [rad/s]
 constexpr double SPEED_OF_LIGHT_M_S = 299792458.0;        //!< Speed of light in vacuum [m/s]
 constexpr double SPEED_OF_LIGHT_M_MS = 299792.4580;       //!< Speed of light in vacuum [m/ms]

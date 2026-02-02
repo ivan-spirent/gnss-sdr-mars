@@ -21,6 +21,12 @@
 #include <array>
 #include <cmath>  // for sin, cos, sqrt, abs, pow
 
+#ifdef GNSS_PLANETARY_CONTEXT_MARS
+#warning ">>> Compilando geofunctions.cc con PARAMETROS DE MARTE"
+#else
+#warning ">>> Compilando geofunctions.cc con PARAMETROS DE TIERRA"
+#endif
+
 const double STRP_PI = 3.1415926535898;  // Pi as defined in IS-GPS-200M, 30.3.3.1.3
 
 arma::mat Skew_symmetric(const arma::vec &a)

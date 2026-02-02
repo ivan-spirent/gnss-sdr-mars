@@ -19,6 +19,12 @@ set(CMAKE_BUILD_TYPE "Release" CACHE STRING "")
 cmake_minimum_required(VERSION 2.8.12...4.0)
 project(gnss-sdr CXX C)
 
+option(GNSS_PLANET_MARS "Use Mars planetary parameters" OFF)
+
+if(GNSS_PLANET_MARS)
+    add_compile_definitions(GNSS_PLANETARY_CONTEXT_MARS)
+endif()
+
 set(GNSSSDR_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}) # Allows to be a sub-project
 set(GNSSSDR_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR})
 list(APPEND CMAKE_MODULE_PATH ${GNSSSDR_SOURCE_DIR}/cmake/Modules)
