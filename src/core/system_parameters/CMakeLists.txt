@@ -133,6 +133,11 @@ else()
     target_link_libraries(core_system_parameters PRIVATE absl::flags absl::log)
 endif()
 
+if(ENABLE_MARS)
+    target_compile_definitions(core_system_parameters PUBLIC GNSS_PLANETARY_CONTEXT_MARS)
+    message(STATUS "Mars planetary context enabled: using Martian gravitational and geometric parameters")
+endif()
+
 # for gnss_sdr_make_unique.h
 target_include_directories(core_system_parameters
     PUBLIC

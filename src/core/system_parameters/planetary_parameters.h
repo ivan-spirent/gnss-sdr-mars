@@ -12,10 +12,7 @@
 /** \addtogroup System_Parameters
  * \{ */
 
-// Select active planet
-#ifndef GNSS_PLANETARY_CONTEXT
-#define GNSS_PLANETARY_CONTEXT_EARTH
-#endif
+
 
 namespace PlanetaryParams {
 

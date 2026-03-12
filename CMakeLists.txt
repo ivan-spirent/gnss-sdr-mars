@@ -19,11 +19,6 @@ set(CMAKE_BUILD_TYPE "Release" CACHE STRING "")
 cmake_minimum_required(VERSION 2.8.12...4.0)
 project(gnss-sdr CXX C)
 
-option(GNSS_PLANET_MARS "Use Mars planetary parameters" OFF)
-
-if(GNSS_PLANET_MARS)
-    add_compile_definitions(GNSS_PLANETARY_CONTEXT_MARS)
-endif()
 
 set(GNSSSDR_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}) # Allows to be a sub-project
 set(GNSSSDR_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR})
@@ -166,9 +161,6 @@ option(ENABLE_ORC "Use (if available) the Optimized Inner Loop Runtime Compiler 
 
 # Planetary context
 option(ENABLE_MARS "Select Mars planetary parameters instead of Earth" OFF)
-if(ENABLE_MARS)
-    add_compile_definitions(GNSS_PLANETARY_CONTEXT_MARS)
-endif()
 
 ################################################################################
 # GNSS-SDR version information
