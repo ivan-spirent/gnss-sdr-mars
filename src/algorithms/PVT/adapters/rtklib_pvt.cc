@@ -25,6 +25,7 @@
 #include "gps_almanac.h"               // for Gps_Almanac
 #include "gps_ephemeris.h"             // for Gps_Ephemeris
 #include "pvt_conf.h"                  // for Pvt_Conf
+#include "rtklib_rtkcmn.h"             // for pos2ecef
 #include "rtklib_rtkpos.h"             // for rtkfree, rtkinit
 #include <iostream>                    // for std::cout
 #include <utility>                     // for std::move
@@ -498,7 +499,10 @@ Rtklib_Pvt::Rtklib_Pvt(const ConfigurationInterface* configuration,
     int positioning_mode = -1;
     const std::string default_pos_mode("Single");
     const std::string positioning_mode_str = configuration->property(role + ".positioning_mode", default_pos_mode);  // (PMODE_XXX) see src/algorithms/libs/rtklib/rtklib.h
-    if (positioning_mode_str == "Single")
+    const bool fixed_height_2d_mode = positioning_mode_str == "Single_2D" ||
+                                      positioning_mode_str == "2D" ||
+                                      configuration->property(role + ".fixed_height_2d", false);
+    if (positioning_mode_str == "Single" || fixed_height_2d_mode)
         {
             positioning_mode = PMODE_SINGLE;
         }
@@ -523,7 +527,7 @@ Rtklib_Pvt::Rtklib_Pvt(const ConfigurationInterface* configuration,
         {
             // warn user and set the default
             std::cout << "WARNING: Bad specification of positioning mode.\n"
-                      << "positioning_mode possible values: Single / Static / Kinematic / PPP_Static / PPP_Kinematic\n"
+                      << "positioning_mode possible values: Single / Single_2D / Static / Kinematic / PPP_Static / PPP_Kinematic\n"
                       << "positioning_mode specified value: " << positioning_mode_str << "\n"
                       << "Setting positioning_mode to Single\n"
                       << std::flush;
@@ -566,7 +570,11 @@ Rtklib_Pvt::Rtklib_Pvt(const ConfigurationInterface* configuration,
         }
 
     double elevation_mask = configuration->property(role + ".elevation_mask", 15.0);
+#ifdef GNSS_PLANETARY_CONTEXT_MARS
+    if ((elevation_mask < -45.0) || (elevation_mask > 90.0))
+#else
     if ((elevation_mask < 0.0) || (elevation_mask > 90.0))
+#endif
         {
             // warn user and set the default
             LOG(WARNING) << "Erroneous Elevation Mask. Setting to default value of 15.0 degrees";
@@ -798,6 +806,21 @@ Rtklib_Pvt::Rtklib_Pvt(const ConfigurationInterface* configuration,
     const double carrier_phase_error_factor_b = configuration->property(role + ".carrier_phase_error_factor_b", 0.003);
 
     const bool bancroft_init = configuration->property(role + ".bancroft_init", true);
+    const double fixed_height_2d_m = configuration->property(role + ".fixed_height_2d_m", 0.0);
+    double fixed_height_2d_sigma_m = configuration->property(role + ".fixed_height_2d_sigma_m", 10.0);
+    if (fixed_height_2d_sigma_m <= 0.0)
+        {
+            fixed_height_2d_sigma_m = 10.0;
+        }
+    const double initial_position_llh[3] = {
+        configuration->property(role + ".initial_latitude_deg", 0.0) * D2R,
+        configuration->property(role + ".initial_longitude_deg", 0.0) * D2R,
+        configuration->property(role + ".initial_height_m", fixed_height_2d_m)};
+    double initial_position_ecef[3] = {};
+    if (fixed_height_2d_mode)
+        {
+            pos2ecef(initial_position_llh, initial_position_ecef);
+        }
 
     snrmask_t snrmask = {{}, {{}, {}}};
 
@@ -842,7 +865,9 @@ Rtklib_Pvt::Rtklib_Pvt(const ConfigurationInterface* configuration,
         threshold_reject_innovation,                                                       /* reject threshold of innovation (m) */
         threshold_reject_gdop,                                                             /* reject threshold of gdop */
         {},                                                                                /* double baseline[2] baseline length constraint {const,sigma} (m) */
-        {},                                                                                /* double ru[3]  rover position for fixed mode {x,y,z} (ecef) (m) */
+        {fixed_height_2d_mode ? initial_position_ecef[0] : 0.0,
+            fixed_height_2d_mode ? initial_position_ecef[1] : 0.0,
+            fixed_height_2d_mode ? initial_position_ecef[2] : 0.0},                       /* double ru[3]  rover position for fixed mode {x,y,z} (ecef) (m), also used as the 2D constrained initial position */
         {},                                                                                /* double rb[3]  base position for relative mode {x,y,z} (ecef) (m) */
         {"", ""},                                                                          /* char anttype[2][MAXANT]  antenna types {rover,base}  */
         {{}, {}},                                                                          /* double antdel[2][3]   antenna delta {{rov_e,rov_n,rov_u},{ref_e,ref_n,ref_u}} */
@@ -858,7 +883,10 @@ Rtklib_Pvt::Rtklib_Pvt(const ConfigurationInterface* configuration,
         {{}, {{}, {}}, {{}, {}}, {}, {}},                                                  /* exterr_t exterr   extended receiver error model */
         0,                                                                                 /* disable L2-AR */
         {},                                                                                /* char pppopt[256]   ppp option   "-GAP_RESION="  default gap to reset iono parameters (ep) */
-        bancroft_init                                                                      /* enable Bancroft initialization for the first iteration of the PVT computation, useful in some geometries */
+        bancroft_init,                                                                     /* enable Bancroft initialization for the first iteration of the PVT computation, useful in some geometries */
+        fixed_height_2d_mode,                                                              /* enable constrained 2D solution with fixed ellipsoidal height */
+        fixed_height_2d_m,                                                                 /* fixed ellipsoidal height [m] */
+        fixed_height_2d_sigma_m                                                            /* fixed-height constraint sigma [m] */
     };
 
     rtkinit(&rtk, &rtklib_configuration_options);

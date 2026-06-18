@@ -30,11 +30,14 @@
 #include <bitset>           // for bitset
 #include <cmath>            // for round
 #include <cstddef>          // for size_t
+#include <cstdio>
+#include <cstdlib>
 #include <cstring>          // for memcpy
 #include <exception>        // for exception
 #include <iomanip>          // for setprecision
 #include <iostream>         // for cout
 #include <memory>           // for shared_ptr
+#include <sstream>
 #include <utility>          // for std::move
 #include <vector>
 
@@ -65,6 +68,30 @@ namespace wht = boost;
 #include <any>
 namespace wht = std;
 #endif
+
+namespace
+{
+bool mars_sync_debug_enabled()
+{
+    const char* env = std::getenv("GNSS_SDR_MARS_SYNC_DEBUG");
+    return env != nullptr && env[0] != '\0' && env[0] != '0';
+}
+
+
+bool mars_sync_debug_prn(uint32_t prn)
+{
+    return prn == 2U || prn == 16U || prn == 21U;
+}
+
+
+void mars_sync_debug_line(const std::string& line)
+{
+    flockfile(stdout);
+    std::fputs(line.c_str(), stdout);
+    std::fputc('\n', stdout);
+    funlockfile(stdout);
+}
+}  // namespace
 
 gps_l1_ca_telemetry_decoder_gs_sptr
 gps_l1_ca_make_telemetry_decoder_gs(const Gnss_Satellite &satellite, const Tlm_Conf &conf)
@@ -100,7 +127,8 @@ gps_l1_ca_telemetry_decoder_gs::gps_l1_ca_telemetry_decoder_gs(
                             d_dump_mat(conf.dump_mat),
                             d_remove_dat(conf.remove_dat),
                             d_enable_navdata_monitor(conf.enable_navdata_monitor),
-                            d_dump_crc_stats(conf.dump_crc_stats)
+                            d_dump_crc_stats(conf.dump_crc_stats),
+                            d_enable_costas_branch_repair(conf.enable_costas_branch_repair)
 {
     // prevent telemetry symbols accumulation in output buffers
     this->set_max_noutput_items(1);
@@ -263,75 +291,208 @@ void gps_l1_ca_telemetry_decoder_gs::set_channel(int32_t channel)
 
 bool gps_l1_ca_telemetry_decoder_gs::decode_subframe(double cn0, bool flag_invert)
 {
-    std::array<char, GPS_SUBFRAME_LENGTH> subframe{};
-    int32_t frame_bit_index = 0;
-    int32_t word_index = 0;
-    uint32_t GPS_frame_4bytes = 0;
-    bool subframe_synchro_confirmation = true;
+    const bool mars_debug = mars_sync_debug_enabled() && mars_sync_debug_prn(d_satellite.get_PRN());
+    const uint32_t prev_word_seed = d_prev_GPS_frame_4bytes;
+    const int32_t words_per_subframe = GPS_SUBFRAME_BITS / GPS_WORD_BITS;
+    struct DecodeCandidate
+    {
+        std::array<char, GPS_SUBFRAME_LENGTH> subframe{};
+        std::array<uint32_t, GPS_SUBFRAME_BITS / GPS_WORD_BITS> words{};
+        std::array<int32_t, GPS_SUBFRAME_BITS / GPS_WORD_BITS> word_crc{};
+        std::string bits;
+        uint32_t last_word{0};
+        int32_t parity_ok{0};
+        int32_t repair_period{0};
+        int32_t repair_start{0};
+        int32_t repair_length{0};
+        int32_t repair_flips{0};
+        bool all_parity{false};
+        bool repaired{false};
+    };
+
+    std::vector<uint8_t> decoded_bits;
+    decoded_bits.reserve(GPS_SUBFRAME_BITS);
     for (float subframe_symbol : d_symbol_history)
         {
             // ******* SYMBOL TO BIT *******
             // symbol to bit
+            uint8_t decoded_bit = 0;
             if (flag_invert == false)
                 {
                     if (subframe_symbol > 0)
                         {
-                            GPS_frame_4bytes += 1;  // insert the telemetry bit in LSB
+                            decoded_bit = 1;
                         }
                 }
             else
                 {
                     if (subframe_symbol < 0)
                         {
-                            GPS_frame_4bytes += 1;  // insert the inverted telemetry bit in LSB
+                            decoded_bit = 1;
                         }
                 }
-            // ******* bits to words ******
-            frame_bit_index++;
-            if (frame_bit_index == 30)
+            decoded_bits.push_back(decoded_bit);
+        }
+
+    auto assemble_candidate = [&](const std::vector<uint8_t>& bits, DecodeCandidate& candidate) {
+        candidate = DecodeCandidate{};
+        candidate.all_parity = true;
+        if (mars_debug)
+            {
+                candidate.bits.reserve(GPS_SUBFRAME_BITS);
+            }
+
+        uint32_t previous_word = prev_word_seed;
+        for (int32_t word_index = 0; word_index < words_per_subframe; ++word_index)
+            {
+                uint32_t gps_frame_4bytes = 0;
+                for (int32_t bit_index = 0; bit_index < GPS_WORD_BITS; ++bit_index)
+                    {
+                        const uint8_t bit = bits[static_cast<size_t>(word_index * GPS_WORD_BITS + bit_index)];
+                        gps_frame_4bytes = (gps_frame_4bytes << 1U) | static_cast<uint32_t>(bit);
+                        if (mars_debug)
+                            {
+                                candidate.bits.push_back(bit ? '1' : '0');
+                            }
+                    }
+
+                // Each word in wordbuff is composed of:
+                //      Bits 0 to 29 = the GPS data word
+                //      Bits 30 to 31 = 2 LSBs of the GPS word ahead.
+                if (previous_word & 0x00000001U)
+                    {
+                        gps_frame_4bytes = gps_frame_4bytes | 0x40000000U;
+                    }
+                if (previous_word & 0x00000002U)
+                    {
+                        gps_frame_4bytes = gps_frame_4bytes | 0x80000000U;
+                    }
+                // Check that the 2 most recently logged words pass parity. Have to first
+                // invert the data bits according to bit 30 of the previous word.
+                if (gps_frame_4bytes & 0x40000000U)
+                    {
+                        gps_frame_4bytes ^= 0x3FFFFFC0U;  // invert the data bits (using XOR)
+                    }
+
+                const bool crc_ok = gps_l1_ca_telemetry_decoder_gs::gps_word_parityCheck(gps_frame_4bytes);
+                candidate.words[static_cast<size_t>(word_index)] = gps_frame_4bytes;
+                candidate.word_crc[static_cast<size_t>(word_index)] = crc_ok ? 1 : 0;
+                if (crc_ok)
+                    {
+                        candidate.parity_ok++;
+                    }
+                else
+                    {
+                        candidate.all_parity = false;
+                    }
+                std::memcpy(&candidate.subframe[word_index * GPS_WORD_LENGTH], &gps_frame_4bytes, sizeof(uint32_t));
+                previous_word = gps_frame_4bytes;
+            }
+        candidate.last_word = previous_word;
+    };
+
+    DecodeCandidate nominal_candidate;
+    assemble_candidate(decoded_bits, nominal_candidate);
+    DecodeCandidate final_candidate = nominal_candidate;
+
+    // A Costas loop can remain carrier-locked while slipping between the 0 and
+    // pi prompt-I branches. If the normal decode fails, try a compact periodic
+    // branch mask and accept it only when the whole subframe becomes parity-clean.
+    if (d_enable_costas_branch_repair && !nominal_candidate.all_parity)
+        {
+            bool repair_found = false;
+            for (int32_t period = GPS_CA_PREAMBLE_LENGTH_BITS + 1; period <= 60 && !repair_found; ++period)
                 {
-                    frame_bit_index = 0;
-                    // parity check
-                    // Each word in wordbuff is composed of:
-                    //      Bits 0 to 29 = the GPS data word
-                    //      Bits 30 to 31 = 2 LSBs of the GPS word ahead.
-                    // prepare the extended frame [-2 -1 0 ... 30]
-                    if (d_prev_GPS_frame_4bytes & 0x00000001U)
+                    for (int32_t start = 0; start < period && !repair_found; ++start)
                         {
-                            GPS_frame_4bytes = GPS_frame_4bytes | 0x40000000U;
+                            for (int32_t length = 2; length < period - 1 && !repair_found; ++length)
+                                {
+                                    std::vector<uint8_t> repaired_bits = decoded_bits;
+                                    int32_t repair_flips = 0;
+                                    for (int32_t bit_index = GPS_CA_PREAMBLE_LENGTH_BITS; bit_index < GPS_SUBFRAME_BITS; ++bit_index)
+                                        {
+                                            const int32_t position = bit_index % period;
+                                            const int32_t end = start + length;
+                                            const bool in_branch_slip =
+                                                (end <= period) ? (position >= start && position < end) : (position >= start || position < (end % period));
+                                            if (in_branch_slip)
+                                                {
+                                                    repaired_bits[static_cast<size_t>(bit_index)] ^= 1U;
+                                                    repair_flips++;
+                                                }
+                                        }
+
+                                    DecodeCandidate repair_candidate;
+                                    assemble_candidate(repaired_bits, repair_candidate);
+                                    if (repair_candidate.all_parity)
+                                        {
+                                            repair_candidate.repaired = true;
+                                            repair_candidate.repair_period = period;
+                                            repair_candidate.repair_start = start;
+                                            repair_candidate.repair_length = length;
+                                            repair_candidate.repair_flips = repair_flips;
+                                            final_candidate = repair_candidate;
+                                            repair_found = true;
+                                        }
+                                }
                         }
-                    if (d_prev_GPS_frame_4bytes & 0x00000002U)
-                        {
-                            GPS_frame_4bytes = GPS_frame_4bytes | 0x80000000U;
-                        }
-                    // Check that the 2 most recently logged words pass parity. Have to first
-                    // invert the data bits according to bit 30 of the previous word.
-                    if (GPS_frame_4bytes & 0x40000000U)
-                        {
-                            GPS_frame_4bytes ^= 0x3FFFFFC0U;  // invert the data bits (using XOR)
-                        }
-                    // check parity. If ANY word inside the subframe fails the parity, set subframe_synchro_confirmation = false
-                    bool crc_ok = gps_l1_ca_telemetry_decoder_gs::gps_word_parityCheck(GPS_frame_4bytes);
-                    if (d_dump_crc_stats)
-                        {
-                            // update CRC statistics
-                            d_Tlm_CRC_Stats->update_CRC_stats(crc_ok);
-                        }
-                    if (!crc_ok)
-                        {
-                            subframe_synchro_confirmation = false;
-                        }
-                    // add word to subframe
-                    // insert the word in the correct position of the subframe
-                    std::memcpy(&subframe[word_index * GPS_WORD_LENGTH], &GPS_frame_4bytes, sizeof(uint32_t));
-                    word_index++;
-                    d_prev_GPS_frame_4bytes = GPS_frame_4bytes;  // save the actual frame
-                    GPS_frame_4bytes = 0;
                 }
-            else
+        }
+
+    const bool subframe_synchro_confirmation = final_candidate.all_parity;
+    std::array<char, GPS_SUBFRAME_LENGTH> subframe = final_candidate.subframe;
+    if (d_dump_crc_stats)
+        {
+            for (int32_t word_index = 0; word_index < words_per_subframe; ++word_index)
                 {
-                    GPS_frame_4bytes <<= 1U;  // shift 1 bit left the telemetry word
+                    d_Tlm_CRC_Stats->update_CRC_stats(final_candidate.word_crc[static_cast<size_t>(word_index)] != 0);
                 }
+        }
+    if (subframe_synchro_confirmation)
+        {
+            d_prev_GPS_frame_4bytes = final_candidate.last_word;
+        }
+
+    if (mars_debug)
+        {
+            std::ostringstream oss;
+            oss << "MARS_SYNC_DIAG stage=tlm_subframe_attempt"
+                << " channel=" << d_channel
+                << " prn=" << d_satellite.get_PRN()
+                << " sample_counter=" << d_sample_counter
+                << " preamble_index=" << d_preamble_index
+                << " invert=" << flag_invert
+                << " history_size=" << d_symbol_history.size()
+                << " cn0_dbhz=" << cn0
+                << " all_parity=" << subframe_synchro_confirmation
+                << " repair_enabled=" << d_enable_costas_branch_repair
+                << " branch_repair=" << final_candidate.repaired
+                << " repair_period=" << final_candidate.repair_period
+                << " repair_start=" << final_candidate.repair_start
+                << " repair_length=" << final_candidate.repair_length
+                << " repair_flips=" << final_candidate.repair_flips
+                << " parity_before=" << nominal_candidate.parity_ok
+                << " recovered_bits=" << final_candidate.bits
+                << " raw_recovered_bits=" << nominal_candidate.bits
+                << " word_crc=";
+            for (int32_t i = 0; i < words_per_subframe; ++i)
+                {
+                    if (i != 0)
+                        {
+                            oss << ',';
+                        }
+                    oss << final_candidate.word_crc[static_cast<size_t>(i)];
+                }
+            oss << " words_hex=";
+            for (int32_t i = 0; i < words_per_subframe; ++i)
+                {
+                    if (i != 0)
+                        {
+                            oss << ',';
+                        }
+                    oss << std::hex << final_candidate.words[static_cast<size_t>(i)] << std::dec;
+                }
+            mars_sync_debug_line(oss.str());
         }
 
     // decode subframe
@@ -481,6 +642,23 @@ void gps_l1_ca_telemetry_decoder_gs::frame_synchronization(const Gnss_Synchro &c
                                     }
                             }
                     }
+                if (mars_sync_debug_enabled() &&
+                    mars_sync_debug_prn(d_satellite.get_PRN()) &&
+                    d_symbol_history.size() >= d_required_symbols &&
+                    std::abs(corr_value) >= d_samples_per_preamble - 2)
+                    {
+                        std::ostringstream oss;
+                        oss << "MARS_SYNC_DIAG stage=tlm_preamble_candidate"
+                            << " state=" << d_stat
+                            << " channel=" << d_channel
+                            << " prn=" << d_satellite.get_PRN()
+                            << " sample_counter=" << d_sample_counter
+                            << " corr=" << corr_value
+                            << " score_abs=" << std::abs(corr_value)
+                            << " inverted=" << (corr_value < 0)
+                            << " history_size=" << d_symbol_history.size();
+                        mars_sync_debug_line(oss.str());
+                    }
                 if (abs(corr_value) >= d_samples_per_preamble)
                     {
                         d_preamble_index = d_sample_counter;  // record the preamble sample stamp
@@ -514,6 +692,19 @@ void gps_l1_ca_telemetry_decoder_gs::frame_synchronization(const Gnss_Synchro &c
             {
                 if (d_sample_counter >= d_preamble_index + static_cast<uint64_t>(d_preamble_period_symbols))
                     {
+                        if (mars_sync_debug_enabled() && mars_sync_debug_prn(d_satellite.get_PRN()))
+                            {
+                                std::ostringstream oss;
+                                oss << "MARS_SYNC_DIAG stage=tlm_periodic_decode"
+                                    << " state=" << d_stat
+                                    << " channel=" << d_channel
+                                    << " prn=" << d_satellite.get_PRN()
+                                    << " sample_counter=" << d_sample_counter
+                                    << " previous_preamble_index=" << d_preamble_index
+                                    << " expected_period_symbols=" << d_preamble_period_symbols
+                                    << " history_size=" << d_symbol_history.size();
+                                mars_sync_debug_line(oss.str());
+                            }
                         DLOG(INFO) << "Preamble received for SAT " << this->d_satellite << "d_sample_counter=" << d_sample_counter << "\n";
                         // call the decoder
                         // 0. fetch the symbols into an array
@@ -535,6 +726,16 @@ void gps_l1_ca_telemetry_decoder_gs::frame_synchronization(const Gnss_Synchro &c
                                 d_CRC_error_counter++;
                                 if (d_CRC_error_counter > 2)
                                     {
+                                        if (mars_sync_debug_enabled() && mars_sync_debug_prn(d_satellite.get_PRN()))
+                                            {
+                                                std::ostringstream oss;
+                                                oss << "MARS_SYNC_DIAG stage=tlm_frame_sync_lost"
+                                                    << " channel=" << d_channel
+                                                    << " prn=" << d_satellite.get_PRN()
+                                                    << " sample_counter=" << d_sample_counter
+                                                    << " crc_error_counter=" << d_CRC_error_counter;
+                                                mars_sync_debug_line(oss.str());
+                                            }
                                         DLOG(INFO) << "Lost of frame sync SAT " << this->d_satellite;
                                         d_flag_frame_sync = false;
                                         d_stat = 0;
@@ -567,8 +768,13 @@ int gps_l1_ca_telemetry_decoder_gs::general_work(int noutput_items __attribute__
     Gnss_Synchro current_symbol{};
     // 1. Copy the current tracking output
     current_symbol = in[0][0];
+    const bool mars_debug_symbol = mars_sync_debug_enabled() && mars_sync_debug_prn(d_satellite.get_PRN());
+    const uint64_t mars_debug_sample_counter_before_seed = d_sample_counter;
+    const size_t mars_debug_history_before_seed = d_symbol_history.size();
+    bool mars_debug_seeded_preamble = false;
     if (d_symbol_history.empty())
         {
+            mars_debug_seeded_preamble = true;
             // Tracking synchronizes the tlm bit boundaries by acquiring the preamble
             // inserting the preamble to the new tracked satellite (history empty) before the first synchronized symbol
             // may speed up the tlm decoding by not discarding the first received frame
@@ -585,10 +791,40 @@ int gps_l1_ca_telemetry_decoder_gs::general_work(int noutput_items __attribute__
                     d_sample_counter++;
                 }
         }
+    const uint64_t mars_debug_decoder_bit_index = d_sample_counter;
+    const size_t mars_debug_history_before_push = d_symbol_history.size();
     // add new symbol to the symbol queue
     d_symbol_history.push_back(current_symbol.Prompt_I);
 
     d_sample_counter++;  // count for the processed symbols
+    if (mars_debug_symbol &&
+        mars_debug_decoder_bit_index < static_cast<uint64_t>(GPS_CA_PREAMBLE_LENGTH_BITS + GPS_SUBFRAME_BITS))
+        {
+            std::ostringstream oss;
+            oss << "MARS_SYNC_DIAG stage=tlm_recv_symbol"
+                << " channel=" << d_channel
+                << " source_channel=" << current_symbol.Channel_ID
+                << " prn=" << d_satellite.get_PRN()
+                << " decoder_bit_index=" << mars_debug_decoder_bit_index
+                << " word_index=" << (mars_debug_decoder_bit_index / GPS_WORD_BITS + 1)
+                << " word_bit=" << (mars_debug_decoder_bit_index % GPS_WORD_BITS + 1)
+                << " sample_counter_before_seed=" << mars_debug_sample_counter_before_seed
+                << " sample_counter_after_push=" << d_sample_counter
+                << " seeded_preamble=" << mars_debug_seeded_preamble
+                << " history_before_seed=" << mars_debug_history_before_seed
+                << " history_before_push=" << mars_debug_history_before_push
+                << " history_after_push=" << d_symbol_history.size()
+                << " tracking_sample_counter=" << current_symbol.Tracking_sample_counter
+                << " prompt_i=" << current_symbol.Prompt_I
+                << " prompt_q=" << current_symbol.Prompt_Q
+                << " sign_i=" << (current_symbol.Prompt_I >= 0.0)
+                << " pll180=" << current_symbol.Flag_PLL_180_deg_phase_locked
+                << " valid_symbol=" << current_symbol.Flag_valid_symbol_output
+                << " correlation_length_ms=" << current_symbol.correlation_length_ms
+                << " cn0_dbhz=" << current_symbol.CN0_dB_hz
+                << " carrier_doppler_hz=" << current_symbol.Carrier_Doppler_hz;
+            mars_sync_debug_line(oss.str());
+        }
     consume_each(1);
     d_flag_preamble = false;
 

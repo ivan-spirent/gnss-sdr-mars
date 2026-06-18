@@ -118,6 +118,7 @@ private:
     bool d_remove_dat;
     bool d_enable_navdata_monitor;
     bool d_dump_crc_stats;
+    bool d_enable_costas_branch_repair;
 };
 
 

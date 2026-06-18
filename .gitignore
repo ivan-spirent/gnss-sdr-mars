@@ -28,3 +28,29 @@
 .settings
 .vs/
 .vscode/
+
+# =========================
+# GNSS-SDR runtime outputs
+# =========================
+
+# Binary / custom output files
+src/main/GSDR*
+
+# Position / navigation outputs
+src/main/*.dat
+src/main/*.nmea
+
+# Geospatial exports
+src/main/*.gpx
+src/main/*.kml
+src/main/*.geojson
+
+# GNSS assistance / broadcast data
+src/main/gps_*.xml
+
+# Python cache files
+__pycache__/
+
+# Local Mars replay inputs and generated diagnostics
+Mars 3 minutes/
+observables/

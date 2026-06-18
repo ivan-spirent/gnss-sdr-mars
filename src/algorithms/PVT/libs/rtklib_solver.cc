@@ -1406,7 +1406,8 @@ bool Rtklib_Solver::get_PVT(const std::map<int, Gnss_Synchro> &gnss_observables_
     // **********************************************************************
 
     this->set_valid_position(false);
-    if ((valid_obs + glo_valid_obs) > 3)
+    const int min_obs_for_pvt = d_rtk.opt.fixed_height_2d ? 3 : 4;
+    if ((valid_obs + glo_valid_obs) >= min_obs_for_pvt)
         {
             int result = 0;
             d_nav_data = {};

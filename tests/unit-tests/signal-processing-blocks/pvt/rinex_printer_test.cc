@@ -135,7 +135,10 @@ void RinexPrinterTest::conf()
         {{}, {{}, {}}, {{}, {}}, {}, {}},                                                  /*  exterr_t exterr   extended receiver error model */
         0,                                                                                 /* disable L2-AR */
         {},                                                                                /* char pppopt[256]   ppp option   "-GAP_RESION="  default gap to reset iono parameters (ep) */
-        true                                                                               /* enable Bancroft initialization for the first iteration of the PVT computation, useful in some geometries */
+        true,                                                                              /* enable Bancroft initialization for the first iteration of the PVT computation, useful in some geometries */
+        false,                                                                             /* enable constrained 2D solution with fixed ellipsoidal height */
+        0.0,                                                                               /* fixed ellipsoidal height [m] */
+        10.0                                                                               /* fixed-height constraint sigma [m] */
     };
 
     rtkinit(&rtk, &rtklib_configuration_options);

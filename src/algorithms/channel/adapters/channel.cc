@@ -104,7 +104,13 @@ Channel::Channel(const ConfigurationInterface* configuration,
 
     acq_->set_threshold(threshold);
 
+    // MARS - 6 Feb 2026
+    LOG(INFO) << "Channel " << channel_ << " initializing acquisition ("
+          << acq_->implementation() << ") for signal " << signal_str;
+
     acq_->init();
+
+    LOG(INFO) << "Channel " << channel_ << " acquisition initialized";
 
     channel_fsm_->set_acquisition(acq_);
     channel_fsm_->set_tracking(trk_);

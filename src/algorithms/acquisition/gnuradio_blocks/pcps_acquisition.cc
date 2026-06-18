@@ -36,15 +36,42 @@
 #include <algorithm>  // for std::fill_n, std::min, std::copy
 #include <array>
 #include <cmath>  // for floor, fmod, rint, ceil
+#include <cstdio>
+#include <cstdlib>
 #include <iostream>
 #include <limits>
 #include <map>
+#include <sstream>
 
 #if USE_GLOG_AND_GFLAGS
 #include <glog/logging.h>
 #else
 #include <absl/log/log.h>
 #endif
+
+namespace
+{
+bool mars_sync_debug_enabled()
+{
+    const char* env = std::getenv("GNSS_SDR_MARS_SYNC_DEBUG");
+    return env != nullptr && env[0] != '\0' && env[0] != '0';
+}
+
+
+bool mars_sync_debug_prn(uint32_t prn)
+{
+    return prn == 2U || prn == 16U || prn == 21U;
+}
+
+
+void mars_sync_debug_line(const std::string& line)
+{
+    flockfile(stdout);
+    std::fputs(line.c_str(), stdout);
+    std::fputc('\n', stdout);
+    funlockfile(stdout);
+}
+}  // namespace
 
 
 pcps_acquisition_sptr pcps_make_acquisition(const Acq_Conf& conf_)
@@ -357,6 +384,24 @@ void pcps_acquisition::send_positive_acquisition()
                << ", magnitude " << d_mag
                << ", input signal power " << d_input_power
                << ", Assist doppler_center " << d_doppler_center;
+    if (mars_sync_debug_enabled() && mars_sync_debug_prn(d_gnss_synchro->PRN))
+        {
+            std::ostringstream oss;
+            oss << "MARS_SYNC_DIAG stage=acq"
+                << " channel=" << d_channel
+                << " prn=" << d_gnss_synchro->PRN
+                << " sample_counter=" << d_sample_counter
+                << " acq_samplestamp=" << d_gnss_synchro->Acq_samplestamp_samples
+                << " code_phase_samples=" << d_gnss_synchro->Acq_delay_samples
+                << " doppler_hz=" << d_gnss_synchro->Acq_doppler_hz
+                << " doppler_step_hz=" << d_gnss_synchro->Acq_doppler_step
+                << " metric=" << d_test_statistics
+                << " threshold=" << d_threshold
+                << " magnitude=" << d_mag
+                << " input_power=" << d_input_power
+                << " doppler_center=" << d_doppler_center;
+            mars_sync_debug_line(oss.str());
+        }
     d_positive_acq = 1;
 
     if (!d_channel_fsm.expired())

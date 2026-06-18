@@ -519,7 +519,11 @@ void hybrid_observables_gs::update_TOW(const std::vector<Gnss_Synchro> &data)
                                 }
                         }
                 }
+#ifdef GNSS_PLANETARY_CONTEXT_MARS
+            d_T_rx_TOW_ms = TOW_ref + 100U;
+#else
             d_T_rx_TOW_ms = TOW_ref;
+#endif
             // align the receiver clock to integer multiple of d_T_rx_step_ms
             if (d_T_rx_TOW_ms % d_T_rx_step_ms)
                 {
@@ -557,9 +561,6 @@ void hybrid_observables_gs::compute_pranges(std::vector<Gnss_Synchro> &data) con
                     it->RX_time = current_T_rx_TOW_s;
                     it->Pseudorange_m = traveltime_ms * SPEED_OF_LIGHT_M_MS;
                     it->Flag_valid_pseudorange = true;
-                    // debug code
-                    // std::cout << "[" << it->Channel_ID << "] interp_TOW_ms: " << it->interp_TOW_ms << '\n';
-                    // std::cout << "[" << it->Channel_ID << "] Diff d_T_rx_TOW_ms - interp_TOW_ms: " << static_cast<double>(d_T_rx_TOW_ms) - it->interp_TOW_ms << '\n';
                 }
             else
                 {

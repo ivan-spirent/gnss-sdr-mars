@@ -53,11 +53,14 @@
 #include <algorithm>  // for fill_n
 #include <array>
 #include <cmath>      // for fmod, round, floor
+#include <cstdio>
+#include <cstdlib>
 #include <exception>  // for exception
 #include <iostream>   // for cout, cerr
 #include <map>
 #include <memory>
 #include <numeric>
+#include <sstream>
 #include <vector>
 
 #if USE_GLOG_AND_GFLAGS
@@ -78,6 +81,46 @@ namespace wht = boost;
 #include <any>
 namespace wht = std;
 #endif
+
+namespace
+{
+bool mars_sync_debug_enabled()
+{
+    const char* env = std::getenv("GNSS_SDR_MARS_SYNC_DEBUG");
+    return env != nullptr && env[0] != '\0' && env[0] != '0';
+}
+
+
+bool mars_sync_debug_prn(uint32_t prn)
+{
+    return prn == 2U || prn == 16U || prn == 21U;
+}
+
+
+void mars_sync_debug_line(const std::string &line)
+{
+    flockfile(stdout);
+    std::fputs(line.c_str(), stdout);
+    std::fputc('\n', stdout);
+    funlockfile(stdout);
+}
+
+
+double mars_sync_prompt_phase_rad(const gr_complex &value)
+{
+    return std::atan2(value.imag(), value.real());
+}
+
+
+double mars_sync_costas_phase_rad(const gr_complex &value)
+{
+    if (value.real() != 0.0F)
+        {
+            return std::atan(value.imag() / value.real());
+        }
+    return 0.0;
+}
+}  // namespace
 
 dll_pll_veml_tracking_sptr dll_pll_veml_make_tracking(const Dll_Pll_Conf &conf_)
 {
@@ -110,6 +153,7 @@ dll_pll_veml_tracking::dll_pll_veml_tracking(const Dll_Pll_Conf &conf_)
       d_code_phase_rate_step_chips(0.0),
       d_rem_code_phase_samples(0.0),  // Residual code phase (in chips)
       d_acq_sample_stamp(0ULL),
+      d_mars_sync_debug_lock_nitems_read(0ULL),
       d_rem_carr_phase_rad(0.0),  // Residual carrier phase
       d_state(0),                 // initial state: standby
       d_current_prn_length_samples(static_cast<int32_t>(d_trk_parameters.vector_length)),
@@ -121,6 +165,8 @@ dll_pll_veml_tracking::dll_pll_veml_tracking(const Dll_Pll_Conf &conf_)
       d_channel(0),
       d_secondary_code_length(0U),
       d_data_secondary_code_length(0U),
+      d_mars_sync_debug_ms_since_lock(0),
+      d_mars_sync_debug_emitted_bits(0),
       d_pull_in_transitory(true),
       d_corrected_doppler(false),
       d_interchange_iq(false),
@@ -129,7 +175,8 @@ dll_pll_veml_tracking::dll_pll_veml_tracking(const Dll_Pll_Conf &conf_)
       d_dump(d_trk_parameters.dump),
       d_dump_mat(d_trk_parameters.dump_mat && d_dump),
       d_acc_carrier_phase_initialized(false),
-      d_Flag_PLL_180_deg_phase_locked(false)
+      d_Flag_PLL_180_deg_phase_locked(false),
+      d_mars_sync_debug_after_lock(false)
 {
 #if GNURADIO_GREATER_THAN_38
     this->set_relative_rate(1, static_cast<uint64_t>(d_trk_parameters.vector_length));
@@ -954,7 +1001,32 @@ bool dll_pll_veml_tracking::acquire_secondary()
                         {
                             corr_value++;
                         }
-                }
+            }
+        }
+
+    if (mars_sync_debug_enabled() &&
+        d_acquisition_gnss_synchro != nullptr &&
+        mars_sync_debug_prn(d_acquisition_gnss_synchro->PRN) &&
+        std::abs(corr_value) >= static_cast<int32_t>(d_secondary_code_length) - 10)
+        {
+            std::ostringstream oss;
+            oss << "MARS_SYNC_DIAG stage=tracking_bit_candidate"
+                << " channel=" << d_channel
+                << " prn=" << d_acquisition_gnss_synchro->PRN
+                << " nitems_read=" << this->nitems_read(0)
+                << " acq_samplestamp=" << d_acq_sample_stamp
+                << " acq_code_phase_samples=" << d_acq_code_phase_samples
+                << " acq_doppler_hz=" << d_acq_carrier_doppler_hz
+                << " corr=" << corr_value
+                << " score_abs=" << std::abs(corr_value)
+                << " inverted=" << (corr_value < 0)
+                << " code_len_symbols=" << d_secondary_code_length
+                << " symbols_per_bit=" << d_symbols_per_bit
+                << " cn0_dbhz=" << d_CN0_SNV_dB_Hz
+                << " carrier_lock=" << d_carrier_lock_test
+                << " carrier_doppler_hz=" << d_carrier_doppler_hz
+                << " code_freq_chips=" << d_code_freq_chips;
+            mars_sync_debug_line(oss.str());
         }
 
     if (abs(corr_value) == static_cast<int32_t>(d_secondary_code_length))
@@ -1183,6 +1255,10 @@ void dll_pll_veml_tracking::clear_tracking_vars()
     d_code_error_filt_chips = 0.0;
     d_current_symbol = 0;
     d_current_data_symbol = 0;
+    d_mars_sync_debug_after_lock = false;
+    d_mars_sync_debug_ms_since_lock = 0;
+    d_mars_sync_debug_emitted_bits = 0;
+    d_mars_sync_debug_lock_nitems_read = 0ULL;
     d_Prompt_circular_buffer.clear();
     d_carrier_phase_rate_step_rad = 0.0;
     d_code_phase_rate_step_chips = 0.0;
@@ -1807,6 +1883,25 @@ int dll_pll_veml_tracking::general_work(int noutput_items __attribute__((unused)
                 d_P_accu = *d_Prompt;
                 d_L_accu = *d_Late;
                 d_trk_parameters.spc = d_trk_parameters.early_late_space_chips;
+                if (mars_sync_debug_enabled() &&
+                    d_acquisition_gnss_synchro != nullptr &&
+                    mars_sync_debug_prn(d_acquisition_gnss_synchro->PRN) &&
+                    this->nitems_read(0) < d_acq_sample_stamp + static_cast<uint64_t>(8.0 * d_trk_parameters.fs_in))
+                    {
+                        std::ostringstream oss;
+                        oss << "MARS_SYNC_DIAG stage=tracking_prompt_1ms"
+                            << " channel=" << d_channel
+                            << " prn=" << d_acquisition_gnss_synchro->PRN
+                            << " nitems_read=" << this->nitems_read(0)
+                            << " prompt_i=" << d_Prompt->real()
+                            << " prompt_q=" << d_Prompt->imag()
+                            << " sign_i=" << (d_Prompt->real() >= 0.0)
+                            << " cn0_dbhz=" << d_CN0_SNV_dB_Hz
+                            << " carrier_lock=" << d_carrier_lock_test
+                            << " carrier_doppler_hz=" << d_carrier_doppler_hz
+                            << " code_freq_chips=" << d_code_freq_chips;
+                        mars_sync_debug_line(oss.str());
+                    }
                 // if (std::string(d_trk_parameters.signal) == "E1")
                 //    {
                 //        d_trk_parameters.slope = -CalculateSlopeAbs(&SinBocCorrelationFunction<1, 1>, d_trk_parameters.spc);
@@ -1884,6 +1979,28 @@ int dll_pll_veml_tracking::general_work(int noutput_items __attribute__((unused)
                             }
                         if (next_state)
                             {  // reset extended correlator
+                                if (mars_sync_debug_enabled() &&
+                                    d_acquisition_gnss_synchro != nullptr &&
+                                    mars_sync_debug_prn(d_acquisition_gnss_synchro->PRN))
+                                    {
+                                        std::ostringstream oss;
+                                        oss << "MARS_SYNC_DIAG stage=tracking_preamble_lock_handoff"
+                                            << " channel=" << d_channel
+                                            << " prn=" << d_acquisition_gnss_synchro->PRN
+                                            << " nitems_read=" << this->nitems_read(0)
+                                            << " prompt_i=" << d_Prompt->real()
+                                            << " prompt_q=" << d_Prompt->imag()
+                                            << " sign_i=" << (d_Prompt->real() >= 0.0)
+                                            << " buffer_size=" << d_Prompt_circular_buffer.size()
+                                            << " secondary_code_length=" << d_secondary_code_length
+                                            << " symbols_per_bit=" << d_symbols_per_bit
+                                            << " current_symbol_before_reset=" << d_current_symbol
+                                            << " current_data_symbol_before_reset=" << d_current_data_symbol
+                                            << " pll180=" << d_Flag_PLL_180_deg_phase_locked
+                                            << " extended_integration=" << d_enable_extended_integration;
+                                        mars_sync_debug_line(oss.str());
+                                    }
+
                                 d_VE_accu = gr_complex(0.0, 0.0);
                                 d_E_accu = gr_complex(0.0, 0.0);
                                 d_P_accu = gr_complex(0.0, 0.0);
@@ -1893,6 +2010,10 @@ int dll_pll_veml_tracking::general_work(int noutput_items __attribute__((unused)
                                 d_Prompt_circular_buffer.clear();
                                 d_current_symbol = 0;
                                 d_current_data_symbol = 0;
+                                d_mars_sync_debug_after_lock = true;
+                                d_mars_sync_debug_ms_since_lock = 0;
+                                d_mars_sync_debug_emitted_bits = 0;
+                                d_mars_sync_debug_lock_nitems_read = this->nitems_read(0);
 
                                 if (d_enable_extended_integration)
                                     {
@@ -1942,7 +2063,65 @@ int dll_pll_veml_tracking::general_work(int noutput_items __attribute__((unused)
             {
                 // perform a correlation step
                 do_correlation_step(in);
+                const int32_t mars_debug_data_symbol_before = d_current_data_symbol;
+                const int32_t mars_debug_ms_index = d_mars_sync_debug_ms_since_lock;
+                const gr_complex mars_debug_prompt = d_trk_parameters.track_pilot ? d_Prompt_Data[0] : *d_Prompt;
+                const gr_complex mars_debug_accu_before = d_P_data_accu;
                 save_correlation_results();
+                const int32_t mars_debug_data_symbol_after = d_current_data_symbol;
+                const gr_complex mars_debug_accu_after = d_P_data_accu;
+                const bool mars_debug_after_lock_sample =
+                    mars_sync_debug_enabled() &&
+                    d_mars_sync_debug_after_lock &&
+                    d_acquisition_gnss_synchro != nullptr &&
+                    mars_sync_debug_prn(d_acquisition_gnss_synchro->PRN) &&
+                    d_symbols_per_bit > 1 &&
+                    mars_debug_ms_index < GPS_SUBFRAME_BITS * GPS_CA_TELEMETRY_SYMBOLS_PER_BIT;
+                if (mars_debug_after_lock_sample)
+                    {
+                        const int32_t telemetry_bit_index = GPS_CA_PREAMBLE_LENGTH_BITS + (mars_debug_ms_index / d_symbols_per_bit);
+                        std::ostringstream oss;
+                        oss << "MARS_SYNC_DIAG stage=tracking_post_lock_ms"
+                            << " channel=" << d_channel
+                            << " prn=" << d_acquisition_gnss_synchro->PRN
+                            << " state=3"
+                            << " nitems_read=" << this->nitems_read(0)
+                            << " lock_nitems_read=" << d_mars_sync_debug_lock_nitems_read
+                            << " ms_since_lock=" << mars_debug_ms_index
+                            << " telemetry_bit_index=" << telemetry_bit_index
+                            << " word_index=" << (telemetry_bit_index / GPS_WORD_BITS + 1)
+                            << " word_bit=" << (telemetry_bit_index % GPS_WORD_BITS + 1)
+                            << " data_symbol_before=" << mars_debug_data_symbol_before
+                            << " data_symbol_after=" << mars_debug_data_symbol_after
+                            << " emit_symbol=" << (mars_debug_data_symbol_after == 0)
+                            << " prompt_i=" << mars_debug_prompt.real()
+                            << " prompt_q=" << mars_debug_prompt.imag()
+                            << " sign_i=" << (mars_debug_prompt.real() >= 0.0)
+                            << " prompt_phase_atan2_rad=" << mars_sync_prompt_phase_rad(mars_debug_prompt)
+                            << " prompt_costas_phase_rad=" << mars_sync_costas_phase_rad(mars_debug_prompt)
+                            << " prompt_phase_branch_pi=" << (mars_debug_prompt.real() < 0.0)
+                            << " accu_i_before=" << mars_debug_accu_before.real()
+                            << " accu_q_before=" << mars_debug_accu_before.imag()
+                            << " accu_i_after=" << mars_debug_accu_after.real()
+                            << " accu_q_after=" << mars_debug_accu_after.imag()
+                            << " accu_phase_atan2_rad=" << mars_sync_prompt_phase_rad(mars_debug_accu_after)
+                            << " accu_costas_phase_rad=" << mars_sync_costas_phase_rad(mars_debug_accu_after)
+                            << " accu_phase_branch_pi=" << (mars_debug_accu_after.real() < 0.0)
+                            << " pll180=" << d_Flag_PLL_180_deg_phase_locked
+                            << " cloop=" << d_cloop
+                            << " high_dyn=" << d_trk_parameters.high_dyn
+                            << " cn0_dbhz=" << d_CN0_SNV_dB_Hz
+                            << " carrier_lock=" << d_carrier_lock_test
+                            << " pll_discriminator_hz=" << d_carr_phase_error_hz
+                            << " pll_filtered_hz=" << d_carr_error_filt_hz
+                            << " rem_carr_phase_rad=" << d_rem_carr_phase_rad
+                            << " acc_carrier_phase_rad=" << d_acc_carrier_phase_rad
+                            << " carrier_doppler_hz=" << d_carrier_doppler_hz
+                            << " carrier_phase_step_rad=" << d_carrier_phase_step_rad
+                            << " carrier_phase_rate_step_rad=" << d_carrier_phase_rate_step_rad
+                            << " code_freq_chips=" << d_code_freq_chips;
+                        mars_sync_debug_line(oss.str());
+                    }
                 update_tracking_vars();
                 if (d_current_data_symbol == 0)
                     {
@@ -1966,7 +2145,49 @@ int dll_pll_veml_tracking::general_work(int noutput_items __attribute__((unused)
                         current_synchro_data.CN0_dB_hz = d_CN0_SNV_dB_Hz;
                         current_synchro_data.correlation_length_ms = d_correlation_length_ms;
                         current_synchro_data.Flag_valid_symbol_output = true;
+                        if (mars_debug_after_lock_sample)
+                            {
+                                const int32_t telemetry_bit_index = GPS_CA_PREAMBLE_LENGTH_BITS + d_mars_sync_debug_emitted_bits;
+                                const gr_complex mars_debug_emit_prompt(static_cast<float>(current_synchro_data.Prompt_I), static_cast<float>(current_synchro_data.Prompt_Q));
+                                std::ostringstream oss;
+                                oss << "MARS_SYNC_DIAG stage=tracking_emit_symbol"
+                                    << " channel=" << d_channel
+                                    << " prn=" << d_acquisition_gnss_synchro->PRN
+                                    << " state=3"
+                                    << " nitems_read=" << this->nitems_read(0)
+                                    << " tracking_sample_counter_est=" << (this->nitems_read(0) + static_cast<uint64_t>(d_current_prn_length_samples))
+                                    << " lock_nitems_read=" << d_mars_sync_debug_lock_nitems_read
+                                    << " emitted_bit_count=" << d_mars_sync_debug_emitted_bits
+                                    << " telemetry_bit_index=" << telemetry_bit_index
+                                    << " word_index=" << (telemetry_bit_index / GPS_WORD_BITS + 1)
+                                    << " word_bit=" << (telemetry_bit_index % GPS_WORD_BITS + 1)
+                                    << " source_ms_start=" << (mars_debug_ms_index - d_symbols_per_bit + 1)
+                                    << " source_ms_end=" << mars_debug_ms_index
+                                    << " prompt_i=" << current_synchro_data.Prompt_I
+                                    << " prompt_q=" << current_synchro_data.Prompt_Q
+                                    << " sign_i=" << (current_synchro_data.Prompt_I >= 0.0)
+                                    << " prompt_phase_atan2_rad=" << mars_sync_prompt_phase_rad(mars_debug_emit_prompt)
+                                    << " prompt_costas_phase_rad=" << mars_sync_costas_phase_rad(mars_debug_emit_prompt)
+                                    << " prompt_phase_branch_pi=" << (current_synchro_data.Prompt_I < 0.0)
+                                    << " pll180=" << d_Flag_PLL_180_deg_phase_locked
+                                    << " cloop=" << d_cloop
+                                    << " high_dyn=" << d_trk_parameters.high_dyn
+                                    << " cn0_dbhz=" << d_CN0_SNV_dB_Hz
+                                    << " carrier_lock=" << d_carrier_lock_test
+                                    << " pll_discriminator_hz=" << d_carr_phase_error_hz
+                                    << " pll_filtered_hz=" << d_carr_error_filt_hz
+                                    << " rem_carr_phase_rad=" << d_rem_carr_phase_rad
+                                    << " acc_carrier_phase_rad=" << d_acc_carrier_phase_rad
+                                    << " carrier_phase_step_rad=" << d_carrier_phase_step_rad
+                                    << " carrier_phase_rate_step_rad=" << d_carrier_phase_rate_step_rad;
+                                mars_sync_debug_line(oss.str());
+                                d_mars_sync_debug_emitted_bits++;
+                            }
                         d_P_data_accu = gr_complex(0.0, 0.0);
+                    }
+                if (mars_debug_after_lock_sample)
+                    {
+                        d_mars_sync_debug_ms_since_lock = mars_debug_ms_index + 1;
                     }
                 d_extend_correlation_symbols_count++;
                 if (d_extend_correlation_symbols_count == (d_extend_correlation_symbols - 1))
@@ -1980,7 +2201,65 @@ int dll_pll_veml_tracking::general_work(int noutput_items __attribute__((unused)
             {
                 // perform a correlation step
                 do_correlation_step(in);
+                const int32_t mars_debug_data_symbol_before = d_current_data_symbol;
+                const int32_t mars_debug_ms_index = d_mars_sync_debug_ms_since_lock;
+                const gr_complex mars_debug_prompt = d_trk_parameters.track_pilot ? d_Prompt_Data[0] : *d_Prompt;
+                const gr_complex mars_debug_accu_before = d_P_data_accu;
                 save_correlation_results();
+                const int32_t mars_debug_data_symbol_after = d_current_data_symbol;
+                const gr_complex mars_debug_accu_after = d_P_data_accu;
+                const bool mars_debug_after_lock_sample =
+                    mars_sync_debug_enabled() &&
+                    d_mars_sync_debug_after_lock &&
+                    d_acquisition_gnss_synchro != nullptr &&
+                    mars_sync_debug_prn(d_acquisition_gnss_synchro->PRN) &&
+                    d_symbols_per_bit > 1 &&
+                    mars_debug_ms_index < GPS_SUBFRAME_BITS * GPS_CA_TELEMETRY_SYMBOLS_PER_BIT;
+                if (mars_debug_after_lock_sample)
+                    {
+                        const int32_t telemetry_bit_index = GPS_CA_PREAMBLE_LENGTH_BITS + (mars_debug_ms_index / d_symbols_per_bit);
+                        std::ostringstream oss;
+                        oss << "MARS_SYNC_DIAG stage=tracking_post_lock_ms"
+                            << " channel=" << d_channel
+                            << " prn=" << d_acquisition_gnss_synchro->PRN
+                            << " state=4"
+                            << " nitems_read=" << this->nitems_read(0)
+                            << " lock_nitems_read=" << d_mars_sync_debug_lock_nitems_read
+                            << " ms_since_lock=" << mars_debug_ms_index
+                            << " telemetry_bit_index=" << telemetry_bit_index
+                            << " word_index=" << (telemetry_bit_index / GPS_WORD_BITS + 1)
+                            << " word_bit=" << (telemetry_bit_index % GPS_WORD_BITS + 1)
+                            << " data_symbol_before=" << mars_debug_data_symbol_before
+                            << " data_symbol_after=" << mars_debug_data_symbol_after
+                            << " emit_symbol=" << (mars_debug_data_symbol_after == 0)
+                            << " prompt_i=" << mars_debug_prompt.real()
+                            << " prompt_q=" << mars_debug_prompt.imag()
+                            << " sign_i=" << (mars_debug_prompt.real() >= 0.0)
+                            << " prompt_phase_atan2_rad=" << mars_sync_prompt_phase_rad(mars_debug_prompt)
+                            << " prompt_costas_phase_rad=" << mars_sync_costas_phase_rad(mars_debug_prompt)
+                            << " prompt_phase_branch_pi=" << (mars_debug_prompt.real() < 0.0)
+                            << " accu_i_before=" << mars_debug_accu_before.real()
+                            << " accu_q_before=" << mars_debug_accu_before.imag()
+                            << " accu_i_after=" << mars_debug_accu_after.real()
+                            << " accu_q_after=" << mars_debug_accu_after.imag()
+                            << " accu_phase_atan2_rad=" << mars_sync_prompt_phase_rad(mars_debug_accu_after)
+                            << " accu_costas_phase_rad=" << mars_sync_costas_phase_rad(mars_debug_accu_after)
+                            << " accu_phase_branch_pi=" << (mars_debug_accu_after.real() < 0.0)
+                            << " pll180=" << d_Flag_PLL_180_deg_phase_locked
+                            << " cloop=" << d_cloop
+                            << " high_dyn=" << d_trk_parameters.high_dyn
+                            << " cn0_dbhz=" << d_CN0_SNV_dB_Hz
+                            << " carrier_lock=" << d_carrier_lock_test
+                            << " pll_discriminator_hz=" << d_carr_phase_error_hz
+                            << " pll_filtered_hz=" << d_carr_error_filt_hz
+                            << " rem_carr_phase_rad=" << d_rem_carr_phase_rad
+                            << " acc_carrier_phase_rad=" << d_acc_carrier_phase_rad
+                            << " carrier_doppler_hz=" << d_carrier_doppler_hz
+                            << " carrier_phase_step_rad=" << d_carrier_phase_step_rad
+                            << " carrier_phase_rate_step_rad=" << d_carrier_phase_rate_step_rad
+                            << " code_freq_chips=" << d_code_freq_chips;
+                        mars_sync_debug_line(oss.str());
+                    }
 
                 // check lock status
                 if (!cn0_and_tracking_lock_status(d_code_period * static_cast<double>(d_extend_correlation_symbols)))
@@ -2018,6 +2297,44 @@ int dll_pll_veml_tracking::general_work(int noutput_items __attribute__((unused)
                                 current_synchro_data.CN0_dB_hz = d_CN0_SNV_dB_Hz;
                                 current_synchro_data.correlation_length_ms = d_correlation_length_ms;
                                 current_synchro_data.Flag_valid_symbol_output = true;
+                                if (mars_debug_after_lock_sample)
+                                    {
+                                        const int32_t telemetry_bit_index = GPS_CA_PREAMBLE_LENGTH_BITS + d_mars_sync_debug_emitted_bits;
+                                        const gr_complex mars_debug_emit_prompt(static_cast<float>(current_synchro_data.Prompt_I), static_cast<float>(current_synchro_data.Prompt_Q));
+                                        std::ostringstream oss;
+                                        oss << "MARS_SYNC_DIAG stage=tracking_emit_symbol"
+                                            << " channel=" << d_channel
+                                            << " prn=" << d_acquisition_gnss_synchro->PRN
+                                            << " state=4"
+                                            << " nitems_read=" << this->nitems_read(0)
+                                            << " tracking_sample_counter_est=" << (this->nitems_read(0) + static_cast<uint64_t>(d_current_prn_length_samples))
+                                            << " lock_nitems_read=" << d_mars_sync_debug_lock_nitems_read
+                                            << " emitted_bit_count=" << d_mars_sync_debug_emitted_bits
+                                            << " telemetry_bit_index=" << telemetry_bit_index
+                                            << " word_index=" << (telemetry_bit_index / GPS_WORD_BITS + 1)
+                                            << " word_bit=" << (telemetry_bit_index % GPS_WORD_BITS + 1)
+                                            << " source_ms_start=" << (mars_debug_ms_index - d_symbols_per_bit + 1)
+                                            << " source_ms_end=" << mars_debug_ms_index
+                                            << " prompt_i=" << current_synchro_data.Prompt_I
+                                            << " prompt_q=" << current_synchro_data.Prompt_Q
+                                            << " sign_i=" << (current_synchro_data.Prompt_I >= 0.0)
+                                            << " prompt_phase_atan2_rad=" << mars_sync_prompt_phase_rad(mars_debug_emit_prompt)
+                                            << " prompt_costas_phase_rad=" << mars_sync_costas_phase_rad(mars_debug_emit_prompt)
+                                            << " prompt_phase_branch_pi=" << (current_synchro_data.Prompt_I < 0.0)
+                                            << " pll180=" << d_Flag_PLL_180_deg_phase_locked
+                                            << " cloop=" << d_cloop
+                                            << " high_dyn=" << d_trk_parameters.high_dyn
+                                            << " cn0_dbhz=" << d_CN0_SNV_dB_Hz
+                                            << " carrier_lock=" << d_carrier_lock_test
+                                            << " pll_discriminator_hz=" << d_carr_phase_error_hz
+                                            << " pll_filtered_hz=" << d_carr_error_filt_hz
+                                            << " rem_carr_phase_rad=" << d_rem_carr_phase_rad
+                                            << " acc_carrier_phase_rad=" << d_acc_carrier_phase_rad
+                                            << " carrier_phase_step_rad=" << d_carrier_phase_step_rad
+                                            << " carrier_phase_rate_step_rad=" << d_carrier_phase_rate_step_rad;
+                                        mars_sync_debug_line(oss.str());
+                                        d_mars_sync_debug_emitted_bits++;
+                                    }
                                 d_P_data_accu = gr_complex(0.0, 0.0);
                             }
 
@@ -2031,6 +2348,10 @@ int dll_pll_veml_tracking::general_work(int noutput_items __attribute__((unused)
                             {
                                 d_state = 3;  // new coherent integration (correlation time extension) cycle
                             }
+                    }
+                if (mars_debug_after_lock_sample)
+                    {
+                        d_mars_sync_debug_ms_since_lock = mars_debug_ms_index + 1;
                     }
             }
         }

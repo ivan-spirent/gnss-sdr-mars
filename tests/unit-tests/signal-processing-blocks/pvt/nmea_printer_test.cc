@@ -135,7 +135,10 @@ void NmeaPrinterTest::conf()
         {{}, {{}, {}}, {{}, {}}, {}, {}},                                                  /*  exterr_t exterr   extended receiver error model */
         0,                                                                                 /* disable L2-AR */
         {},                                                                                /* char pppopt[256]   ppp option   "-GAP_RESION="  default gap to reset iono parameters (ep) */
-        true                                                                               /* enable Bancroft initialization for the first iteration of the PVT computation, useful in some geometries */
+        true,                                                                              /* enable Bancroft initialization for the first iteration of the PVT computation, useful in some geometries */
+        false,                                                                             /* enable constrained 2D solution with fixed ellipsoidal height */
+        0.0,                                                                               /* fixed ellipsoidal height [m] */
+        10.0                                                                               /* fixed-height constraint sigma [m] */
     };
 
     rtkinit(&rtk, &rtklib_configuration_options);
@@ -181,7 +184,11 @@ TEST_F(NmeaPrinterTest, PrintLine)
                     std::size_t found = line.find(GPRMC);
                     if (found != std::string::npos)
                         {
+#ifdef GNSS_PLANETARY_CONTEXT_MARS
+                            EXPECT_EQ(line, "$GPRMC,225436.00,A,4915.7133809,N,12311.1202744,W,0.00,0.00,191194,0.0,E,D*2B\r");
+#else
                             EXPECT_EQ(line, "$GPRMC,225436.00,A,4916.4497617,N,12311.1202744,W,0.00,0.00,191194,0.0,E,D*21\r");
+#endif
                         }
                 }
             test_file.close();

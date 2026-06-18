@@ -167,6 +167,7 @@ private:
 
     // uint64_t d_sample_counter;
     uint64_t d_acq_sample_stamp;
+    uint64_t d_mars_sync_debug_lock_nitems_read;
     GnssTime d_last_timetag{};
     uint64_t d_last_timetag_samplecounter;
     bool d_timetag_waiting;
@@ -192,6 +193,8 @@ private:
     uint32_t d_channel;
     uint32_t d_secondary_code_length;
     uint32_t d_data_secondary_code_length;
+    int32_t d_mars_sync_debug_ms_since_lock;
+    int32_t d_mars_sync_debug_emitted_bits;
 
     bool d_pull_in_transitory;
     bool d_corrected_doppler;
@@ -204,6 +207,7 @@ private:
     bool d_acc_carrier_phase_initialized;
     bool d_enable_extended_integration;
     bool d_Flag_PLL_180_deg_phase_locked;
+    bool d_mars_sync_debug_after_lock;
 };
 
 

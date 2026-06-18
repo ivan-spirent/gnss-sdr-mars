@@ -546,6 +546,21 @@ int rescode(int iter, const obsd_t *obs, int n, const double *rs,
             trace(4, "sat=%2d azel=%5.1f %4.1f res=%7.3f sig=%5.3f\n", obs[i].sat,
                 azel[i * 2] * R2D, azel[1 + i * 2] * R2D, resp[i], sqrt(var[nv - 1]));
         }
+    if (opt->fixed_height_2d)
+        {
+            double pos_constraint[3];
+            ecef2pos(rr, pos_constraint);
+            v[nv] = opt->fixed_height_2d_m - pos_constraint[2];
+            for (j = 0; j < NX; j++)
+                {
+                    H[j + nv * NX] = 0.0;
+                }
+            H[0 + nv * NX] = cos(pos_constraint[0]) * cos(pos_constraint[1]);
+            H[1 + nv * NX] = cos(pos_constraint[0]) * sin(pos_constraint[1]);
+            H[2 + nv * NX] = sin(pos_constraint[0]);
+            var[nv++] = opt->fixed_height_2d_sigma_m * opt->fixed_height_2d_sigma_m;
+        }
+
     /* constraint to avoid rank-deficient */
     for (i = 0; i < 4; i++)
         {
@@ -595,11 +610,14 @@ int valsol(const double *azel, const int *vsat, int n,
             azels[1 + ns * 2] = azel[1 + i * 2];
             ns++;
         }
-    dops(ns, azels, opt->elmin, dop);
-    if (dop[0] <= 0.0 || dop[0] > opt->maxgdop)
+    if (!(opt->fixed_height_2d && ns == 3))
         {
-            std::snprintf(msg, MAXSOLBUF, "gdop error nv=%d gdop=%.1f", nv, dop[0]);
-            return 0;
+            dops(ns, azels, opt->elmin, dop);
+            if (dop[0] <= 0.0 || dop[0] > opt->maxgdop)
+                {
+                    std::snprintf(msg, MAXSOLBUF, "gdop error nv=%d gdop=%.1f", nv, dop[0]);
+                    return 0;
+                }
         }
     return 1;
 }
@@ -680,6 +698,96 @@ arma::vec rough_bancroft(const arma::mat &B_pass)
 }
 
 
+arma::vec rough_surface_constrained_position(const arma::mat &sat_ranges,
+    const double *seed_ecef,
+    double fixed_height_m)
+{
+    const int m = sat_ranges.n_rows;
+    arma::vec x = arma::zeros<arma::vec>(4);
+
+    if (m < 3)
+        {
+            return x;
+        }
+
+    if (std::sqrt(seed_ecef[0] * seed_ecef[0] + seed_ecef[1] * seed_ecef[1] + seed_ecef[2] * seed_ecef[2]) > 0.1)
+        {
+            x(0) = seed_ecef[0];
+            x(1) = seed_ecef[1];
+            x(2) = seed_ecef[2];
+        }
+    else
+        {
+            x(0) = RE_WGS84 + fixed_height_m;
+        }
+
+    double clock_sum = 0.0;
+    int clock_count = 0;
+    for (int i = 0; i < m; i++)
+        {
+            const arma::vec dr = x.head_rows(3) - sat_ranges.submat(i, 0, i, 2).t();
+            const double rho = arma::norm(dr);
+            if (rho <= 0.0)
+                {
+                    continue;
+                }
+            clock_sum += sat_ranges(i, 3) - rho;
+            clock_count++;
+        }
+    if (clock_count > 0)
+        {
+            x(3) = clock_sum / clock_count;
+        }
+
+    for (int iter = 0; iter < 8; iter++)
+        {
+            arma::mat A = arma::zeros<arma::mat>(m + 1, 4);
+            arma::vec y = arma::zeros<arma::vec>(m + 1);
+
+            for (int i = 0; i < m; i++)
+                {
+                    const arma::vec dr = x.head_rows(3) - sat_ranges.submat(i, 0, i, 2).t();
+                    const double rho = arma::norm(dr);
+                    if (rho <= 0.0)
+                        {
+                            continue;
+                        }
+                    A(i, 0) = dr(0) / rho;
+                    A(i, 1) = dr(1) / rho;
+                    A(i, 2) = dr(2) / rho;
+                    A(i, 3) = 1.0;
+                    y(i) = sat_ranges(i, 3) - (rho + x(3));
+                }
+
+            double pos[3];
+            const double rr[3] = {x(0), x(1), x(2)};
+            ecef2pos(rr, pos);
+            A(m, 0) = cos(pos[0]) * cos(pos[1]);
+            A(m, 1) = cos(pos[0]) * sin(pos[1]);
+            A(m, 2) = sin(pos[0]);
+            y(m) = fixed_height_m - pos[2];
+
+            arma::vec dx;
+            bool success = arma::solve(dx, A, y);
+            if (!success)
+                {
+                    dx = arma::pinv(A) * y;
+                }
+            if (!dx.is_finite())
+                {
+                    break;
+                }
+            x += dx;
+            if (arma::norm(dx) < 1e-4)
+                {
+                    break;
+                }
+        }
+
+    return x;
+}
+
+
 /* estimate receiver position ------------------------------------------------*/
 int estpos(const obsd_t *obs, int n, const double *rs, const double *dts,
     const double *vare, const int *svh, const nav_t *nav,
@@ -704,9 +812,9 @@ int estpos(const obsd_t *obs, int n, const double *rs, const double *dts,
 
     trace(3, "estpos  : n=%d\n", n);
 
-    v = mat(n + 4, 1);
-    H = mat(NX, n + 4);
-    var = mat(n + 4, 1);
+    v = mat(n + 5, 1);
+    H = mat(NX, n + 5);
+    var = mat(n + 5, 1);
 
     for (i = 0; i < 3; i++)
         {
@@ -714,7 +822,53 @@ int estpos(const obsd_t *obs, int n, const double *rs, const double *dts,
         }
 
     // Rough first estimation to initialize the algorithm
-    if (opt->bancroft_init && (std::sqrt(x[0] * x[0] + x[1] * x[1] + x[2] * x[2]) < 0.1))
+    if (opt->fixed_height_2d && (std::sqrt(x[0] * x[0] + x[1] * x[1] + x[2] * x[2]) < 0.1))
+        {
+            if (std::sqrt(opt->ru[0] * opt->ru[0] + opt->ru[1] * opt->ru[1] + opt->ru[2] * opt->ru[2]) > 0.1)
+                {
+                    for (i = 0; i < 3; i++)
+                        {
+                            x[i] = opt->ru[i];
+                        }
+                }
+            else
+                {
+                    x[0] = RE_WGS84 + opt->fixed_height_2d_m;
+                }
+        }
+
+    if (opt->bancroft_init && opt->fixed_height_2d && n >= 3)
+        {
+            arma::mat B = arma::mat(n, 4, arma::fill::zeros);
+            for (i = 0; i < n; i++)
+                {
+                    B(i, 0) = rs[0 + i * 6];
+                    B(i, 1) = rs[1 + i * 6];
+                    B(i, 2) = rs[2 + i * 6];
+                    if (obs[i].code[0] != CODE_NONE)
+                        {
+                            B(i, 3) = obs[i].P[0];
+                        }
+                    else if (obs[i].code[1] != CODE_NONE)
+                        {
+                            B(i, 3) = obs[i].P[1];
+                        }
+                    else
+                        {
+                            B(i, 3) = obs[i].P[2];
+                        }
+                    B(i, 3) += SPEED_OF_LIGHT_M_S * dts[i * 2];
+                }
+            arma::vec pos = rough_surface_constrained_position(B, x, opt->fixed_height_2d_m);
+            if (pos.is_finite() && arma::norm(pos.head_rows(3)) > 0.1)
+                {
+                    x[0] = pos(0);
+                    x[1] = pos(1);
+                    x[2] = pos(2);
+                    x[3] = pos(3);
+                }
+        }
+    else if (opt->bancroft_init && n >= 4 && (std::sqrt(x[0] * x[0] + x[1] * x[1] + x[2] * x[2]) < 0.1))
         {
             arma::mat B = arma::mat(n, 4, arma::fill::zeros);
             for (i = 0; i < n; i++)

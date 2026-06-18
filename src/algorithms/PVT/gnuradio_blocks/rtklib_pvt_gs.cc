@@ -2285,7 +2285,22 @@ int rtklib_pvt_gs::work(int noutput_items, gr_vector_const_void_star& input_item
                     else
                         {
                             // sanity check: If the PVT solver is getting 100 consecutive errors, send a reset command to observables block
+#ifdef GNSS_PLANETARY_CONTEXT_MARS
+                            int num_obs_with_eph = 0;
+                            for (const auto& obs_pair : d_gnss_observables_map)
+                                {
+                                    if (d_internal_pvt_solver->gps_ephemeris_map.find(obs_pair.second.PRN) != d_internal_pvt_solver->gps_ephemeris_map.cend())
+                                        {
+                                            num_obs_with_eph++;
+                                        }
+                                }
+                            if (num_obs_with_eph >= 4)
+                                {
+                                    d_pvt_errors_counter++;
+                                }
+#else
                             d_pvt_errors_counter++;
+#endif
                             if (d_pvt_errors_counter >= 100)
                                 {
                                     int command = 1;

@@ -1005,6 +1005,9 @@ typedef struct
     int freqopt;                  /* disable L2-AR */
     char pppopt[256];             /* ppp option */
     bool bancroft_init;           /* enable Bancroft initialization for the first iteration of the PVT computation */
+    bool fixed_height_2d;         /* enable single-point constrained 2D solution with fixed ellipsoidal height */
+    double fixed_height_2d_m;     /* fixed ellipsoidal height for constrained 2D solution (m) */
+    double fixed_height_2d_sigma_m; /* standard deviation of fixed-height constraint (m) */
 } prcopt_t;
 
 

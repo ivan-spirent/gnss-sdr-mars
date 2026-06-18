@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mars GNSS Receiver UI</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="title-block">
+      <h1>Mars GNSS Receiver</h1>
+      <p id="statusLine">No receiver artifacts loaded</p>
+    </div>
+    <div class="toolbar" aria-label="Data sources">
+      <button id="loadDefaults" class="primary">Load build outputs</button>
+      <label class="file-pill">
+        Receiver log
+        <input id="logFile" type="file" accept=".log,.txt">
+      </label>
+      <label class="file-pill">
+        NMEA
+        <input id="nmeaFile" type="file" accept=".nmea,.txt">
+      </label>
+      <label class="file-pill">
+        GeoJSON
+        <input id="geojsonFile" type="file" accept=".geojson,.json">
+      </label>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="summary-grid" id="summaryGrid" aria-label="Receiver summary"></section>
+
+    <section class="panel span-12">
+      <div class="panel-head">
+        <h2>Receiver Stages</h2>
+        <div class="legend">
+          <span><i class="swatch start"></i>Acq/track start</span>
+          <span><i class="swatch lock"></i>Bit lock</span>
+          <span><i class="swatch nav"></i>NAV</span>
+          <span><i class="swatch loss"></i>Loss</span>
+          <span><i class="swatch fix"></i>PVT</span>
+        </div>
+      </div>
+      <canvas id="timelineCanvas" class="chart tall" aria-label="Receiver event timeline"></canvas>
+    </section>
+
+    <section class="panel span-7">
+      <div class="panel-head">
+        <h2>CN0 By PRN</h2>
+        <span id="cn0Range" class="muted"></span>
+      </div>
+      <canvas id="cn0Canvas" class="chart" aria-label="CN0 chart"></canvas>
+    </section>
+
+    <section class="panel span-5">
+      <div class="panel-head">
+        <h2>Sky Plot</h2>
+        <span id="skySummary" class="muted"></span>
+      </div>
+      <canvas id="skyCanvas" class="chart sky-chart" aria-label="Receiver sky plot"></canvas>
+      <div class="sky-control">
+        <input id="skyTimeSlider" type="range" min="0" max="0" value="0" step="1">
+        <span id="skyEpochLabel" class="muted"></span>
+      </div>
+    </section>
+
+    <section class="panel span-5">
+      <div class="panel-head">
+        <h2>PVT Local Plot</h2>
+        <span id="pvtOffset" class="muted"></span>
+      </div>
+      <canvas id="mapCanvas" class="chart" aria-label="PVT local tangent plot"></canvas>
+    </section>
+
+    <section class="panel span-7">
+      <div class="panel-head">
+        <h2>Fix Observability</h2>
+        <span id="satCountSummary" class="muted"></span>
+      </div>
+      <canvas id="satCanvas" class="chart" aria-label="Satellite count chart"></canvas>
+    </section>
+
+    <section class="panel span-5">
+      <div class="panel-head">
+        <h2>Channels</h2>
+        <span id="channelSummary" class="muted"></span>
+      </div>
+      <div class="table-wrap">
+        <table id="channelTable">
+          <thead>
+            <tr>
+              <th>Ch</th>
+              <th>PRN</th>
+              <th>Start</th>
+              <th>Lock</th>
+              <th>NAV</th>
+              <th>CN0</th>
+              <th>Loss</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel span-12">
+      <div class="panel-head">
+        <h2>Event Log</h2>
+        <div class="filters" role="tablist" aria-label="Event filters">
+          <button class="filter active" data-filter="all">All</button>
+          <button class="filter" data-filter="start">Start</button>
+          <button class="filter" data-filter="lock">Lock</button>
+          <button class="filter" data-filter="nav">NAV</button>
+          <button class="filter" data-filter="loss">Loss</button>
+          <button class="filter" data-filter="pvt">PVT</button>
+        </div>
+      </div>
+      <div id="eventList" class="event-list" aria-label="Parsed receiver events"></div>
+    </section>
+  </main>
+
+  <script src="./app.js"></script>
+</body>
+</html>

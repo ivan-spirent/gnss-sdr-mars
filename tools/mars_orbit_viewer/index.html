@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mars Orbit Viewer</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <main class="app">
+    <section class="scene-shell" aria-label="Mars satellite orbit scene">
+      <canvas id="sceneCanvas"></canvas>
+      <div class="scene-top">
+        <div>
+          <h1>Mars Orbit Viewer</h1>
+          <p id="statusLine">Loading scenario data...</p>
+        </div>
+        <div class="mode-tabs" role="tablist" aria-label="View mode">
+          <button class="mode active" data-mode="mars">Mars</button>
+          <button class="mode" data-mode="earth">Earth</button>
+        </div>
+      </div>
+      <div class="legend" aria-label="Scene legend">
+        <span><i class="dot captured"></i>Captured PRN</span>
+        <span><i class="dot orbit"></i>XML orbit</span>
+        <span><i class="dot receiver"></i>Receiver</span>
+        <span><i class="dot pvt"></i>PVT</span>
+      </div>
+    </section>
+
+    <aside class="side">
+      <section class="panel controls-panel">
+        <div class="panel-head">
+          <h2>Epoch</h2>
+          <button id="loadDefaults" class="primary">Reload</button>
+        </div>
+        <div class="transport">
+          <button id="playButton">Play</button>
+          <input id="timeSlider" type="range" min="0" max="0" value="0" step="1">
+        </div>
+        <div class="readout">
+          <span id="epochLabel">-</span>
+          <span id="towLabel">-</span>
+        </div>
+        <div class="toggles">
+          <label><input id="toggleXml" type="checkbox" checked> XML orbits</label>
+          <label><input id="toggleCaptured" type="checkbox" checked> Captured PRNs</label>
+          <label><input id="togglePvt" type="checkbox" checked> PVT solution</label>
+        </div>
+      </section>
+
+      <section class="metric-grid" aria-label="Scenario metrics">
+        <article class="metric">
+          <span>XML Satellites</span>
+          <strong id="xmlCount">-</strong>
+        </article>
+        <article class="metric">
+          <span>Captured PRNs</span>
+          <strong id="capturedCount">-</strong>
+        </article>
+        <article class="metric">
+          <span>Earth Range</span>
+          <strong id="earthRange">-</strong>
+        </article>
+        <article class="metric">
+          <span>PVT Points</span>
+          <strong id="pvtCount">-</strong>
+        </article>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <h2>Selected PRN</h2>
+          <span id="selectedPrn" class="muted">-</span>
+        </div>
+        <div id="selectedDetails" class="detail-grid"></div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <h2>Receiver</h2>
+          <span class="muted">Mars 0/0 surface</span>
+        </div>
+        <div id="receiverDetails" class="detail-grid"></div>
+      </section>
+
+      <section class="panel sat-panel">
+        <div class="panel-head">
+          <h2>Scenario Satellites</h2>
+          <span id="satSummary" class="muted">-</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>PRN</th>
+                <th>Range</th>
+                <th>El</th>
+                <th>Doppler</th>
+                <th>Signal</th>
+              </tr>
+            </thead>
+            <tbody id="satTable"></tbody>
+          </table>
+        </div>
+      </section>
+    </aside>
+  </main>
+
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

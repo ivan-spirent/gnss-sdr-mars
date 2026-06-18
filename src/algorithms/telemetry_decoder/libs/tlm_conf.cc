@@ -28,6 +28,7 @@ void Tlm_Conf::SetFromConfiguration(const ConfigurationInterface *configuration,
     dump_mat = configuration->property(role + ".dump_mat", dump);
     remove_dat = configuration->property(role + ".remove_dat", false);
     dump_crc_stats = configuration->property(role + ".dump_crc_stats", false);
+    enable_costas_branch_repair = configuration->property(role + ".enable_costas_branch_repair", false);
     const std::string default_crc_stats_dumpname("telemetry_crc_stats");
     dump_crc_stats_filename = configuration->property(role + ".dump_crc_stats_filename", default_crc_stats_dumpname);
     enable_navdata_monitor = configuration->property("NavDataMonitor.enable_monitor", false);

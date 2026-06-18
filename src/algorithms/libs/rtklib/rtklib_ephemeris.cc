@@ -39,10 +39,17 @@
 /* constants -----------------------------------------------------------------*/
 
 const double RE_GLO = 6378136.0;      /* radius of earth (m)            ref [2] */
-const double MU_GPS = PlanetaryParams::MU;   /* gravitational constant         ref [1] */
+#ifdef GNSS_PLANETARY_CONTEXT_MARS
+const double MU_GPS = PlanetaryParams::MU;   /* planetary gravitational constant */
+const double MU_GLO = PlanetaryParams::MU;   /* planetary gravitational constant */
+const double MU_GAL = PlanetaryParams::MU;   /* planetary gravitational constant */
+const double MU_BDS = PlanetaryParams::MU;   /* planetary gravitational constant */
+#else
+const double MU_GPS = 3.9860050e14;   /* gravitational constant         ref [1] */
 const double MU_GLO = 3.9860044e14;   /* gravitational constant         ref [2] */
 const double MU_GAL = 3.986004418e14; /* earth gravitational constant   ref [7] */
 const double MU_BDS = 3.986004418e14; /* earth gravitational constant   ref [9] */
+#endif
 const double J2_GLO = 1.0826257e-3;   /* 2nd zonal harmonic of geopot   ref [2] */
 
 const double OMGE_GLO = GLONASS_OMEGA_EARTH_DOT; /* earth angular velocity (rad/s) ref [2] */
