@@ -5,7 +5,7 @@ const EARTH_RADIUS_KM = 6371;
 const MARS_MU_M3_S2 = 4.282837e13;
 const EARTH_CONTEXT_SEPARATION = 22000;
 const EARTH_CONTEXT_ORBIT_SCALE = 0.18;
-const TRUTH_POSITION = { latDeg: 30, lonDeg: 30, heightM: 80 };
+const TRUTH_POSITION = { latDeg: 30, lonDeg: 30, heightM: 30 };
 const DEG = 180 / Math.PI;
 const RAD = Math.PI / 180;
 

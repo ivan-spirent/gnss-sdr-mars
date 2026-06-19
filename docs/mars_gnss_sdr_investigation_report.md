@@ -289,11 +289,11 @@ The newer GPS-like Mars capture uses a different constellation and receiver trut
 
 - Latitude: 30 deg
 - Longitude: 30 deg
-- Height: about 80 m
+- Height: about 30 m
 
 UI updates:
 
-- `tools/mars_receiver_ui/` now plots 3D error against 30 deg latitude, 30 deg longitude, and 80 m height on the Mars ellipsoid used by the receiver build.
+- `tools/mars_receiver_ui/` now plots 3D error against 30 deg latitude, 30 deg longitude, and 30 m height on the Mars ellipsoid used by the receiver build.
 - The PVT plot annotates the reported latitude, longitude, and height in degrees/metres.
 - A new I/Q dominance panel shows whether each channel is I-dominant, Q-dominant, or mixed from prompt I/Q diagnostics.
 
@@ -307,10 +307,10 @@ Q/I investigation:
 Longitude/frame investigation:
 
 - GNSS-SDR C1C pseudoranges match simulator `P-Range Group A` after one common receiver-clock offset, so the longitude bias is not caused by code-phase tracking or pseudorange formation.
-- The same pseudoranges and broadcast ephemerides fit a receiver near 30.012 deg latitude, 29.912 deg longitude, and about 70 m height much better than they fit the requested 30 deg, 30 deg, 80 m truth. This reproduces the westward PVT bias offline.
+- The same pseudoranges and broadcast ephemerides fit a receiver near 30.012 deg latitude, 29.912 deg longitude, and a biased height much better than they fit the requested 30 deg, 30 deg, 30 m truth. This reproduces the westward PVT bias offline.
 - Reinterpreting 30 deg latitude as a SPICE-like planetocentric surface point makes the range residuals much worse, not better. A spherical Mars truth interpretation is worse again. Therefore the current kilometre-class longitude error is not explained by altitude or by geodetic-versus-planetocentric latitude alone.
-- A new diagnostic tool, `utils/scripts/analyze_mars_frame_alignment.py`, compares simulator geometric ranges with GNSS-SDR broadcast-orbit ranges. For the GPS-like 5 minute data set, the uncorrected broadcast ranges show about 2.5 km RMS mismatch at the 30/30/80 truth point.
-- The same tool finds that a common Mars body-fixed frame phase of about +21.3 s of Mars rotation, plus a small -2.0 s ephemeris propagation-time offset, reduces the broadcast/simulator range mismatch to about 387 m RMS. This strongly points to a SPICE `IAU_MARS` prime-meridian/time-tag alignment mismatch in the NAV-to-receiver orbit path.
+- A new diagnostic tool, `utils/scripts/analyze_mars_frame_alignment.py`, compares simulator geometric ranges with GNSS-SDR broadcast-orbit ranges. For the GPS-like 5 minute data set, the uncorrected broadcast ranges show about 2.5 km RMS mismatch at the 30/30/30 truth point.
+- The same tool finds that a common Mars body-fixed frame phase of about +21.4 s of Mars rotation, plus a small -1.9 s ephemeris propagation-time offset, reduces the broadcast/simulator range mismatch to about 403 m RMS. This strongly points to a SPICE `IAU_MARS` prime-meridian/time-tag alignment mismatch in the NAV-to-receiver orbit path.
 
 Generic tooling added:
 
@@ -324,29 +324,29 @@ Generic tooling added:
 GPS-like 5 minute validation after PVT ephemeris corrections:
 
 - Generated alignment summary:
-  - Uncorrected broadcast/simulator range mismatch: 2514.3 m RMS.
-  - Best aligned mismatch: 386.7 m RMS.
-  - Derived frame phase: +21.3 s of Mars rotation, or 0.001509790434 rad.
-  - Derived ephemeris time offset: -2.0 s.
-- Per-PRN ephemeris corrections reduce the aligned broadcast/simulator range mismatch from 386.7 m RMS to 15.7 m RMS.
-- Full corrected fixed-height 2D replay completed normally in 167.80 s.
+  - Uncorrected broadcast/simulator range mismatch: 2521.3 m RMS.
+  - Best aligned mismatch: 402.9 m RMS.
+  - Derived frame phase: +21.4 s of Mars rotation, or 0.001516878652 rad.
+  - Derived ephemeris time offset: -1.9 s.
+- Per-PRN ephemeris corrections reduce the aligned broadcast/simulator range mismatch from 402.9 m RMS to 15.6 m RMS.
+- Full corrected fixed-height 2D replay completed normally in 174.04 s.
 - PVT points: 551.
 - PVT observations: 5 to 7.
 - NMEA GSA satellites used across the run: PRNs 02, 04, 05, 09, 10, 12, 14, 24, and 30.
 - Final fix:
   - Time: 2026-Mar-02 00:34:41.500000 UTC
-  - Latitude: 30.000493 deg
-  - Longitude: 29.999508 deg
-  - Height: 75.99 m
+  - Latitude: 30.000492 deg
+  - Longitude: 29.999515 deg
+  - Height: 26.07 m
   - Observations: 7
-- 3D error against 30 deg latitude, 30 deg longitude, and 80 m height:
+- 3D error against 30 deg latitude, 30 deg longitude, and 30 m height:
   - 2D RMS: 21.1 m
-  - 2D maximum: 38.6 m
-  - 2D final: 38.5 m
-  - 3D RMS: 21.4 m
-  - 3D maximum: 38.8 m
-  - 3D final: 38.7 m
-- `build/latest_pvt.geojson` now points at `PVT_260619_154718.geojson`, and both web UIs load the corrected full-run NMEA and GeoJSON outputs.
+  - 2D maximum: 38.4 m
+  - 2D final: 38.3 m
+  - 3D RMS: 21.3 m
+  - 3D maximum: 38.5 m
+  - 3D final: 38.4 m
+- `build/latest_pvt.geojson` now points at `PVT_260619_161428.geojson`, and both web UIs load the corrected full-run NMEA and GeoJSON outputs.
 
 ## Known Limitations and Follow-Up
 

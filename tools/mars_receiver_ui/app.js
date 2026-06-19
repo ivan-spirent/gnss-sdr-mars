@@ -6,7 +6,7 @@ const DEG_TO_RAD = Math.PI / 180;
 const TRUTH_POSITION = {
   lat: 30,
   lon: 30,
-  height: 80
+  height: 30
 };
 const COLORS = {
   start: "#2f6db5",
