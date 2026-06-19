@@ -33,6 +33,7 @@
 #include <fstream>           // for ofstream
 #include <memory>            // for std::unique_ptr
 #include <string>            // for string
+#include <vector>
 
 /** \addtogroup Telemetry_Decoder
  * \{ */
@@ -75,6 +76,11 @@ private:
 
     void check_tlm_separation();
     void frame_synchronization(const Gnss_Synchro &current_gs);
+    bool try_set_assisted_tow(const Gnss_Synchro &current_gs);
+    bool try_set_assisted_nav_truth_tow();
+    void load_assisted_nav_bits(const std::string& nav_bits_file);
+    Gps_Ephemeris get_frame_aligned_ephemeris() const;
+    void publish_frame_aligned_ephemeris();
     bool is_PLL_180_deg_phase_locked();
     bool gps_word_parityCheck(uint32_t gpsword);
     bool decode_subframe(double cn0, bool flag_invert);
@@ -97,6 +103,7 @@ private:
 
     int32_t d_bits_per_preamble;
     int32_t d_samples_per_preamble;
+    int32_t d_assisted_tow_min_preamble_score;
     int32_t d_preamble_period_symbols;
     int32_t d_CRC_error_counter;
     int32_t d_channel;
@@ -107,9 +114,20 @@ private:
     uint32_t d_stat;
     uint32_t d_TOW_at_Preamble_ms;
     uint32_t d_TOW_at_current_symbol_ms;
+    uint32_t d_assisted_tow_start_ms;
+    int32_t d_assisted_nav_min_match_bits;
+    int32_t d_last_nav_subframe_id;
+    int32_t d_last_nav_tow_s;
+    double d_assisted_tow_light_time_ms;
+    double d_assisted_tow_boundary_tolerance_ms;
+    double d_assisted_tow_min_cn0_dbhz;
+    double d_ephemeris_frame_phase_offset_rad;
+    double d_ephemeris_time_offset_s;
+    std::string d_assisted_nav_bits_file;
 
     bool d_flag_frame_sync;
     bool d_flag_preamble;
+    bool d_flag_assisted_tow_seeded;
     bool d_sent_tlm_failed_msg;
     bool d_flag_PLL_180_deg_phase_locked;
     bool d_flag_TOW_set;
@@ -119,6 +137,15 @@ private:
     bool d_enable_navdata_monitor;
     bool d_dump_crc_stats;
     bool d_enable_costas_branch_repair;
+    bool d_enable_assisted_tow;
+
+    struct AssistedNavSubframe
+    {
+        int32_t subframe_id{0};
+        uint32_t tow_at_current_symbol_ms{0U};
+        std::string bits;
+    };
+    std::vector<AssistedNavSubframe> d_assisted_nav_subframes;
 };
 
 

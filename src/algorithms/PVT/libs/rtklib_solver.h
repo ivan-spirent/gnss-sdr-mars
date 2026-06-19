@@ -128,11 +128,23 @@ public:
     std::map<int, Beidou_Dnav_Almanac> beidou_dnav_almanac_map;
 
 private:
+    struct Gps_Ephemeris_Correction
+    {
+        double delta_m0_rad = 0.0;
+        double delta_omega0_rad = 0.0;
+        double delta_i0_rad = 0.0;
+        double delta_omega_rad = 0.0;
+        double delta_sqrtA = 0.0;
+    };
+
     bool save_matfile() const;
 
     void check_has_orbit_clock_validity(const std::map<int, Gnss_Synchro>& obs_map);
     void get_has_biases(const std::map<int, Gnss_Synchro>& obs_map);
     void get_current_has_obs_correction(const std::string& signal, uint32_t tow_obs, int prn);
+    void correct_code_phase_ms_ambiguities(int obs_count);
+    void load_gps_ephemeris_corrections(const std::string& file_path);
+    Gps_Ephemeris apply_gps_ephemeris_correction(const Gps_Ephemeris& ephemeris) const;
 
     std::array<obsd_t, MAXOBS> d_obs_data{};
     std::array<double, 4> d_dop{};
@@ -146,6 +158,7 @@ private:
     std::map<std::string, std::map<int, std::pair<float, uint32_t>>> d_has_phase_bias_store_map;  // first key is signal, second key is PRN
 
     std::map<std::string, std::map<int, HAS_obs_corrections>> d_has_obs_corr_map;  // first key is signal, second key is PRN
+    std::map<int, Gps_Ephemeris_Correction> d_gps_ephemeris_corrections;
 
     std::string d_dump_filename;
     std::ofstream d_dump_file;

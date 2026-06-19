@@ -571,7 +571,7 @@ Rtklib_Pvt::Rtklib_Pvt(const ConfigurationInterface* configuration,
 
     double elevation_mask = configuration->property(role + ".elevation_mask", 15.0);
 #ifdef GNSS_PLANETARY_CONTEXT_MARS
-    if ((elevation_mask < -45.0) || (elevation_mask > 90.0))
+    if ((elevation_mask < -90.0) || (elevation_mask > 90.0))
 #else
     if ((elevation_mask < 0.0) || (elevation_mask > 90.0))
 #endif
@@ -812,10 +812,38 @@ Rtklib_Pvt::Rtklib_Pvt(const ConfigurationInterface* configuration,
         {
             fixed_height_2d_sigma_m = 10.0;
         }
+    int fixed_height_2d_min_observations = configuration->property(role + ".fixed_height_2d_min_observations", 3);
+    if (fixed_height_2d_min_observations < 3)
+        {
+            fixed_height_2d_min_observations = 3;
+        }
     const double initial_position_llh[3] = {
         configuration->property(role + ".initial_latitude_deg", 0.0) * D2R,
         configuration->property(role + ".initial_longitude_deg", 0.0) * D2R,
         configuration->property(role + ".initial_height_m", fixed_height_2d_m)};
+    pvt_output_parameters.initial_latitude_deg = initial_position_llh[0] * R2D;
+    pvt_output_parameters.initial_longitude_deg = initial_position_llh[1] * R2D;
+    pvt_output_parameters.initial_height_m = initial_position_llh[2];
+    pvt_output_parameters.enable_code_phase_ms_ambiguity_correction =
+        configuration->property(role + ".enable_code_phase_ms_ambiguity_correction", false);
+    pvt_output_parameters.code_phase_ms_ambiguity_max_ms =
+        configuration->property(role + ".code_phase_ms_ambiguity_max_ms", 5);
+    if (pvt_output_parameters.code_phase_ms_ambiguity_max_ms < 0)
+        {
+            pvt_output_parameters.code_phase_ms_ambiguity_max_ms = 0;
+        }
+    pvt_output_parameters.code_phase_ms_ambiguity_residual_threshold_m =
+        configuration->property(role + ".code_phase_ms_ambiguity_residual_threshold_m", 100000.0);
+    if (pvt_output_parameters.code_phase_ms_ambiguity_residual_threshold_m <= 0.0)
+        {
+            pvt_output_parameters.code_phase_ms_ambiguity_residual_threshold_m = 100000.0;
+        }
+    pvt_output_parameters.code_phase_ms_ambiguity_min_improvement_m =
+        configuration->property(role + ".code_phase_ms_ambiguity_min_improvement_m", 50000.0);
+    if (pvt_output_parameters.code_phase_ms_ambiguity_min_improvement_m < 0.0)
+        {
+            pvt_output_parameters.code_phase_ms_ambiguity_min_improvement_m = 0.0;
+        }
     double initial_position_ecef[3] = {};
     if (fixed_height_2d_mode)
         {
@@ -886,7 +914,8 @@ Rtklib_Pvt::Rtklib_Pvt(const ConfigurationInterface* configuration,
         bancroft_init,                                                                     /* enable Bancroft initialization for the first iteration of the PVT computation, useful in some geometries */
         fixed_height_2d_mode,                                                              /* enable constrained 2D solution with fixed ellipsoidal height */
         fixed_height_2d_m,                                                                 /* fixed ellipsoidal height [m] */
-        fixed_height_2d_sigma_m                                                            /* fixed-height constraint sigma [m] */
+        fixed_height_2d_sigma_m,                                                           /* fixed-height constraint sigma [m] */
+        fixed_height_2d_min_observations                                                   /* minimum observations required for fixed-height 2D PVT */
     };
 
     rtkinit(&rtk, &rtklib_configuration_options);
@@ -944,6 +973,7 @@ Rtklib_Pvt::Rtklib_Pvt(const ConfigurationInterface* configuration,
     // Use E6 for PVT
     pvt_output_parameters.use_e6_for_pvt = configuration->property(role + ".use_e6_for_pvt", pvt_output_parameters.use_e6_for_pvt);
     pvt_output_parameters.use_has_corrections = configuration->property(role + ".use_has_corrections", pvt_output_parameters.use_has_corrections);
+    pvt_output_parameters.gps_ephemeris_corrections_file = configuration->property(role + ".gps_ephemeris_corrections_file", pvt_output_parameters.gps_ephemeris_corrections_file);
 
     // Use unhealthy satellites
     pvt_output_parameters.use_unhealthy_sats = configuration->property(role + ".use_unhealthy_sats", pvt_output_parameters.use_unhealthy_sats);

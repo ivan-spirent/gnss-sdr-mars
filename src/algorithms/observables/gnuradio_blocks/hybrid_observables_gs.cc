@@ -519,11 +519,7 @@ void hybrid_observables_gs::update_TOW(const std::vector<Gnss_Synchro> &data)
                                 }
                         }
                 }
-#ifdef GNSS_PLANETARY_CONTEXT_MARS
-            d_T_rx_TOW_ms = TOW_ref + 100U;
-#else
-            d_T_rx_TOW_ms = TOW_ref;
-#endif
+            d_T_rx_TOW_ms = TOW_ref + d_conf.rx_tow_init_offset_ms;
             // align the receiver clock to integer multiple of d_T_rx_step_ms
             if (d_T_rx_TOW_ms % d_T_rx_step_ms)
                 {

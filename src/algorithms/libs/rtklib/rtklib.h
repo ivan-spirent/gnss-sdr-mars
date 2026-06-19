@@ -1008,6 +1008,7 @@ typedef struct
     bool fixed_height_2d;         /* enable single-point constrained 2D solution with fixed ellipsoidal height */
     double fixed_height_2d_m;     /* fixed ellipsoidal height for constrained 2D solution (m) */
     double fixed_height_2d_sigma_m; /* standard deviation of fixed-height constraint (m) */
+    int fixed_height_2d_min_observations; /* minimum observations required for constrained 2D PVT */
 } prcopt_t;
 
 

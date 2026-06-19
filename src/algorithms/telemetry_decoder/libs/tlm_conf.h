@@ -43,6 +43,17 @@ public:
     bool dump_crc_stats{false};       // telemetry CRC statistics
     bool enable_navdata_monitor{false};
     bool enable_costas_branch_repair{false};
+    bool enable_assisted_tow{false};
+    std::string assisted_nav_bits_file;
+    uint32_t assisted_tow_start_ms{0U};
+    int32_t assisted_nav_min_match_bits{295};
+    int32_t assisted_tow_min_preamble_score{8};
+    double assisted_tow_light_time_ms{100.0};
+    double assisted_tow_boundary_tolerance_ms{120.0};
+    double assisted_tow_min_cn0_dbhz{0.0};
+    double ephemeris_mars_frame_phase_offset_s{0.0};
+    double ephemeris_mars_frame_phase_offset_rad{0.0};
+    double ephemeris_time_offset_s{0.0};
     bool there_are_e1_channels{false};
     bool there_are_e6_channels{false};
     bool use_ced{false};

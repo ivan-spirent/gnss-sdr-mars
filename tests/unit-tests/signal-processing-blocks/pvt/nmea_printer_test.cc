@@ -138,7 +138,8 @@ void NmeaPrinterTest::conf()
         true,                                                                              /* enable Bancroft initialization for the first iteration of the PVT computation, useful in some geometries */
         false,                                                                             /* enable constrained 2D solution with fixed ellipsoidal height */
         0.0,                                                                               /* fixed ellipsoidal height [m] */
-        10.0                                                                               /* fixed-height constraint sigma [m] */
+        10.0,                                                                              /* fixed-height constraint sigma [m] */
+        3                                                                                  /* minimum observations required for fixed-height 2D PVT */
     };
 
     rtkinit(&rtk, &rtklib_configuration_options);

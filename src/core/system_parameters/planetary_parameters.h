@@ -28,11 +28,14 @@ struct PlanetProperties {
 };
 
 #if defined(GNSS_PLANETARY_CONTEXT_MARS)
-// Martian parameters
+// Martian parameters.
+// The Mars simulator scenarios in this workspace use the IAU_MARS body-fixed
+// frame. SPICE/PCK Mars radii are represented here as an oblate ellipsoid
+// with the standard equatorial and polar radii.
 constexpr double MU = 4.282837e13;
 constexpr double OMEGA_DOT = 7.088218e-5;
 constexpr double SEMI_MAJOR_A = 3396190.0;
-constexpr double FLATTENING_F = 1.0 / 169.8;
+constexpr double FLATTENING_F = (3396190.0 - 3376200.0) / 3396190.0;
 constexpr double J2 = 1.96045e-3;
 #else
 // Earth (WGS84) parameters

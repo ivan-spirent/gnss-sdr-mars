@@ -69,6 +69,8 @@
 #include <pmt/pmt_sugar.h>              // for mp
 #include <algorithm>                    // for sort, unique
 #include <cerrno>                       // for errno
+#include <cmath>                        // for round
+#include <cstdlib>                      // for getenv
 #include <cstring>                      // for strerror
 #include <exception>                    // for exception
 #include <fstream>                      // for ofstream
@@ -111,6 +113,78 @@ namespace wht = boost;
 #include <any>
 namespace wht = std;
 #endif
+
+namespace
+{
+bool mars_pvt_debug_enabled()
+{
+    static const bool enabled = [] {
+        const char* env = std::getenv("GNSS_SDR_MARS_PVT_DEBUG");
+        return env != nullptr && env[0] != '\0' && env[0] != '0';
+    }();
+    return enabled;
+}
+
+std::string mars_observables_summary(const std::map<int, Gnss_Synchro>& observables_map)
+{
+    std::ostringstream os;
+    bool first = true;
+    for (const auto& obs_pair : observables_map)
+        {
+            const auto& obs = obs_pair.second;
+            if (!first)
+                {
+                    os << " | ";
+                }
+            first = false;
+            os << "map_ch=" << obs_pair.first
+               << " channel=" << obs.Channel_ID
+               << " prn=" << obs.PRN
+               << " sig=" << std::string(obs.Signal, 2)
+               << " rx_ms=" << static_cast<int64_t>(std::round(obs.RX_time * 1000.0))
+               << " tow_ms=" << obs.TOW_at_current_symbol_ms
+               << " interp_tow_ms=" << std::fixed << std::setprecision(3) << obs.interp_TOW_ms
+               << " pr_m=" << std::setprecision(3) << obs.Pseudorange_m
+               << " cn0=" << std::setprecision(2) << obs.CN0_dB_hz
+               << " doppler=" << std::setprecision(2) << obs.Carrier_Doppler_hz;
+        }
+    return os.str();
+}
+
+std::string mars_ssat_summary(const std::array<ssat_t, MAXSAT>& ssat)
+{
+    std::ostringstream os;
+    bool first = true;
+    for (int sat = 1; sat <= MAXSAT; ++sat)
+        {
+            const auto& sat_status = ssat[sat - 1];
+            if (!sat_status.vs && sat_status.snr[0] == 0 && sat_status.azel[0] == 0.0F && sat_status.azel[1] == 0.0F)
+                {
+                    continue;
+                }
+
+            int prn = 0;
+            const int sys = satsys(sat, &prn);
+            if (sys == 0)
+                {
+                    continue;
+                }
+            if (!first)
+                {
+                    os << " | ";
+                }
+            first = false;
+            os << "sat=" << sat
+               << " prn=" << prn
+               << " vs=" << static_cast<int>(sat_status.vs)
+               << " el_deg=" << std::fixed << std::setprecision(2) << sat_status.azel[1] * R2D
+               << " az_deg=" << std::setprecision(2) << sat_status.azel[0] * R2D
+               << " snr_dbhz=" << std::setprecision(2) << sat_status.snr[0] * 0.25
+               << " resp_m=" << std::setprecision(3) << sat_status.resp[0];
+        }
+    return os.str();
+}
+}  // namespace
 
 rtklib_pvt_gs_sptr rtklib_make_pvt_gs(uint32_t nchannels,
     const Pvt_Conf& conf_,
@@ -1227,6 +1301,14 @@ void rtklib_pvt_gs::msg_handler_telemetry(const pmt::pmt_t& msg)
                         {
                             d_user_pvt_solver->gps_ephemeris_map[gps_eph->PRN] = *gps_eph;
                         }
+                    if (mars_pvt_debug_enabled())
+                        {
+                            LOG(INFO) << "MARS_PVT_EPH prn=" << gps_eph->PRN
+                                      << " toe=" << gps_eph->toe
+                                      << " week=" << gps_eph->WN
+                                      << " health=" << gps_eph->SV_health
+                                      << " map_size=" << d_internal_pvt_solver->gps_ephemeris_map.size();
+                        }
                     if (gps_eph->SV_health != 0)
                         {
                             std::cout << TEXT_RED << "Satellite " << Gnss_Satellite(std::string("GPS"), gps_eph->PRN)
@@ -2030,11 +2112,23 @@ int rtklib_pvt_gs::work(int noutput_items, gr_vector_const_void_star& input_item
 
             d_gnss_observables_map.clear();
             const auto** in = reinterpret_cast<const Gnss_Synchro**>(&input_items[0]);  // Get the input buffer pointer
+            const bool mars_pvt_debug = mars_pvt_debug_enabled();
+            uint32_t mars_valid_word_count = 0U;
+            uint32_t mars_valid_pseudorange_count = 0U;
+            uint32_t mars_missing_gps_eph_count = 0U;
+            uint32_t mars_unhealthy_gps_count = 0U;
+            uint32_t mars_non_l1ca_count = 0U;
+            std::ostringstream mars_pvt_gate_obs;
             // ############ 1. READ PSEUDORANGES ####
             for (uint32_t i = 0; i < d_nchannels; i++)
                 {
+                    if (in[i][epoch].Flag_valid_word)
+                        {
+                            mars_valid_word_count++;
+                        }
                     if (in[i][epoch].Flag_valid_pseudorange)
                         {
+                            mars_valid_pseudorange_count++;
                             const auto tmp_eph_iter_gps = d_internal_pvt_solver->gps_ephemeris_map.find(in[i][epoch].PRN);
                             const auto tmp_eph_iter_gal = d_internal_pvt_solver->galileo_ephemeris_map.find(in[i][epoch].PRN);
                             const auto tmp_eph_iter_cnav = d_internal_pvt_solver->gps_cnav_ephemeris_map.find(in[i][epoch].PRN);
@@ -2050,6 +2144,18 @@ int rtklib_pvt_gs::work(int noutput_items, gr_vector_const_void_star& input_item
                                         {
                                             store_valid_observable = true;
                                         }
+                                    else if (std::string(in[i][epoch].Signal, 2) != std::string("1C"))
+                                        {
+                                            mars_non_l1ca_count++;
+                                        }
+                                    else if (!d_use_unhealthy_sats && tmp_eph_iter_gps->second.SV_health != 0)
+                                        {
+                                            mars_unhealthy_gps_count++;
+                                        }
+                                }
+                            else if (std::string(in[i][epoch].Signal, 2) == std::string("1C"))
+                                {
+                                    mars_missing_gps_eph_count++;
                                 }
                             if (tmp_eph_iter_gal != d_internal_pvt_solver->galileo_ephemeris_map.cend())
                                 {
@@ -2118,6 +2224,23 @@ int rtklib_pvt_gs::work(int noutput_items, gr_vector_const_void_star& input_item
                                     // store valid observables in a map.
                                     d_gnss_observables_map.insert(std::pair<int, Gnss_Synchro>(i, in[i][epoch]));
                                 }
+                            if (mars_pvt_debug && d_local_counter_ms % 1000U == 0U)
+                                {
+                                    if (mars_pvt_gate_obs.tellp() > 0)
+                                        {
+                                            mars_pvt_gate_obs << " | ";
+                                        }
+                                    mars_pvt_gate_obs << "in_ch=" << i
+                                                       << " obs_ch=" << in[i][epoch].Channel_ID
+                                                       << " prn=" << in[i][epoch].PRN
+                                                       << " sig=" << std::string(in[i][epoch].Signal, 2)
+                                                       << " word=" << in[i][epoch].Flag_valid_word
+                                                       << " pr=" << in[i][epoch].Flag_valid_pseudorange
+                                                       << " rx_ms=" << static_cast<int64_t>(std::round(in[i][epoch].RX_time * 1000.0))
+                                                       << " tow_ms=" << in[i][epoch].TOW_at_current_symbol_ms
+                                                       << " eph=" << (tmp_eph_iter_gps != d_internal_pvt_solver->gps_ephemeris_map.cend())
+                                                       << " stored=" << store_valid_observable;
+                                }
 
                             if (d_rtcm_enabled)
                                 {
@@ -2176,6 +2299,26 @@ int rtklib_pvt_gs::work(int noutput_items, gr_vector_const_void_star& input_item
                     this->update_HAS_corrections();
                 }
 
+            const uint32_t raw_RX_time_ms = d_gnss_observables_map.empty() ? 0U : static_cast<uint32_t>(std::round(d_gnss_observables_map.cbegin()->second.RX_time * 1000.0));
+            if (mars_pvt_debug && d_local_counter_ms % 1000U == 0U)
+                {
+                    LOG(INFO) << "MARS_PVT_GATE local_ms=" << d_local_counter_ms
+                              << " valid_word=" << mars_valid_word_count
+                              << " valid_pr=" << mars_valid_pseudorange_count
+                              << " stored=" << d_gnss_observables_map.size()
+                              << " gps_eph_map=" << d_internal_pvt_solver->gps_ephemeris_map.size()
+                              << " missing_gps_eph=" << mars_missing_gps_eph_count
+                              << " unhealthy_gps=" << mars_unhealthy_gps_count
+                              << " non_l1ca=" << mars_non_l1ca_count
+                              << " obs={" << mars_pvt_gate_obs.str() << "}";
+                }
+            if (mars_pvt_debug && !d_gnss_observables_map.empty() && raw_RX_time_ms % 500U == 0U)
+                {
+                    LOG(INFO) << "MARS_PVT_INPUT raw_rx_ms=" << raw_RX_time_ms
+                              << " obs_count=" << d_gnss_observables_map.size()
+                              << " obs={" << mars_observables_summary(d_gnss_observables_map) << "}";
+                }
+
             // ############ 2 COMPUTE THE PVT ################################
             bool flag_pvt_valid = false;
             if (d_gnss_observables_map.empty() == false)
@@ -2188,6 +2331,12 @@ int rtklib_pvt_gs::work(int noutput_items, gr_vector_const_void_star& input_item
                         {
                             d_pvt_errors_counter = 0;  // Reset consecutive PVT error counter
                             const double Rx_clock_offset_s = d_internal_pvt_solver->get_time_offset_s();
+                            if (mars_pvt_debug && raw_RX_time_ms % 500U == 0U)
+                                {
+                                    LOG(INFO) << "MARS_PVT_INTERNAL_OK raw_rx_ms=" << raw_RX_time_ms
+                                              << " rx_clock_offset_ms=" << Rx_clock_offset_s * 1000.0
+                                              << " used={" << mars_ssat_summary(d_internal_pvt_solver->pvt_ssat) << "}";
+                                }
 
                             // **************** time tags ****************
                             if (d_enable_rx_clock_correction == false)  // todo: currently only works if clock correction is disabled (computed clock offset is applied here)
@@ -2284,6 +2433,12 @@ int rtklib_pvt_gs::work(int noutput_items, gr_vector_const_void_star& input_item
                         }
                     else
                         {
+                            if (mars_pvt_debug && !d_gnss_observables_map.empty() && raw_RX_time_ms % 500U == 0U)
+                                {
+                                    LOG(INFO) << "MARS_PVT_INTERNAL_FAIL raw_rx_ms=" << raw_RX_time_ms
+                                              << " obs_count=" << d_gnss_observables_map.size()
+                                              << " obs={" << mars_observables_summary(d_gnss_observables_map) << "}";
+                                }
                             // sanity check: If the PVT solver is getting 100 consecutive errors, send a reset command to observables block
 #ifdef GNSS_PLANETARY_CONTEXT_MARS
                             int num_obs_with_eph = 0;
@@ -2314,6 +2469,12 @@ int rtklib_pvt_gs::work(int noutput_items, gr_vector_const_void_star& input_item
                     if (flag_compute_pvt_output == true)
                         {
                             flag_pvt_valid = d_user_pvt_solver->get_PVT(d_gnss_observables_map, d_output_rate_ms / 1000.0);
+                            if (mars_pvt_debug)
+                                {
+                                    LOG(INFO) << "MARS_PVT_USER_RESULT rx_ms=" << current_RX_time_ms
+                                              << " valid=" << flag_pvt_valid
+                                              << " used={" << mars_ssat_summary(d_user_pvt_solver->pvt_ssat) << "}";
+                                }
                         }
 
                     if (flag_pvt_valid == true)

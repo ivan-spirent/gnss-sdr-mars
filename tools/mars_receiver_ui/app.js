@@ -1,4 +1,13 @@
-const MARS_RADIUS_M = 3396190;
+const MARS_EQUATORIAL_RADIUS_M = 3396190;
+const MARS_POLAR_RADIUS_M = 3376200;
+const MARS_RADIUS_M = MARS_EQUATORIAL_RADIUS_M;
+const MARS_FLATTENING = (MARS_EQUATORIAL_RADIUS_M - MARS_POLAR_RADIUS_M) / MARS_EQUATORIAL_RADIUS_M;
+const DEG_TO_RAD = Math.PI / 180;
+const TRUTH_POSITION = {
+  lat: 30,
+  lon: 30,
+  height: 80
+};
 const COLORS = {
   start: "#2f6db5",
   lock: "#156c7b",
@@ -8,6 +17,10 @@ const COLORS = {
   pvt: "#258552",
   firstFix: "#2f6db5",
   finalFix: "#c2472b",
+  error: "#c2472b",
+  iAxis: "#2f6db5",
+  qAxis: "#c2472b",
+  mixed: "#7a5f12",
   reference: "#8f3f5d",
   visible: "#6f7f87",
   below: "#9b6a5d",
@@ -17,13 +30,17 @@ const COLORS = {
 };
 
 const DEFAULT_SOURCES = {
-  log: ["/build/gnss_sdr_run_fixed.log"],
+  log: [
+    "/build/gnss_sdr_gps_like_iau_probe.log",
+    "/build/gnss_sdr_run_fixed.log"
+  ],
   nmea: ["/build/gnss_sdr_pvt.nmea"],
-  geojson: ["/build/latest_pvt.geojson", "/build/PVT_260617_142203.geojson"]
+  geojson: ["/build/latest_pvt.geojson", "/build/PVT_260617_142203.geojson"],
+  iq: ["/build/gnss_sdr_gps_like_iq_summary.json"]
 };
 
 const state = {
-  raw: { log: "", nmea: "", geojson: "" },
+  raw: { log: "", nmea: "", geojson: "", iq: "" },
   files: {},
   events: [],
   channels: new Map(),
@@ -50,6 +67,8 @@ const els = {
   skyCanvas: document.getElementById("skyCanvas"),
   mapCanvas: document.getElementById("mapCanvas"),
   satCanvas: document.getElementById("satCanvas"),
+  errorCanvas: document.getElementById("errorCanvas"),
+  iqCanvas: document.getElementById("iqCanvas"),
   channelTable: document.querySelector("#channelTable tbody"),
   eventList: document.getElementById("eventList"),
   cn0Range: document.getElementById("cn0Range"),
@@ -58,6 +77,8 @@ const els = {
   skyEpochLabel: document.getElementById("skyEpochLabel"),
   pvtOffset: document.getElementById("pvtOffset"),
   satCountSummary: document.getElementById("satCountSummary"),
+  errorSummary: document.getElementById("errorSummary"),
+  iqSummary: document.getElementById("iqSummary"),
   channelSummary: document.getElementById("channelSummary")
 };
 
@@ -86,6 +107,37 @@ function fmtNumber(value, digits = 2) {
   return Number.isFinite(value) ? value.toFixed(digits) : "-";
 }
 
+function fmtMeters(value) {
+  if (!Number.isFinite(value)) return "-";
+  const abs = Math.abs(value);
+  if (abs >= 100000) return `${(value / 1000).toFixed(0)} km`;
+  if (abs >= 1000) return `${(value / 1000).toFixed(1)} km`;
+  return `${value.toFixed(0)} m`;
+}
+
+function fmtRatio(value) {
+  return Number.isFinite(value) ? value.toFixed(2) : "-";
+}
+
+function utcSecondsFromText(text) {
+  const match = String(text || "").match(/(\d{2}):(\d{2}):(\d{2}(?:\.\d+)?)/);
+  if (!match) return NaN;
+  return Number(match[1]) * 3600 + Number(match[2]) * 60 + Number(match[3]);
+}
+
+function emptyIqStats(stage = "all") {
+  return {
+    stage,
+    samples: 0,
+    sumAbsI: 0,
+    sumAbsQ: 0,
+    sumPowerI: 0,
+    sumPowerQ: 0,
+    maxAbsI: 0,
+    maxAbsQ: 0
+  };
+}
+
 function channelRecord(channel) {
   const key = String(channel);
   if (!state.channels.has(key)) {
@@ -97,11 +149,106 @@ function channelRecord(channel) {
       navCount: 0,
       subframes: new Set(),
       cn0: [],
+      iq: {
+        tracking_emit_symbol: emptyIqStats("tracking_emit_symbol"),
+        tracking_post_lock_ms: emptyIqStats("tracking_post_lock_ms"),
+        tracking_prompt_1ms: emptyIqStats("tracking_prompt_1ms"),
+        all: emptyIqStats("all")
+      },
       losses: 0,
       events: []
     });
   }
   return state.channels.get(key);
+}
+
+function updateIqStats(stats, promptI, promptQ) {
+  const absI = Math.abs(promptI);
+  const absQ = Math.abs(promptQ);
+  stats.samples += 1;
+  stats.sumAbsI += absI;
+  stats.sumAbsQ += absQ;
+  stats.sumPowerI += promptI * promptI;
+  stats.sumPowerQ += promptQ * promptQ;
+  stats.maxAbsI = Math.max(stats.maxAbsI, absI);
+  stats.maxAbsQ = Math.max(stats.maxAbsQ, absQ);
+}
+
+function mergeIqStats(target, source) {
+  const samples = Number(source.samples || source.n || 0);
+  if (!samples) return;
+  target.samples += samples;
+  target.sumAbsI += Number(source.sumAbsI || source.ai || 0);
+  target.sumAbsQ += Number(source.sumAbsQ || source.aq || 0);
+  target.sumPowerI += Number(source.sumPowerI || source.pi || 0);
+  target.sumPowerQ += Number(source.sumPowerQ || source.pq || 0);
+  target.maxAbsI = Math.max(target.maxAbsI, Number(source.maxAbsI || 0));
+  target.maxAbsQ = Math.max(target.maxAbsQ, Number(source.maxAbsQ || 0));
+}
+
+function recordIqSample(channelNumber, prn, stage, promptI, promptQ) {
+  if (!Number.isFinite(channelNumber) || !Number.isFinite(promptI) || !Number.isFinite(promptQ)) return;
+  const channel = channelRecord(channelNumber);
+  if (Number.isFinite(prn)) channel.prn = prn;
+  if (!channel.iq[stage]) channel.iq[stage] = emptyIqStats(stage);
+  updateIqStats(channel.iq[stage], promptI, promptQ);
+  updateIqStats(channel.iq.all, promptI, promptQ);
+}
+
+function recordIqAggregate(channelNumber, prn, stage, stats) {
+  if (!Number.isFinite(channelNumber) || !stats || stage === "all") return;
+  const channel = channelRecord(channelNumber);
+  if (Number.isFinite(prn)) channel.prn = prn;
+  if (!channel.iq[stage]) channel.iq[stage] = emptyIqStats(stage);
+  mergeIqStats(channel.iq[stage], stats);
+  mergeIqStats(channel.iq.all, stats);
+}
+
+function iqSummaryFromStats(stats) {
+  if (!stats || !stats.samples) return null;
+  const meanAbsI = stats.sumAbsI / stats.samples;
+  const meanAbsQ = stats.sumAbsQ / stats.samples;
+  const rmsI = Math.sqrt(stats.sumPowerI / stats.samples);
+  const rmsQ = Math.sqrt(stats.sumPowerQ / stats.samples);
+  const ratio = meanAbsI > 0 ? meanAbsQ / meanAbsI : Number.POSITIVE_INFINITY;
+  const qFraction = meanAbsI + meanAbsQ > 0 ? meanAbsQ / (meanAbsI + meanAbsQ) : 0.5;
+  const dominance = ratio >= 1.25 ? "Q" : ratio <= 0.8 ? "I" : "mixed";
+  return {
+    stage: stats.stage,
+    samples: stats.samples,
+    meanAbsI,
+    meanAbsQ,
+    rmsI,
+    rmsQ,
+    ratio,
+    qFraction,
+    dominance
+  };
+}
+
+function bestIqSummary(channel) {
+  if (!channel || !channel.iq) return null;
+  const stages = ["tracking_emit_symbol", "tracking_post_lock_ms", "tracking_prompt_1ms", "all"];
+  for (const stage of stages) {
+    const summary = iqSummaryFromStats(channel.iq[stage]);
+    if (summary) return summary;
+  }
+  return null;
+}
+
+function iqStageLabel(stage) {
+  if (stage === "tracking_emit_symbol") return "telemetry prompt";
+  if (stage === "tracking_post_lock_ms") return "post-lock 1 ms";
+  if (stage === "tracking_prompt_1ms") return "pre-lock 1 ms";
+  return "all prompt";
+}
+
+function parseDiagFields(line) {
+  const fields = {};
+  for (const match of line.matchAll(/([A-Za-z0-9_]+)=([^\s]+)/g)) {
+    fields[match[1]] = match[2];
+  }
+  return fields;
 }
 
 function addEvent(event) {
@@ -130,6 +277,25 @@ function parseLog(text) {
     const receiverSec = receiverSecondsFromLine(line);
     if (receiverSec !== null) {
       currentSec = receiverSec;
+      continue;
+    }
+
+    if (line.includes("MARS_SYNC_DIAG") && line.includes("prompt_i=") && line.includes("prompt_q=")) {
+      const fields = parseDiagFields(line);
+      const stage = fields.stage;
+      const supportedStage =
+        stage === "tracking_emit_symbol" ||
+        stage === "tracking_post_lock_ms" ||
+        stage === "tracking_prompt_1ms";
+      if (supportedStage) {
+        recordIqSample(
+          Number(fields.channel),
+          Number(fields.prn),
+          stage,
+          Number(fields.prompt_i),
+          Number(fields.prompt_q)
+        );
+      }
       continue;
     }
 
@@ -228,6 +394,7 @@ function parseLog(text) {
         fixType: "first",
         time: currentSec,
         utc: match[1],
+        utcSeconds: utcSecondsFromText(match[1]),
         lat: Number(match[2]),
         lon: Number(match[3]),
         height: Number(match[4]),
@@ -250,6 +417,7 @@ function parseLog(text) {
         fixType: "solution",
         time: currentSec,
         utc: match[1],
+        utcSeconds: utcSecondsFromText(match[1]),
         observations: Number(match[2]),
         lat: Number(match[3]),
         lon: Number(match[4]),
@@ -269,6 +437,30 @@ function parseLog(text) {
         raw: line
       });
     }
+  }
+}
+
+function parseIqSummary(text) {
+  if (!text.trim()) return;
+  try {
+    const data = JSON.parse(text);
+    const channels = Array.isArray(data.channels) ? data.channels : [];
+    channels.forEach((entry) => {
+      const channelNumber = Number(entry.channel);
+      const prn = Number(entry.prn);
+      const stages = entry.stages || {};
+      Object.entries(stages).forEach(([stage, stats]) => {
+        if (
+          stage === "tracking_emit_symbol" ||
+          stage === "tracking_post_lock_ms" ||
+          stage === "tracking_prompt_1ms"
+        ) {
+          recordIqAggregate(channelNumber, prn, stage, stats);
+        }
+      });
+    });
+  } catch (error) {
+    console.warn("I/Q summary parse failed", error);
   }
 }
 
@@ -457,6 +649,7 @@ function resetParsed() {
 function parseAll() {
   resetParsed();
   if (state.raw.log) parseLog(state.raw.log);
+  if (state.raw.iq) parseIqSummary(state.raw.iq);
   if (state.raw.nmea) parseNmea(state.raw.nmea);
   if (state.raw.geojson) parseGeojson(state.raw.geojson);
   state.events.sort((a, b) => (a.time ?? 0) - (b.time ?? 0));
@@ -473,15 +666,83 @@ function pvtStats(points) {
   if (!points.length) return null;
   const meanLat = points.reduce((sum, point) => sum + point.lat, 0) / points.length;
   const meanLon = points.reduce((sum, point) => sum + point.lon, 0) / points.length;
-  const east = meanLon * Math.PI / 180 * MARS_RADIUS_M * Math.cos(meanLat * Math.PI / 180);
-  const north = meanLat * Math.PI / 180 * MARS_RADIUS_M;
+  const east = meanLon * DEG_TO_RAD * MARS_RADIUS_M * Math.cos(meanLat * DEG_TO_RAD);
+  const north = meanLat * DEG_TO_RAD * MARS_RADIUS_M;
   const radial = Math.hypot(east, north);
   return { meanLat, meanLon, east, north, radial };
 }
 
+function marsGeodeticToCartesian(latDeg, lonDeg, heightM = 0) {
+  const lat = latDeg * DEG_TO_RAD;
+  const lon = lonDeg * DEG_TO_RAD;
+  const height = Number.isFinite(heightM) ? heightM : 0;
+  const e2 = MARS_FLATTENING * (2 - MARS_FLATTENING);
+  const sinLat = Math.sin(lat);
+  const cosLat = Math.cos(lat);
+  const primeVertical = MARS_EQUATORIAL_RADIUS_M / Math.sqrt(1 - e2 * sinLat * sinLat);
+  return {
+    x: (primeVertical + height) * cosLat * Math.cos(lon),
+    y: (primeVertical + height) * cosLat * Math.sin(lon),
+    z: (primeVertical * (1 - e2) + height) * sinLat
+  };
+}
+
+function truthLabel() {
+  return `truth ${fmtNumber(TRUTH_POSITION.lat, 6)}, ${fmtNumber(TRUTH_POSITION.lon, 6)}, h ${fmtNumber(TRUTH_POSITION.height, 0)} m`;
+}
+
+function pvtErrorSeries(points = activePvtPoints()) {
+  const truth = marsGeodeticToCartesian(TRUTH_POSITION.lat, TRUTH_POSITION.lon, TRUTH_POSITION.height);
+  return points
+    .map((point, index) => {
+      const height = Number.isFinite(point.height) ? point.height : 0;
+      const position = marsGeodeticToCartesian(point.lat, point.lon, height);
+      const east = (point.lon - TRUTH_POSITION.lon) * DEG_TO_RAD * MARS_EQUATORIAL_RADIUS_M * Math.cos(TRUTH_POSITION.lat * DEG_TO_RAD);
+      const north = (point.lat - TRUTH_POSITION.lat) * DEG_TO_RAD * MARS_EQUATORIAL_RADIUS_M;
+      const up = height - TRUTH_POSITION.height;
+      const dx = position.x - truth.x;
+      const dy = position.y - truth.y;
+      const dz = position.z - truth.z;
+      const simTime = Number.isFinite(point.utcSeconds)
+        ? point.utcSeconds
+        : Number.isFinite(point.time)
+          ? point.time
+          : index;
+      return {
+        point,
+        simTime,
+        timeIsTod: Number.isFinite(point.utcSeconds),
+        east,
+        north,
+        up,
+        horizontal: Math.hypot(east, north),
+        error3d: Math.hypot(dx, dy, dz)
+      };
+    })
+    .filter((sample) => Number.isFinite(sample.simTime) && Number.isFinite(sample.error3d));
+}
+
+function pvtErrorStats(points = activePvtPoints()) {
+  const samples = pvtErrorSeries(points);
+  if (!samples.length) return null;
+  const rms = Math.sqrt(samples.reduce((sum, sample) => sum + sample.error3d ** 2, 0) / samples.length);
+  const max = Math.max(...samples.map((sample) => sample.error3d));
+  const final = samples[samples.length - 1].error3d;
+  return { samples, rms, max, final };
+}
+
+function niceLimit(value) {
+  if (!Number.isFinite(value) || value <= 0) return 1;
+  const exponent = Math.floor(Math.log10(value));
+  const base = 10 ** exponent;
+  const scaled = value / base;
+  const nice = scaled <= 1 ? 1 : scaled <= 2 ? 2 : scaled <= 5 ? 5 : 10;
+  return nice * base;
+}
+
 function renderSummary() {
   const points = activePvtPoints();
-  const stats = pvtStats(points);
+  const errorStats = pvtErrorStats(points);
   const firstFix = state.pvtLog.find((point) => point.fixType === "first") || points[0];
   const maxObs = Math.max(0, ...state.satCounts.map((point) => point.count || 0));
   const maxCn0 = Math.max(0, ...state.navMessages.map((event) => event.cn0 || 0));
@@ -515,9 +776,9 @@ function renderSummary() {
       note: maxObs ? `${maxObs} max observations` : "No solution"
     },
     {
-      label: "Mean Offset",
-      value: stats ? `${fmtNumber(stats.radial, 0)} m` : "-",
-      note: stats ? `${fmtNumber(stats.meanLat, 6)}, ${fmtNumber(stats.meanLon, 6)}` : "No trajectory"
+      label: "3D Error",
+      value: errorStats ? fmtMeters(errorStats.rms) : "-",
+      note: errorStats ? `final ${fmtMeters(errorStats.final)}` : "No trajectory"
     }
   ];
 
@@ -928,8 +1189,225 @@ function renderMap() {
   ctx.fillStyle = COLORS.muted;
   ctx.font = "11px system-ui, sans-serif";
   ctx.textAlign = "left";
+  const finalPoint = points[points.length - 1];
+  const finalPositionLabel = `final lat ${fmtNumber(finalPoint.lat, 6)} deg, lon ${fmtNumber(finalPoint.lon, 6)} deg`;
+  ctx.fillText(finalPositionLabel, 12, 14);
+  ctx.fillText(`h ${fmtNumber(finalPoint.height, 1)} m`, 12, 28);
   ctx.fillText(`extent +/-${fmtNumber(padded, 0)} m`, 12, height - 12);
-  els.pvtOffset.textContent = stats ? `mean ${fmtNumber(stats.east, 0)} m E, ${fmtNumber(stats.north, 0)} m N` : "";
+  els.pvtOffset.textContent = stats ? `${finalPositionLabel}, h ${fmtNumber(finalPoint.height, 1)} m` : "";
+}
+
+function renderError() {
+  if (!els.errorCanvas) return;
+  const samples = pvtErrorSeries();
+  if (!samples.length) {
+    if (els.errorSummary) els.errorSummary.textContent = "";
+    drawEmpty(els.errorCanvas, "No PVT positions");
+    return;
+  }
+
+  const stats = pvtErrorStats();
+  if (els.errorSummary) {
+    els.errorSummary.textContent = `RMS ${fmtMeters(stats.rms)} | max ${fmtMeters(stats.max)} | final ${fmtMeters(stats.final)}`;
+  }
+
+  const { ctx, width, height } = resizeCanvas(els.errorCanvas);
+  ctx.clearRect(0, 0, width, height);
+  const left = 64;
+  const right = 22;
+  const top = 20;
+  const bottom = 44;
+  const minTime = Math.min(...samples.map((sample) => sample.simTime));
+  const maxTime = Math.max(...samples.map((sample) => sample.simTime));
+  const span = maxTime - minTime || 1;
+  const maxError = Math.max(...samples.map((sample) => sample.error3d));
+  const yMax = niceLimit(maxError * 1.08);
+  const useTimeOfDay = samples.some((sample) => sample.timeIsTod);
+  const x = (time) => left + ((time - minTime) / span) * (width - left - right);
+  const y = (value) => height - bottom - (value / yMax) * (height - top - bottom);
+
+  ctx.fillStyle = "#fbfcfd";
+  ctx.fillRect(0, 0, width, height);
+  drawAxes(ctx, width, height, left, top, right, bottom, useTimeOfDay ? "simulation time" : "time", "3D error");
+
+  for (let i = 0; i <= 4; i++) {
+    const value = (i / 4) * yMax;
+    const gy = y(value);
+    ctx.strokeStyle = "#edf2f4";
+    ctx.beginPath();
+    ctx.moveTo(left, gy);
+    ctx.lineTo(width - right, gy);
+    ctx.stroke();
+    ctx.fillStyle = COLORS.muted;
+    ctx.font = "11px system-ui, sans-serif";
+    ctx.textAlign = "right";
+    ctx.fillText(fmtMeters(value), left - 8, gy + 4);
+  }
+
+  const xTickCount = width < 520 ? 2 : 4;
+  for (let i = 0; i <= xTickCount; i++) {
+    const time = minTime + (i / xTickCount) * span;
+    const gx = x(time);
+    ctx.strokeStyle = "#edf2f4";
+    ctx.beginPath();
+    ctx.moveTo(gx, top);
+    ctx.lineTo(gx, height - bottom);
+    ctx.stroke();
+    ctx.fillStyle = COLORS.muted;
+    ctx.font = "11px system-ui, sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText(useTimeOfDay ? fmtTimeOfDay(time) : fmtSeconds(time), gx, height - 12);
+  }
+
+  ctx.beginPath();
+  samples.forEach((sample, index) => {
+    const px = x(sample.simTime);
+    const py = y(sample.error3d);
+    if (index === 0) ctx.moveTo(px, py);
+    else ctx.lineTo(px, py);
+  });
+  ctx.lineTo(x(samples[samples.length - 1].simTime), height - bottom);
+  ctx.lineTo(x(samples[0].simTime), height - bottom);
+  ctx.closePath();
+  ctx.fillStyle = "rgba(194, 71, 43, 0.11)";
+  ctx.fill();
+
+  ctx.strokeStyle = COLORS.error;
+  ctx.lineWidth = 2.25;
+  ctx.beginPath();
+  samples.forEach((sample, index) => {
+    const px = x(sample.simTime);
+    const py = y(sample.error3d);
+    if (index === 0) ctx.moveTo(px, py);
+    else ctx.lineTo(px, py);
+  });
+  ctx.stroke();
+
+  const endpoints = [
+    { sample: samples[0], color: COLORS.firstFix },
+    { sample: samples[samples.length - 1], color: COLORS.finalFix }
+  ];
+  endpoints.forEach(({ sample, color }) => {
+    ctx.fillStyle = color;
+    ctx.strokeStyle = "#ffffff";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(x(sample.simTime), y(sample.error3d), 4.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+  });
+
+  ctx.fillStyle = COLORS.muted;
+  ctx.font = "11px system-ui, sans-serif";
+  ctx.textAlign = "left";
+  ctx.fillText(truthLabel(), left, 12);
+}
+
+function renderIqDominance() {
+  if (!els.iqCanvas) return;
+  const rows = [...state.channels.values()]
+    .map((channel) => ({
+      channel,
+      summary: bestIqSummary(channel)
+    }))
+    .filter((row) => row.summary)
+    .sort((a, b) => a.channel.channel - b.channel.channel);
+
+  if (!rows.length) {
+    if (els.iqSummary) els.iqSummary.textContent = "";
+    drawEmpty(els.iqCanvas, "No prompt I/Q diagnostics in receiver log");
+    return;
+  }
+
+  const counts = rows.reduce((acc, row) => {
+    acc[row.summary.dominance] = (acc[row.summary.dominance] || 0) + 1;
+    return acc;
+  }, {});
+  const stageCounts = rows.reduce((acc, row) => {
+    acc[row.summary.stage] = (acc[row.summary.stage] || 0) + 1;
+    return acc;
+  }, {});
+  const primaryStage = Object.entries(stageCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || "all";
+  if (els.iqSummary) {
+    els.iqSummary.textContent = `${counts.I || 0} I | ${counts.Q || 0} Q | ${counts.mixed || 0} mixed, ${iqStageLabel(primaryStage)}`;
+  }
+
+  const { ctx, width, height } = resizeCanvas(els.iqCanvas);
+  ctx.clearRect(0, 0, width, height);
+  ctx.fillStyle = "#fbfcfd";
+  ctx.fillRect(0, 0, width, height);
+
+  const left = 86;
+  const right = 126;
+  const top = 28;
+  const bottom = 30;
+  const plotWidth = width - left - right;
+  const rowHeight = Math.max(24, Math.min(42, (height - top - bottom) / rows.length));
+  const barHeight = Math.max(12, Math.min(18, rowHeight * 0.52));
+
+  ctx.fillStyle = COLORS.muted;
+  ctx.font = "11px system-ui, sans-serif";
+  ctx.textAlign = "left";
+  ctx.fillText("|I| share", left, 14);
+  ctx.textAlign = "right";
+  ctx.fillText("|Q| share", left + plotWidth, 14);
+  ctx.textAlign = "center";
+  ctx.fillText("balanced", left + plotWidth / 2, 14);
+
+  ctx.strokeStyle = COLORS.grid;
+  ctx.beginPath();
+  ctx.moveTo(left + plotWidth / 2, top - 6);
+  ctx.lineTo(left + plotWidth / 2, height - bottom + 4);
+  ctx.stroke();
+
+  rows.forEach(({ channel, summary }, index) => {
+    const y = top + index * rowHeight + rowHeight / 2;
+    const barY = y - barHeight / 2;
+    const qWidth = plotWidth * summary.qFraction;
+    const iWidth = plotWidth - qWidth;
+
+    ctx.fillStyle = index % 2 ? "#f8fafb" : "#ffffff";
+    ctx.fillRect(0, top + index * rowHeight, width, rowHeight);
+
+    ctx.fillStyle = COLORS.text;
+    ctx.font = "12px system-ui, sans-serif";
+    ctx.textAlign = "right";
+    ctx.fillText(`Ch ${channel.channel}`, left - 12, y - 2);
+    ctx.fillStyle = COLORS.muted;
+    ctx.fillText(`P${channel.prn ?? "-"}`, left - 12, y + 12);
+
+    ctx.fillStyle = "rgba(47, 109, 181, 0.18)";
+    ctx.fillRect(left, barY, iWidth, barHeight);
+    ctx.fillStyle = "rgba(194, 71, 43, 0.18)";
+    ctx.fillRect(left + iWidth, barY, qWidth, barHeight);
+
+    ctx.fillStyle = COLORS.iAxis;
+    ctx.fillRect(left, barY, iWidth, barHeight);
+    ctx.fillStyle = COLORS.qAxis;
+    ctx.fillRect(left + iWidth, barY, qWidth, barHeight);
+
+    ctx.strokeStyle = "#ffffff";
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(left, barY, plotWidth, barHeight);
+    ctx.lineWidth = 1;
+
+    const dominanceColor =
+      summary.dominance === "I" ? COLORS.iAxis :
+        summary.dominance === "Q" ? COLORS.qAxis :
+          COLORS.mixed;
+    ctx.fillStyle = dominanceColor;
+    ctx.font = "700 12px system-ui, sans-serif";
+    ctx.textAlign = "left";
+    ctx.fillText(`${summary.dominance}-dom`, left + plotWidth + 14, y - 3);
+    ctx.fillStyle = COLORS.muted;
+    ctx.font = "11px system-ui, sans-serif";
+    ctx.fillText(`Q/I ${fmtRatio(summary.ratio)} | ${summary.samples}`, left + plotWidth + 14, y + 11);
+  });
+
+  ctx.fillStyle = COLORS.muted;
+  ctx.font = "11px system-ui, sans-serif";
+  ctx.textAlign = "left";
+  ctx.fillText("classification uses mean absolute prompt values", left, height - 8);
 }
 
 function renderSatCounts() {
@@ -994,13 +1472,16 @@ function renderChannelTable() {
   const channels = [...state.channels.values()].sort((a, b) => a.channel - b.channel);
   els.channelSummary.textContent = channels.length ? `${channels.length} channels` : "";
   if (!channels.length) {
-    els.channelTable.innerHTML = `<tr><td colspan="7" class="muted">No channels parsed</td></tr>`;
+    els.channelTable.innerHTML = `<tr><td colspan="9" class="muted">No channels parsed</td></tr>`;
     return;
   }
   els.channelTable.innerHTML = channels
     .map((channel) => {
       const cn0Values = channel.cn0.map((sample) => sample.value);
       const cn0Text = cn0Values.length ? `${fmtNumber(Math.max(...cn0Values), 1)}` : "-";
+      const iq = bestIqSummary(channel);
+      const iqText = iq ? `${iq.dominance}` : "-";
+      const iqRatio = iq ? fmtRatio(iq.ratio) : "-";
       return `
         <tr>
           <td>${channel.channel}</td>
@@ -1009,6 +1490,8 @@ function renderChannelTable() {
           <td>${fmtSeconds(channel.bitLockTime)}</td>
           <td>${channel.navCount || "-"}</td>
           <td>${cn0Text}</td>
+          <td>${iqText}</td>
+          <td>${iqRatio}</td>
           <td>${channel.losses || "-"}</td>
         </tr>
       `;
@@ -1048,6 +1531,8 @@ function renderAll() {
   renderSkyPlot();
   renderMap();
   renderSatCounts();
+  renderError();
+  renderIqDominance();
   renderChannelTable();
   renderEvents();
 }
@@ -1125,6 +1610,8 @@ function installHandlers() {
     renderSkyPlot();
     renderMap();
     renderSatCounts();
+    renderError();
+    renderIqDominance();
   });
 }
 

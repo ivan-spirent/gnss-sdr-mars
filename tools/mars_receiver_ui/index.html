@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Mars GNSS Receiver UI</title>
-  <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="./styles.css?v=truth-30-30-h80-iau-iq-20260619">
 </head>
 <body>
   <header class="topbar">
@@ -82,6 +82,22 @@
       <canvas id="satCanvas" class="chart" aria-label="Satellite count chart"></canvas>
     </section>
 
+    <section class="panel span-12">
+      <div class="panel-head">
+        <h2>3D Error</h2>
+        <span id="errorSummary" class="muted"></span>
+      </div>
+      <canvas id="errorCanvas" class="chart error-chart" aria-label="3D position error chart"></canvas>
+    </section>
+
+    <section class="panel span-12">
+      <div class="panel-head">
+        <h2>I/Q Dominance</h2>
+        <span id="iqSummary" class="muted"></span>
+      </div>
+      <canvas id="iqCanvas" class="chart iq-chart" aria-label="Prompt I/Q dominance chart"></canvas>
+    </section>
+
     <section class="panel span-5">
       <div class="panel-head">
         <h2>Channels</h2>
@@ -97,6 +113,8 @@
               <th>Lock</th>
               <th>NAV</th>
               <th>CN0</th>
+              <th>I/Q</th>
+              <th>Q/I</th>
               <th>Loss</th>
             </tr>
           </thead>
@@ -121,6 +139,6 @@
     </section>
   </main>
 
-  <script src="./app.js"></script>
+  <script src="./app.js?v=truth-30-30-h80-iau-iq-20260619"></script>
 </body>
 </html>

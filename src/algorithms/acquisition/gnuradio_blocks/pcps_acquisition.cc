@@ -60,6 +60,42 @@ bool mars_sync_debug_enabled()
 
 bool mars_sync_debug_prn(uint32_t prn)
 {
+    const char* env = std::getenv("GNSS_SDR_MARS_SYNC_DEBUG_PRNS");
+    if (env != nullptr && env[0] != '\0')
+        {
+            if ((env[0] == 'a' || env[0] == 'A') &&
+                (env[1] == 'l' || env[1] == 'L') &&
+                (env[2] == 'l' || env[2] == 'L') &&
+                env[3] == '\0')
+                {
+                    return true;
+                }
+            const char* cursor = env;
+            while (*cursor != '\0')
+                {
+                    while (*cursor == ',' || *cursor == ';' || *cursor == ':' || *cursor == ' ')
+                        {
+                            cursor++;
+                        }
+                    char* end = nullptr;
+                    const unsigned long value = std::strtoul(cursor, &end, 10);
+                    if (end == cursor)
+                        {
+                            if (*cursor == '\0')
+                                {
+                                    break;
+                                }
+                            cursor++;
+                            continue;
+                        }
+                    if (value == prn)
+                        {
+                            return true;
+                        }
+                    cursor = end;
+                }
+            return false;
+        }
     return prn == 2U || prn == 16U || prn == 21U;
 }
 

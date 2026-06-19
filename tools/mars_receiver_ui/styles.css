@@ -181,6 +181,7 @@ button.primary {
 }
 
 .panel h2 {
+  flex: 0 0 auto;
   margin: 0;
   font-size: 0.98rem;
   font-weight: 780;
@@ -190,6 +191,12 @@ button.primary {
 .muted {
   color: var(--muted);
   font-size: 0.8rem;
+}
+
+.panel-head .muted {
+  min-width: 0;
+  text-align: right;
+  overflow-wrap: anywhere;
 }
 
 .legend,
@@ -251,6 +258,14 @@ button.primary {
 
 .sky-chart {
   height: 330px;
+}
+
+.error-chart {
+  height: 320px;
+}
+
+.iq-chart {
+  height: 360px;
 }
 
 .sky-control {

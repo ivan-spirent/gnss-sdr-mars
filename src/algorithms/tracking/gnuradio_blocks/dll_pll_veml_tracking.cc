@@ -93,6 +93,42 @@ bool mars_sync_debug_enabled()
 
 bool mars_sync_debug_prn(uint32_t prn)
 {
+    const char* env = std::getenv("GNSS_SDR_MARS_SYNC_DEBUG_PRNS");
+    if (env != nullptr && env[0] != '\0')
+        {
+            if ((env[0] == 'a' || env[0] == 'A') &&
+                (env[1] == 'l' || env[1] == 'L') &&
+                (env[2] == 'l' || env[2] == 'L') &&
+                env[3] == '\0')
+                {
+                    return true;
+                }
+            const char* cursor = env;
+            while (*cursor != '\0')
+                {
+                    while (*cursor == ',' || *cursor == ';' || *cursor == ':' || *cursor == ' ')
+                        {
+                            cursor++;
+                        }
+                    char* end = nullptr;
+                    const unsigned long value = std::strtoul(cursor, &end, 10);
+                    if (end == cursor)
+                        {
+                            if (*cursor == '\0')
+                                {
+                                    break;
+                                }
+                            cursor++;
+                            continue;
+                        }
+                    if (value == prn)
+                        {
+                            return true;
+                        }
+                    cursor = end;
+                }
+            return false;
+        }
     return prn == 2U || prn == 16U || prn == 21U;
 }
 
@@ -978,6 +1014,15 @@ bool dll_pll_veml_tracking::acquire_secondary()
 {
     // ******* preamble correlation ********
     int32_t corr_value = 0;
+    int32_t bit_corr_value = 0;
+    int32_t bit_corr_evidence = 0;
+    int32_t min_bit_corr_evidence = d_symbols_per_bit;
+    const bool bit_sync_preamble =
+        !d_secondary &&
+        d_symbols_per_bit > 1 &&
+        d_secondary_code_length >= static_cast<uint32_t>(d_symbols_per_bit) &&
+        d_secondary_code_length % static_cast<uint32_t>(d_symbols_per_bit) == 0;
+    const int32_t bits_in_preamble = bit_sync_preamble ? static_cast<int32_t>(d_secondary_code_length) / d_symbols_per_bit : 0;
     for (uint32_t i = 0; i < d_secondary_code_length; i++)
         {
             if (d_Prompt_circular_buffer[i].real() < 0.0)  // symbols clipping
@@ -1004,10 +1049,45 @@ bool dll_pll_veml_tracking::acquire_secondary()
             }
         }
 
+    if (bit_sync_preamble)
+        {
+            for (int32_t bit_index = 0; bit_index < bits_in_preamble; bit_index++)
+                {
+                    int32_t bit_symbol_corr = 0;
+                    const int32_t symbol_offset = bit_index * d_symbols_per_bit;
+                    for (int32_t symbol_index = 0; symbol_index < d_symbols_per_bit; symbol_index++)
+                        {
+                            const int32_t i = symbol_offset + symbol_index;
+                            const bool prompt_negative = d_Prompt_circular_buffer[static_cast<uint32_t>(i)].real() < 0.0;
+                            const bool expected_negative = d_secondary_code_string[static_cast<uint32_t>(i)] == '0';
+                            bit_symbol_corr += (prompt_negative == expected_negative) ? 1 : -1;
+                        }
+                    if (bit_symbol_corr == 0)
+                        {
+                            min_bit_corr_evidence = 0;
+                            continue;
+                        }
+                    min_bit_corr_evidence = std::min(min_bit_corr_evidence, std::abs(bit_symbol_corr));
+                    bit_corr_value += (bit_symbol_corr > 0) ? 1 : -1;
+                    bit_corr_evidence += std::abs(bit_symbol_corr);
+                }
+        }
+
+    const int32_t corr_abs = std::abs(corr_value);
+    const bool exact_symbol_lock = corr_abs == static_cast<int32_t>(d_secondary_code_length);
+    const int32_t majority_evidence_threshold = (static_cast<int32_t>(d_secondary_code_length) * 7 + 7) / 8;  // 87.5%.
+    const int32_t per_bit_evidence_threshold = (d_symbols_per_bit * 3 + 4) / 5;                              // 60%.
+    const bool bit_majority_lock =
+        bit_sync_preamble &&
+        std::abs(bit_corr_value) == bits_in_preamble &&
+        bit_corr_evidence >= majority_evidence_threshold &&
+        min_bit_corr_evidence >= per_bit_evidence_threshold;
+
     if (mars_sync_debug_enabled() &&
         d_acquisition_gnss_synchro != nullptr &&
         mars_sync_debug_prn(d_acquisition_gnss_synchro->PRN) &&
-        std::abs(corr_value) >= static_cast<int32_t>(d_secondary_code_length) - 10)
+        (corr_abs >= static_cast<int32_t>(d_secondary_code_length) - 10 ||
+            (bit_sync_preamble && std::abs(bit_corr_value) == static_cast<int32_t>(d_secondary_code_length) / d_symbols_per_bit)))
         {
             std::ostringstream oss;
             oss << "MARS_SYNC_DIAG stage=tracking_bit_candidate"
@@ -1018,7 +1098,14 @@ bool dll_pll_veml_tracking::acquire_secondary()
                 << " acq_code_phase_samples=" << d_acq_code_phase_samples
                 << " acq_doppler_hz=" << d_acq_carrier_doppler_hz
                 << " corr=" << corr_value
-                << " score_abs=" << std::abs(corr_value)
+                << " score_abs=" << corr_abs
+                << " bit_corr=" << bit_corr_value
+                << " bit_corr_abs=" << std::abs(bit_corr_value)
+                << " bit_corr_evidence=" << bit_corr_evidence
+                << " min_bit_corr_evidence=" << min_bit_corr_evidence
+                << " majority_evidence_threshold=" << majority_evidence_threshold
+                << " per_bit_evidence_threshold=" << per_bit_evidence_threshold
+                << " bit_majority_lock=" << bit_majority_lock
                 << " inverted=" << (corr_value < 0)
                 << " code_len_symbols=" << d_secondary_code_length
                 << " symbols_per_bit=" << d_symbols_per_bit
@@ -1029,15 +1116,25 @@ bool dll_pll_veml_tracking::acquire_secondary()
             mars_sync_debug_line(oss.str());
         }
 
-    if (abs(corr_value) == static_cast<int32_t>(d_secondary_code_length))
+    if (exact_symbol_lock || bit_majority_lock)
         {
-            if (corr_value < 0)
+            if (corr_value < 0 || (!exact_symbol_lock && bit_corr_value < 0))
                 {
                     d_Flag_PLL_180_deg_phase_locked = true;
                 }
             else
                 {
                     d_Flag_PLL_180_deg_phase_locked = false;
+                }
+            if (bit_majority_lock && !exact_symbol_lock)
+                {
+                    LOG(INFO) << d_systemName << " " << d_signal_pretty_name
+                              << " tracking bit synchronization accepted by bit-majority preamble in channel " << d_channel
+                              << " for satellite " << Gnss_Satellite(d_systemName, d_acquisition_gnss_synchro->PRN)
+                              << " corr=" << corr_value
+                              << " bit_corr=" << bit_corr_value
+                              << " bit_corr_evidence=" << bit_corr_evidence
+                              << " min_bit_corr_evidence=" << min_bit_corr_evidence;
                 }
             return true;
         }

@@ -33,12 +33,15 @@
 #include "rtklib_solver.h"
 #include "Beidou_DNAV.h"
 #include "gnss_sdr_filesystem.h"
+#include "rtklib_ephemeris.h"
 #include "rtklib_rtkpos.h"
 #include "rtklib_solution.h"
 #include <matio.h>
 #include <algorithm>
 #include <cmath>
 #include <exception>
+#include <limits>
+#include <sstream>
 #include <utility>
 #include <vector>
 
@@ -47,6 +50,119 @@
 #else
 #include <absl/log/log.h>
 #endif
+
+namespace
+{
+struct CodePhaseAmbiguityObs
+{
+    int obs_index = 0;
+    int band = 0;
+    int prn = 0;
+    double raw_pseudorange_m = 0.0;
+    double modeled_pseudorange_m = 0.0;
+};
+
+
+double median_or_zero(std::vector<double> values)
+{
+    if (values.empty())
+        {
+            return 0.0;
+        }
+    const auto middle = values.begin() + values.size() / 2;
+    std::nth_element(values.begin(), middle, values.end());
+    double median = *middle;
+    if (values.size() % 2 == 0)
+        {
+            const auto lower = std::max_element(values.begin(), middle);
+            median = (*lower + median) * 0.5;
+        }
+    return median;
+}
+
+
+double residual_rms(const std::vector<double>& values, double center)
+{
+    if (values.empty())
+        {
+            return std::numeric_limits<double>::infinity();
+        }
+    double sum_sq = 0.0;
+    for (const auto value : values)
+        {
+            const double residual = value - center;
+            sum_sq += residual * residual;
+        }
+    return std::sqrt(sum_sq / static_cast<double>(values.size()));
+}
+}  // namespace
+
+
+void Rtklib_Solver::load_gps_ephemeris_corrections(const std::string& file_path)
+{
+    if (file_path.empty())
+        {
+            return;
+        }
+
+    std::ifstream input(file_path);
+    if (!input.is_open())
+        {
+            LOG(WARNING) << "Unable to open GPS ephemeris corrections file " << file_path;
+            return;
+        }
+
+    std::string line;
+    int loaded = 0;
+    while (std::getline(input, line))
+        {
+            const auto comment_pos = line.find('#');
+            if (comment_pos != std::string::npos)
+                {
+                    line = line.substr(0, comment_pos);
+                }
+            std::replace(line.begin(), line.end(), ',', ' ');
+
+            std::istringstream stream(line);
+            int prn = 0;
+            Gps_Ephemeris_Correction correction;
+            if (!(stream >> prn))
+                {
+                    continue;
+                }
+            if (!(stream >> correction.delta_m0_rad >> correction.delta_omega0_rad >>
+                    correction.delta_i0_rad >> correction.delta_omega_rad >>
+                    correction.delta_sqrtA))
+                {
+                    LOG(WARNING) << "Ignoring malformed GPS ephemeris correction row in " << file_path << ": " << line;
+                    continue;
+                }
+
+            d_gps_ephemeris_corrections[prn] = correction;
+            loaded++;
+        }
+
+    LOG(INFO) << "Loaded " << loaded << " GPS ephemeris correction rows from " << file_path;
+}
+
+
+Gps_Ephemeris Rtklib_Solver::apply_gps_ephemeris_correction(const Gps_Ephemeris& ephemeris) const
+{
+    const auto correction_iter = d_gps_ephemeris_corrections.find(ephemeris.PRN);
+    if (correction_iter == d_gps_ephemeris_corrections.cend())
+        {
+            return ephemeris;
+        }
+
+    Gps_Ephemeris corrected = ephemeris;
+    corrected.M_0 += correction_iter->second.delta_m0_rad;
+    corrected.OMEGA_0 += correction_iter->second.delta_omega0_rad;
+    corrected.i_0 += correction_iter->second.delta_i0_rad;
+    corrected.omega += correction_iter->second.delta_omega_rad;
+    corrected.sqrtA += correction_iter->second.delta_sqrtA;
+    return corrected;
+}
+
 
 Rtklib_Solver::Rtklib_Solver(const rtk_t &rtk,
     const Pvt_Conf &conf,
@@ -60,6 +176,8 @@ Rtklib_Solver::Rtklib_Solver(const rtk_t &rtk,
                              d_flag_dump_enabled(flag_dump_to_file),
                              d_flag_dump_mat_enabled(flag_dump_to_mat)
 {
+    load_gps_ephemeris_corrections(d_conf.gps_ephemeris_corrections_file);
+
     // see freq index at src/algorithms/libs/rtklib/rtklib_rtkcmn.cc
     // function: satwavelen
     d_rtklib_freq_index[0] = 0;
@@ -906,6 +1024,207 @@ void Rtklib_Solver::get_current_has_obs_correction(const std::string &signal, ui
 }
 
 
+void Rtklib_Solver::correct_code_phase_ms_ambiguities(int obs_count)
+{
+    if (!d_conf.enable_code_phase_ms_ambiguity_correction ||
+        d_conf.code_phase_ms_ambiguity_max_ms <= 0 ||
+        obs_count < 4)
+        {
+            return;
+        }
+
+    const int nobs = std::min(obs_count, MAXOBS);
+    const double ref_pos_llh[3] = {
+        d_conf.initial_latitude_deg * D2R,
+        d_conf.initial_longitude_deg * D2R,
+        d_conf.initial_height_m};
+    double ref_pos_ecef[3] = {};
+    pos2ecef(ref_pos_llh, ref_pos_ecef);
+    const double ref_norm = std::sqrt(ref_pos_ecef[0] * ref_pos_ecef[0] +
+                                     ref_pos_ecef[1] * ref_pos_ecef[1] +
+                                     ref_pos_ecef[2] * ref_pos_ecef[2]);
+    if (ref_norm < 1000.0)
+        {
+            return;
+        }
+
+    std::vector<double> rs(static_cast<size_t>(nobs) * 6U, 0.0);
+    std::vector<double> dts(static_cast<size_t>(nobs) * 2U, 0.0);
+    std::vector<double> var(static_cast<size_t>(nobs), 0.0);
+    std::vector<int> svh(static_cast<size_t>(nobs), 0);
+    satposs(d_obs_data[0].time, d_obs_data.data(), nobs, &d_nav_data, d_rtk.opt.sateph,
+        rs.data(), dts.data(), var.data(), svh.data());
+
+    std::vector<CodePhaseAmbiguityObs> correction_obs;
+    correction_obs.reserve(nobs);
+    for (int i = 0; i < nobs; ++i)
+        {
+            int prn = 0;
+            if (satsys(d_obs_data[i].sat, &prn) != SYS_GPS)
+                {
+                    continue;
+                }
+
+            int band = -1;
+            for (int j = 0; j < NFREQ + NEXOBS; ++j)
+                {
+                    if (d_obs_data[i].P[j] != 0.0 &&
+                        d_obs_data[i].code[j] == static_cast<unsigned char>(CODE_L1C))
+                        {
+                            band = j;
+                            break;
+                        }
+                }
+            if (band < 0)
+                {
+                    continue;
+                }
+
+            double line_of_sight[3] = {};
+            const double geometric_range_m = geodist(rs.data() + static_cast<size_t>(i) * 6U, ref_pos_ecef, line_of_sight);
+            if (geometric_range_m <= 0.0 || !std::isfinite(geometric_range_m) || !std::isfinite(dts[static_cast<size_t>(i) * 2U]))
+                {
+                    continue;
+                }
+
+            correction_obs.push_back({
+                i,
+                band,
+                prn,
+                d_obs_data[i].P[band],
+                geometric_range_m - SPEED_OF_LIGHT_M_S * dts[static_cast<size_t>(i) * 2U]});
+        }
+
+    if (correction_obs.size() < 4U)
+        {
+            return;
+        }
+
+    std::vector<double> raw_diffs;
+    raw_diffs.reserve(correction_obs.size());
+    for (const auto& obs : correction_obs)
+        {
+            raw_diffs.push_back(obs.raw_pseudorange_m - obs.modeled_pseudorange_m);
+        }
+    const double raw_bias = median_or_zero(raw_diffs);
+    const double raw_rms = residual_rms(raw_diffs, raw_bias);
+
+    const int max_ms = d_conf.code_phase_ms_ambiguity_max_ms;
+    const double range_per_ms_m = SPEED_OF_LIGHT_M_MS;
+    std::vector<double> candidate_biases;
+    candidate_biases.reserve(correction_obs.size() * static_cast<size_t>(2 * max_ms + 1));
+    for (const auto raw_diff : raw_diffs)
+        {
+            for (int k = -max_ms; k <= max_ms; ++k)
+                {
+                    candidate_biases.push_back(raw_diff + static_cast<double>(k) * range_per_ms_m);
+                }
+        }
+
+    double best_rms = std::numeric_limits<double>::infinity();
+    double best_bias = 0.0;
+    int best_abs_steps = std::numeric_limits<int>::max();
+    std::vector<int> best_steps(correction_obs.size(), 0);
+
+    for (const auto candidate_bias : candidate_biases)
+        {
+            std::vector<int> trial_steps(correction_obs.size(), 0);
+            std::vector<double> trial_diffs;
+            trial_diffs.reserve(correction_obs.size());
+
+            for (size_t i = 0; i < correction_obs.size(); ++i)
+                {
+                    double best_residual = std::numeric_limits<double>::infinity();
+                    int best_step = 0;
+                    double best_diff = raw_diffs[i];
+                    for (int k = -max_ms; k <= max_ms; ++k)
+                        {
+                            const double diff = raw_diffs[i] + static_cast<double>(k) * range_per_ms_m;
+                            const double residual = std::abs(diff - candidate_bias);
+                            if (residual < best_residual)
+                                {
+                                    best_residual = residual;
+                                    best_step = k;
+                                    best_diff = diff;
+                                }
+                        }
+                    trial_steps[i] = best_step;
+                    trial_diffs.push_back(best_diff);
+                }
+
+            const double trial_bias = median_or_zero(trial_diffs);
+            const double trial_rms = residual_rms(trial_diffs, trial_bias);
+            int trial_abs_steps = 0;
+            for (const auto step : trial_steps)
+                {
+                    trial_abs_steps += std::abs(step);
+                }
+
+            if ((trial_rms + 1.0 < best_rms) ||
+                (std::abs(trial_rms - best_rms) <= 1.0 && trial_abs_steps < best_abs_steps))
+                {
+                    best_rms = trial_rms;
+                    best_bias = trial_bias;
+                    best_abs_steps = trial_abs_steps;
+                    best_steps = std::move(trial_steps);
+                }
+        }
+
+    if (!std::isfinite(best_rms) ||
+        best_rms > d_conf.code_phase_ms_ambiguity_residual_threshold_m ||
+        raw_rms - best_rms < d_conf.code_phase_ms_ambiguity_min_improvement_m)
+        {
+            return;
+        }
+
+    std::vector<double> selected_steps;
+    selected_steps.reserve(best_steps.size());
+    for (const auto step : best_steps)
+        {
+            selected_steps.push_back(static_cast<double>(step));
+        }
+    const int common_step = static_cast<int>(std::llround(median_or_zero(selected_steps)));
+
+    int applied_count = 0;
+    for (size_t i = 0; i < correction_obs.size(); ++i)
+        {
+            const int relative_step = best_steps[i] - common_step;
+            if (relative_step == 0)
+                {
+                    continue;
+                }
+
+            const double correction_m = static_cast<double>(relative_step) * range_per_ms_m;
+            for (int band = 0; band < NFREQ + NEXOBS; ++band)
+                {
+                    if (d_obs_data[correction_obs[i].obs_index].P[band] != 0.0)
+                        {
+                            d_obs_data[correction_obs[i].obs_index].P[band] += correction_m;
+                        }
+                }
+            ++applied_count;
+        }
+
+    if (applied_count > 0 && std::getenv("GNSS_SDR_MARS_PVT_DEBUG") != nullptr)
+        {
+            std::string steps_msg;
+            for (size_t i = 0; i < correction_obs.size(); ++i)
+                {
+                    const int relative_step = best_steps[i] - common_step;
+                    if (relative_step != 0)
+                        {
+                            steps_msg += " G" + std::to_string(correction_obs[i].prn) + ":" + std::to_string(relative_step);
+                        }
+                }
+            LOG(INFO) << "Code-phase ms ambiguity correction applied: raw_rms_m=" << raw_rms
+                      << " corrected_rms_m=" << best_rms
+                      << " bias_m=" << best_bias
+                      << " common_ms=" << common_step
+                      << " steps=" << steps_msg;
+        }
+}
+
+
 bool Rtklib_Solver::get_PVT(const std::map<int, Gnss_Synchro> &gnss_observables_map, double kf_update_interval_s)
 {
     std::map<int, Gnss_Synchro>::const_iterator gnss_observables_iter;
@@ -1141,8 +1460,9 @@ bool Rtklib_Solver::get_PVT(const std::map<int, Gnss_Synchro> &gnss_observables_
                                 gps_ephemeris_iter = gps_ephemeris_map.find(gnss_observables_iter->second.PRN);
                                 if (gps_ephemeris_iter != gps_ephemeris_map.cend())
                                     {
+                                        const auto corrected_ephemeris = apply_gps_ephemeris_correction(gps_ephemeris_iter->second);
                                         // convert ephemeris from GNSS-SDR class to RTKLIB structure
-                                        eph_data[valid_obs] = eph_to_rtklib(gps_ephemeris_iter->second,
+                                        eph_data[valid_obs] = eph_to_rtklib(corrected_ephemeris,
                                             this->d_has_orbit_corrections_store_map[gps_str],
                                             this->d_has_clock_corrections_store_map[gps_str],
                                             this->is_pre_2009());
@@ -1151,7 +1471,7 @@ bool Rtklib_Solver::get_PVT(const std::map<int, Gnss_Synchro> &gnss_observables_
                                         d_obs_data[valid_obs + glo_valid_obs] = insert_obs_to_rtklib(newobs,
                                             gnss_observables_iter->second,
                                             d_has_obs_corr_map,
-                                            gps_ephemeris_iter->second.WN,
+                                            corrected_ephemeris.WN,
                                             d_rtklib_band_index[sig_],
                                             this->is_pre_2009());
                                         valid_obs++;
@@ -1406,7 +1726,7 @@ bool Rtklib_Solver::get_PVT(const std::map<int, Gnss_Synchro> &gnss_observables_
     // **********************************************************************
 
     this->set_valid_position(false);
-    const int min_obs_for_pvt = d_rtk.opt.fixed_height_2d ? 3 : 4;
+    const int min_obs_for_pvt = d_rtk.opt.fixed_height_2d ? std::max(3, d_rtk.opt.fixed_height_2d_min_observations) : 4;
     if ((valid_obs + glo_valid_obs) >= min_obs_for_pvt)
         {
             int result = 0;
@@ -1503,6 +1823,8 @@ bool Rtklib_Solver::get_PVT(const std::map<int, Gnss_Synchro> &gnss_observables_
                             d_nav_data.lam[i][j] = satwavelen(i + 1, d_rtklib_freq_index[j], &d_nav_data);
                         }
                 }
+
+            correct_code_phase_ms_ambiguities(valid_obs + glo_valid_obs);
 
             result = rtkpos(&d_rtk, d_obs_data.data(), valid_obs + glo_valid_obs, &d_nav_data);
 

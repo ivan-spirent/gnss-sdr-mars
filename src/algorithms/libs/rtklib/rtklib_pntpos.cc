@@ -38,8 +38,11 @@
 #include "rtklib_ionex.h"
 #include "rtklib_sbas.h"
 #include <armadillo>
+#include <algorithm>
 #include <cmath>
+#include <cstdlib>
 #include <cstring>
+#include <iostream>
 #include <vector>
 
 /* pseudorange measurement error variance ------------------------------------*/
@@ -506,6 +509,34 @@ int rescode(int iter, const obsd_t *obs, int n, const double *rs,
             /* pseudorange residual */
             v[nv] = P - (r + dtr - SPEED_OF_LIGHT_M_S * dts[i * 2] + dion + dtrp);
 
+            static const bool mars_pvt_res_debug = std::getenv("GNSS_SDR_MARS_PVT_RES_DEBUG") != nullptr;
+            if (mars_pvt_res_debug)
+                {
+                    int prn_debug = 0;
+                    satsys(obs[i].sat, &prn_debug);
+                    std::cerr << "MARS_PVT_RES"
+                              << " time=" << time_str(obs[i].time, 3)
+                              << " iter=" << iter
+                              << " sat=" << static_cast<int>(obs[i].sat)
+                              << " prn=" << prn_debug
+                              << " P=" << P
+                              << " range=" << r
+                              << " dtr_m=" << dtr
+                              << " sat_clk_m=" << SPEED_OF_LIGHT_M_S * dts[i * 2]
+                              << " ion_m=" << dion
+                              << " trop_m=" << dtrp
+                              << " residual_m=" << v[nv]
+                              << " az_deg=" << azel[i * 2] * R2D
+                              << " el_deg=" << azel[1 + i * 2] * R2D
+                              << " rr_x=" << rr[0]
+                              << " rr_y=" << rr[1]
+                              << " rr_z=" << rr[2]
+                              << " rs_x=" << rs[i * 6]
+                              << " rs_y=" << rs[i * 6 + 1]
+                              << " rs_z=" << rs[i * 6 + 2]
+                              << '\n';
+                }
+
             /* design matrix */
             for (j = 0; j < NX; j++)
                 {
@@ -579,6 +610,65 @@ int rescode(int iter, const obsd_t *obs, int n, const double *rs,
 }
 
 
+static double fixed_height_2d_gdop(int ns, const double *azel, double elmin)
+{
+    double normal[9] = {0.0};
+    int n = 0;
+
+    for (int i = 0; i < ns && i < MAXSAT; i++)
+        {
+            const double el = azel[1 + i * 2];
+            if (el < elmin)
+                {
+                    continue;
+                }
+            const double az = azel[i * 2];
+            const double cosel = std::cos(el);
+            const double row[3] = {cosel * std::sin(az), cosel * std::cos(az), 1.0};
+
+            for (int r = 0; r < 3; r++)
+                {
+                    for (int c = 0; c < 3; c++)
+                        {
+                            normal[r + c * 3] += row[r] * row[c];
+                        }
+                }
+            n++;
+        }
+    if (n < 3)
+        {
+            return 0.0;
+        }
+
+    const double det =
+        normal[0] * (normal[4] * normal[8] - normal[7] * normal[5]) -
+        normal[3] * (normal[1] * normal[8] - normal[7] * normal[2]) +
+        normal[6] * (normal[1] * normal[5] - normal[4] * normal[2]);
+
+    if (!std::isfinite(det) || std::abs(det) < 1.0e-12)
+        {
+            return 0.0;
+        }
+
+    const double qee = (normal[4] * normal[8] - normal[7] * normal[5]) / det;
+    const double qnn = (normal[0] * normal[8] - normal[6] * normal[2]) / det;
+    const double qtt = (normal[0] * normal[4] - normal[3] * normal[1]) / det;
+    const double gdop = qee + qnn + qtt;
+
+    if (!std::isfinite(gdop) || gdop <= 0.0)
+        {
+            return 0.0;
+        }
+    return std::sqrt(gdop);
+}
+
+
+static int fixed_height_2d_min_observations(const prcopt_t *opt)
+{
+    return std::max(3, opt->fixed_height_2d_min_observations);
+}
+
+
 /* validate solution ---------------------------------------------------------*/
 int valsol(const double *azel, const int *vsat, int n,
     const prcopt_t *opt, const double *v, int nv, int nx,
@@ -610,7 +700,22 @@ int valsol(const double *azel, const int *vsat, int n,
             azels[1 + ns * 2] = azel[1 + i * 2];
             ns++;
         }
-    if (!(opt->fixed_height_2d && ns == 3))
+    if (opt->fixed_height_2d)
+        {
+            const int min_valid_sats = fixed_height_2d_min_observations(opt);
+            if (ns < min_valid_sats)
+                {
+                    std::snprintf(msg, MAXSOLBUF, "fixed-height 2d lack of valid sats ns=%d min=%d", ns, min_valid_sats);
+                    return 0;
+                }
+            const double constrained_gdop = fixed_height_2d_gdop(ns, azels, opt->elmin);
+            if (constrained_gdop <= 0.0 || constrained_gdop > opt->maxgdop)
+                {
+                    std::snprintf(msg, MAXSOLBUF, "fixed-height 2d gdop error nv=%d gdop=%.1f", nv, constrained_gdop);
+                    return 0;
+                }
+        }
+    else
         {
             dops(ns, azels, opt->elmin, dop);
             if (dop[0] <= 0.0 || dop[0] > opt->maxgdop)
@@ -999,6 +1104,7 @@ int raim_fde(const obsd_t *obs, int n, const double *rs,
     int *svh_e;
     int *vsat_e;
     int sat = 0;
+    const int min_valid_sats = opt->fixed_height_2d ? fixed_height_2d_min_observations(opt) : 5;
 
     trace(3, "raim_fde: %s n=%2d\n", time_str(obs[0].time, 0), n);
 
@@ -1045,7 +1151,7 @@ int raim_fde(const obsd_t *obs, int n, const double *rs,
                     rms_e += std::pow(resp_e[j], 2.0);
                     nvsat++;
                 }
-            if (nvsat < 5)
+            if (nvsat < min_valid_sats)
                 {
                     trace(3, "raim_fde: exsat=%2d lack of satellites nvsat=%2d\n",
                         obs[i].sat, nvsat);
@@ -1288,7 +1394,8 @@ int pntpos(const obsd_t *obs, int n, const nav_t *nav,
     stat = estpos(obs, n, rs, dts, var, svh.data(), nav, &opt_, sol, azel_, vsat.data(), resp, msg);
 
     /* raim fde */
-    if (!stat && n >= 6 && opt->posopt[4])
+    const int min_obs_for_raim = opt_.fixed_height_2d ? fixed_height_2d_min_observations(&opt_) + 1 : 6;
+    if (!stat && n >= min_obs_for_raim && opt->posopt[4])
         {
             stat = raim_fde(obs, n, rs, dts, var, svh.data(), nav, &opt_, sol, azel_, vsat.data(), resp, msg);
         }

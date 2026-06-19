@@ -5,6 +5,7 @@ const EARTH_RADIUS_KM = 6371;
 const MARS_MU_M3_S2 = 4.282837e13;
 const EARTH_CONTEXT_SEPARATION = 22000;
 const EARTH_CONTEXT_ORBIT_SCALE = 0.18;
+const TRUTH_POSITION = { latDeg: 30, lonDeg: 30, heightM: 80 };
 const DEG = 180 / Math.PI;
 const RAD = Math.PI / 180;
 
@@ -32,6 +33,21 @@ const DEFAULT_GEOJSON_SOURCES = [
   "/build/PVT_260617_142203.geojson"
 ];
 
+const DEFAULT_SCENARIO_SOURCES = {
+  xml: [
+    "/Mars-GPS-like-5min/GPS_orbits_mars%201.gps",
+    "/Scenario%20Data/GPS_Mars.gps"
+  ],
+  sat: [
+    "/Mars-GPS-like-5min/sat_data_V1A1.csv",
+    "/Scenario%20Data/sat_data_V1A1.csv"
+  ],
+  motion: [
+    "/Mars-GPS-like-5min/motion_V1.csv",
+    "/Scenario%20Data/motion_V1.csv"
+  ]
+};
+
 const state = {
   mode: "mars",
   playing: false,
@@ -46,7 +62,8 @@ const state = {
     epochs: [],
     motion: [],
     pvt: [],
-    nmeaUsed: new Set()
+    nmeaUsed: new Set(),
+    receiverFixes: []
   }
 };
 
@@ -140,11 +157,14 @@ function fmtInt(value) {
 
 function fmtTow(ms) {
   if (!Number.isFinite(ms)) return "-";
-  const seconds = Math.floor(ms / 1000);
+  const totalSeconds = Math.floor(ms / 1000);
+  const day = Math.floor(totalSeconds / 86400);
+  const seconds = totalSeconds % 86400;
   const hh = Math.floor(seconds / 3600);
   const mm = Math.floor((seconds % 3600) / 60);
   const ss = seconds % 60;
-  return `${String(hh).padStart(2, "0")}:${String(mm).padStart(2, "0")}:${String(ss).padStart(2, "0")}`;
+  const tod = `${String(hh).padStart(2, "0")}:${String(mm).padStart(2, "0")}:${String(ss).padStart(2, "0")}`;
+  return day > 0 ? `D${day} ${tod}` : tod;
 }
 
 function splitCsv(line) {
@@ -316,6 +336,42 @@ function parseGeojson(text) {
   }
 }
 
+function nmeaCoord(value, hemi) {
+  const raw = Number(value);
+  if (!Number.isFinite(raw)) return NaN;
+  const degrees = Math.floor(raw / 100);
+  const minutes = raw - degrees * 100;
+  const signed = degrees + minutes / 60;
+  return hemi === "S" || hemi === "W" ? -signed : signed;
+}
+
+function nmeaTimeSeconds(value) {
+  if (!value) return NaN;
+  const hh = Number(value.slice(0, 2));
+  const mm = Number(value.slice(2, 4));
+  const ss = Number(value.slice(4));
+  if (![hh, mm, ss].every(Number.isFinite)) return NaN;
+  return hh * 3600 + mm * 60 + ss;
+}
+
+function nmeaDateText(value) {
+  if (!value || value.length < 6) return "";
+  const day = value.slice(0, 2);
+  const month = value.slice(2, 4);
+  const year = `20${value.slice(4, 6)}`;
+  return `${year}-${month}-${day}`;
+}
+
+function receiverTimeText(fix) {
+  if (!fix) return "-";
+  const seconds = Number.isFinite(fix.todSeconds) ? fix.todSeconds : 0;
+  const hh = Math.floor(seconds / 3600);
+  const mm = Math.floor((seconds % 3600) / 60);
+  const ss = seconds - hh * 3600 - mm * 60;
+  const tod = `${String(hh).padStart(2, "0")}:${String(mm).padStart(2, "0")}:${ss.toFixed(2).padStart(5, "0")}`;
+  return fix.dateText ? `${fix.dateText} ${tod}` : tod;
+}
+
 function parseNmeaUsed(text) {
   const used = new Set();
   text.split(/\r?\n/).forEach((line) => {
@@ -327,6 +383,39 @@ function parseNmeaUsed(text) {
     });
   });
   return used;
+}
+
+function parseNmeaReceiver(text) {
+  const fixes = [];
+  const datesByTime = new Map();
+  let firstTod = null;
+  text.split(/\r?\n/).forEach((line) => {
+    if (!line.startsWith("$")) return;
+    const body = line.split("*")[0];
+    const fields = body.split(",");
+    const type = fields[0].slice(3);
+    if (type === "RMC" && fields[1] && fields[9]) {
+      datesByTime.set(fields[1], nmeaDateText(fields[9]));
+      return;
+    }
+    if (type !== "GGA") return;
+    const todSeconds = nmeaTimeSeconds(fields[1]);
+    if (!Number.isFinite(todSeconds)) return;
+    if (firstTod === null) firstTod = todSeconds;
+    const fix = {
+      relativeSeconds: todSeconds - firstTod,
+      todSeconds,
+      dateText: datesByTime.get(fields[1]) || "",
+      lat: nmeaCoord(fields[2], fields[3]),
+      lon: nmeaCoord(fields[4], fields[5]),
+      quality: Number(fields[6]),
+      satellites: Number(fields[7]),
+      hdop: Number(fields[8]),
+      heightM: Number(fields[9])
+    };
+    if (Number.isFinite(fix.lat) && Number.isFinite(fix.lon)) fixes.push(fix);
+  });
+  return fixes;
 }
 
 async function fetchText(url) {
@@ -344,6 +433,17 @@ async function fetchFirstText(urls) {
     }
   }
   return "";
+}
+
+async function fetchFirstSource(urls) {
+  for (const url of urls) {
+    try {
+      return { text: await fetchText(url), url };
+    } catch {
+      // Try the next stable result artifact.
+    }
+  }
+  return { text: "", url: "" };
 }
 
 function makeMarsTexture() {
@@ -433,11 +533,11 @@ function createSceneObjects() {
   marsGroup.add(wire);
   marsGroup.add(orbitGroup, markerGroup, labelGroup, pvtGroup);
 
-  const receiverPos = llhToMars(0, 0, 0, 55);
+  const receiverPos = llhToMars(TRUTH_POSITION.latDeg, TRUTH_POSITION.lonDeg, TRUTH_POSITION.heightM, 55);
   meshes.receiver = makeSphere(110, COLORS.receiver, 24);
   meshes.receiver.position.copy(receiverPos);
   marsGroup.add(meshes.receiver);
-  meshes.receiverLabel = makeLabel("RX 0/0", "#bdf4ed");
+  meshes.receiverLabel = makeLabel("RX 30/30", "#bdf4ed");
   meshes.receiverLabel.position.copy(receiverPos.clone().multiplyScalar(1.06));
   labelGroup.add(meshes.receiverLabel);
 
@@ -540,6 +640,21 @@ function currentTowSeconds() {
   return epoch ? epoch.towMs / 1000 : 0;
 }
 
+function nearestReceiverFix(seconds) {
+  const fixes = state.data.receiverFixes;
+  if (!fixes.length || !Number.isFinite(seconds)) return null;
+  let best = fixes[0];
+  let bestDiff = Math.abs(best.relativeSeconds - seconds);
+  for (const fix of fixes) {
+    const diff = Math.abs(fix.relativeSeconds - seconds);
+    if (diff < bestDiff) {
+      best = fix;
+      bestDiff = diff;
+    }
+  }
+  return best;
+}
+
 function updateMarsScene() {
   const towSec = currentTowSeconds();
   const captured = new Set(state.data.capturedPrns);
@@ -621,6 +736,7 @@ function detailsHtml(items) {
 function renderHud() {
   const epoch = currentEpoch();
   const motion = nearestMotion(epoch?.towMs || 0);
+  const receiverFix = nearestReceiverFix(epoch?.seconds || 0);
   const earthDistanceKm = motion ? motion.eciKm.length() : NaN;
   const selected = epoch?.sats.find((sat) => sat.prn === state.selectedPrn);
   els.epochLabel.textContent = epoch ? `T+${fmt(epoch.seconds, 0)} s` : "-";
@@ -643,7 +759,13 @@ function renderHud() {
   ]);
   const pvtMean = pvtMeanOffset();
   els.receiverDetails.innerHTML = detailsHtml([
-    ["Truth Lat/Lon", "0.000000, 0.000000"],
+    ["Truth Lat/Lon", `${TRUTH_POSITION.latDeg.toFixed(6)}, ${TRUTH_POSITION.lonDeg.toFixed(6)}`],
+    ["Truth Height", `${fmt(TRUTH_POSITION.heightM, 1)} m`],
+    ["Scenario TOW", epoch ? fmtTow(epoch.towMs) : "-"],
+    ["Receiver NMEA Time", receiverTimeText(receiverFix)],
+    ["Receiver Lat/Lon", receiverFix ? `${fmt(receiverFix.lat, 6)}, ${fmt(receiverFix.lon, 6)}` : "-"],
+    ["Receiver Height", receiverFix ? `${fmt(receiverFix.heightM, 1)} m` : "-"],
+    ["Receiver Sats", receiverFix ? fmt(receiverFix.satellites, 0) : "-"],
     ["Mars Radius", `${fmt(MARS_RADIUS_KM, 1)} km`],
     ["ECI Range", Number.isFinite(earthDistanceKm) ? `${fmt(earthDistanceKm / 1e6, 3)}M km` : "-"],
     ["ECI Velocity", motion ? `${fmt(motion.velEciKmS.length(), 2)} km/s` : "-"],
@@ -682,8 +804,8 @@ function pvtMeanOffset() {
   if (!state.data.pvt.length) return null;
   const meanLat = state.data.pvt.reduce((sum, point) => sum + point.lat, 0) / state.data.pvt.length;
   const meanLon = state.data.pvt.reduce((sum, point) => sum + point.lon, 0) / state.data.pvt.length;
-  const eastM = meanLon * RAD * MARS_RADIUS_KM * 1000 * Math.cos(meanLat * RAD);
-  const northM = meanLat * RAD * MARS_RADIUS_KM * 1000;
+  const eastM = (meanLon - TRUTH_POSITION.lonDeg) * RAD * MARS_RADIUS_KM * 1000 * Math.cos(meanLat * RAD);
+  const northM = (meanLat - TRUTH_POSITION.latDeg) * RAD * MARS_RADIUS_KM * 1000;
   return { meanLat, meanLon, eastM, northM, radialM: Math.hypot(eastM, northM) };
 }
 
@@ -793,24 +915,26 @@ async function loadDefaults() {
   state.playing = false;
   els.playButton.textContent = "Play";
   els.statusLine.textContent = "Loading scenario data...";
-  const [xml, satCsv, motionCsv, geojson, nmea] = await Promise.all([
-    fetchText("/Scenario%20Data/GPS_Mars.gps"),
-    fetchText("/Scenario%20Data/sat_data_V1A1.csv"),
-    fetchText("/Scenario%20Data/motion_V1.csv"),
+  const [xmlSource, satSource, motionSource, geojson, nmea] = await Promise.all([
+    fetchFirstSource(DEFAULT_SCENARIO_SOURCES.xml),
+    fetchFirstSource(DEFAULT_SCENARIO_SOURCES.sat),
+    fetchFirstSource(DEFAULT_SCENARIO_SOURCES.motion),
     fetchFirstText(DEFAULT_GEOJSON_SOURCES),
     fetchText("/build/gnss_sdr_pvt.nmea").catch(() => "")
   ]);
 
-  const orbits = parseGpsXml(xml);
-  const epochs = parseSatData(satCsv);
-  const motion = parseMotion(motionCsv);
+  const orbits = parseGpsXml(xmlSource.text);
+  const epochs = parseSatData(satSource.text);
+  const motion = parseMotion(motionSource.text);
   const pvt = parseGeojson(geojson);
   const nmeaUsed = parseNmeaUsed(nmea);
+  const receiverFixes = parseNmeaReceiver(nmea);
   const capturedPrns = [...new Set(epochs.flatMap((epoch) => epoch.sats.map((sat) => sat.prn)))].sort((a, b) => a - b);
-  state.data = { orbits, epochs, motion, pvt, capturedPrns, nmeaUsed };
+  state.data = { orbits, epochs, motion, pvt, capturedPrns, nmeaUsed, receiverFixes };
   state.currentIndex = Math.max(0, Math.min(state.currentIndex, epochs.length - 1));
   state.selectedPrn = capturedPrns.includes(state.selectedPrn) ? state.selectedPrn : capturedPrns[0];
-  els.statusLine.textContent = `${orbits.length} XML satellites, ${capturedPrns.length} captured PRNs, ${epochs.length} scenario epochs`;
+  const scenarioName = xmlSource.url.includes("Mars-GPS-like-5min") ? "GPS-like 5 min" : "Mars SPIR";
+  els.statusLine.textContent = `${scenarioName}: ${orbits.length} XML satellites, ${capturedPrns.length} captured PRNs, ${epochs.length} scenario epochs`;
   createSceneObjects();
   resize();
   updateScene();

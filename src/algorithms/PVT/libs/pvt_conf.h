@@ -51,6 +51,7 @@ public:
     std::string udp_ports;
     std::string udp_eph_addresses;
     std::string log_source_timetag_file;
+    std::string gps_ephemeris_corrections_file;
 
     uint32_t type_of_receiver = 0;
     uint32_t observable_interval_ms = 20;
@@ -96,6 +97,7 @@ public:
     bool use_has_corrections = true;
     bool use_unhealthy_sats = false;
     bool osnma_strict = false;
+    bool enable_code_phase_ms_ambiguity_correction = false;
 
     // PVT KF parameters
     bool enable_pvt_kf = false;
@@ -103,6 +105,12 @@ public:
     double measures_ecef_vel_sd_ms = 0.1;
     double system_ecef_pos_sd_m = 0.01;
     double system_ecef_vel_sd_ms = 0.001;
+    double initial_latitude_deg = 0.0;
+    double initial_longitude_deg = 0.0;
+    double initial_height_m = 0.0;
+    double code_phase_ms_ambiguity_residual_threshold_m = 100000.0;
+    double code_phase_ms_ambiguity_min_improvement_m = 50000.0;
+    int32_t code_phase_ms_ambiguity_max_ms = 5;
 };
 
 

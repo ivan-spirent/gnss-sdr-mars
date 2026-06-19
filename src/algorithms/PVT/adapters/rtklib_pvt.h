@@ -94,7 +94,7 @@ class Gps_Ephemeris;
  *                      "Static", "Kinematic", "PPP_Static" and "PPP_Kinematic". Unsupported modes
  *                      include DGPS/DGNSS, Moving Baseline, Fixed, and PPP-fixed
  *  .num_bands - number of frequencies to use, between 1 and 3. Default is based on the channels configured
- *  .elevation_mask - (15.0). Value must be in the range [0,90.0]
+ *  .elevation_mask - (15.0). Value must be in the range [0,90.0], or [-90,90.0] in Mars planetary context
  *  .dynamics_model - (0) 0:none, 1:velocity, 2:acceleration
 
  *  .iono_model - ("OFF"). Supported values are "OFF", "Broadcast", "SBAS", "Iono-Free-LC",

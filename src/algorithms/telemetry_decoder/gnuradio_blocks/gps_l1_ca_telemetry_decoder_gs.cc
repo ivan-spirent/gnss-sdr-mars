@@ -19,6 +19,7 @@
  */
 
 #include "gps_l1_ca_telemetry_decoder_gs.h"
+#include "MATH_CONSTANTS.h"
 #include "gnss_sdr_make_unique.h"  // for std::make_unique in C++11
 #include "gps_ephemeris.h"         // for Gps_Ephemeris
 #include "gps_iono.h"              // for Gps_Iono
@@ -27,6 +28,7 @@
 #include <gnuradio/io_signature.h>
 #include <pmt/pmt.h>        // for make_any
 #include <pmt/pmt_sugar.h>  // for mp
+#include <algorithm>        // for max, min
 #include <bitset>           // for bitset
 #include <cmath>            // for round
 #include <cstddef>          // for size_t
@@ -35,6 +37,7 @@
 #include <cstring>          // for memcpy
 #include <exception>        // for exception
 #include <iomanip>          // for setprecision
+#include <fstream>
 #include <iostream>         // for cout
 #include <memory>           // for shared_ptr
 #include <sstream>
@@ -71,6 +74,27 @@ namespace wht = std;
 
 namespace
 {
+double normalize_gps_angle(double angle_rad)
+{
+    return std::remainder(angle_rad, TWO_PI);
+}
+}  // namespace
+
+namespace
+{
+constexpr int64_t GPS_WEEK_DURATION_MS = 604800000LL;
+constexpr int64_t GPS_LNAV_SUBFRAME_DURATION_MS = 6000LL;
+
+uint32_t wrap_gps_week_ms(int64_t tow_ms)
+{
+    tow_ms %= GPS_WEEK_DURATION_MS;
+    if (tow_ms < 0)
+        {
+            tow_ms += GPS_WEEK_DURATION_MS;
+        }
+    return static_cast<uint32_t>(tow_ms);
+}
+
 bool mars_sync_debug_enabled()
 {
     const char* env = std::getenv("GNSS_SDR_MARS_SYNC_DEBUG");
@@ -80,6 +104,42 @@ bool mars_sync_debug_enabled()
 
 bool mars_sync_debug_prn(uint32_t prn)
 {
+    const char* env = std::getenv("GNSS_SDR_MARS_SYNC_DEBUG_PRNS");
+    if (env != nullptr && env[0] != '\0')
+        {
+            if ((env[0] == 'a' || env[0] == 'A') &&
+                (env[1] == 'l' || env[1] == 'L') &&
+                (env[2] == 'l' || env[2] == 'L') &&
+                env[3] == '\0')
+                {
+                    return true;
+                }
+            const char* cursor = env;
+            while (*cursor != '\0')
+                {
+                    while (*cursor == ',' || *cursor == ';' || *cursor == ':' || *cursor == ' ')
+                        {
+                            cursor++;
+                        }
+                    char* end = nullptr;
+                    const unsigned long value = std::strtoul(cursor, &end, 10);
+                    if (end == cursor)
+                        {
+                            if (*cursor == '\0')
+                                {
+                                    break;
+                                }
+                            cursor++;
+                            continue;
+                        }
+                    if (value == prn)
+                        {
+                            return true;
+                        }
+                    cursor = end;
+                }
+            return false;
+        }
     return prn == 2U || prn == 16U || prn == 21U;
 }
 
@@ -118,8 +178,19 @@ gps_l1_ca_telemetry_decoder_gs::gps_l1_ca_telemetry_decoder_gs(
                             d_stat(0),
                             d_TOW_at_Preamble_ms(0),
                             d_TOW_at_current_symbol_ms(0),
+                            d_assisted_tow_start_ms(conf.assisted_tow_start_ms),
+                            d_assisted_nav_min_match_bits(conf.assisted_nav_min_match_bits),
+                            d_last_nav_subframe_id(0),
+                            d_last_nav_tow_s(0),
+                            d_assisted_tow_light_time_ms(conf.assisted_tow_light_time_ms),
+                            d_assisted_tow_boundary_tolerance_ms(conf.assisted_tow_boundary_tolerance_ms),
+                            d_assisted_tow_min_cn0_dbhz(conf.assisted_tow_min_cn0_dbhz),
+                            d_ephemeris_frame_phase_offset_rad(conf.ephemeris_mars_frame_phase_offset_rad + conf.ephemeris_mars_frame_phase_offset_s * GNSS_OMEGA_EARTH_DOT),
+                            d_ephemeris_time_offset_s(conf.ephemeris_time_offset_s),
+                            d_assisted_nav_bits_file(conf.assisted_nav_bits_file),
                             d_flag_frame_sync(false),
                             d_flag_preamble(false),
+                            d_flag_assisted_tow_seeded(false),
                             d_sent_tlm_failed_msg(false),
                             d_flag_PLL_180_deg_phase_locked(false),
                             d_flag_TOW_set(false),
@@ -128,8 +199,11 @@ gps_l1_ca_telemetry_decoder_gs::gps_l1_ca_telemetry_decoder_gs(
                             d_remove_dat(conf.remove_dat),
                             d_enable_navdata_monitor(conf.enable_navdata_monitor),
                             d_dump_crc_stats(conf.dump_crc_stats),
-                            d_enable_costas_branch_repair(conf.enable_costas_branch_repair)
+                            d_enable_costas_branch_repair(conf.enable_costas_branch_repair),
+                            d_enable_assisted_tow(conf.enable_assisted_tow)
 {
+    d_assisted_tow_min_preamble_score = std::max(0, std::min(conf.assisted_tow_min_preamble_score, GPS_CA_PREAMBLE_LENGTH_BITS));
+    d_assisted_nav_min_match_bits = std::max(0, std::min(d_assisted_nav_min_match_bits, GPS_SUBFRAME_BITS));
     // prevent telemetry symbols accumulation in output buffers
     this->set_max_noutput_items(1);
     // Ephemeris data port out
@@ -146,6 +220,13 @@ gps_l1_ca_telemetry_decoder_gs::gps_l1_ca_telemetry_decoder_gs(
         }
 
     d_satellite = Gnss_Satellite(satellite.get_system(), satellite.get_PRN());
+    load_assisted_nav_bits(conf.assisted_nav_bits_file);
+    if (std::abs(d_ephemeris_frame_phase_offset_rad) > 0.0 || std::abs(d_ephemeris_time_offset_s) > 0.0)
+        {
+            LOG(INFO) << "GPS L1 telemetry decoder will align decoded ephemerides with frame_phase_rad="
+                      << d_ephemeris_frame_phase_offset_rad
+                      << " ephemeris_time_offset_s=" << d_ephemeris_time_offset_s;
+        }
     DLOG(INFO) << "Initializing GPS L1 TELEMETRY DECODER";
 
     // set the preamble
@@ -249,6 +330,7 @@ void gps_l1_ca_telemetry_decoder_gs::set_satellite(const Gnss_Satellite &satelli
 {
     d_nav = Gps_Navigation_Message();
     d_satellite = Gnss_Satellite(satellite.get_system(), satellite.get_PRN());
+    load_assisted_nav_bits(d_assisted_nav_bits_file);
     DLOG(INFO) << "Setting decoder Finite State Machine to satellite " << d_satellite;
     d_nav.set_satellite_PRN(d_satellite.get_PRN());
     DLOG(INFO) << "Navigation Satellite set to " << d_satellite;
@@ -306,7 +388,11 @@ bool gps_l1_ca_telemetry_decoder_gs::decode_subframe(double cn0, bool flag_inver
         int32_t repair_start{0};
         int32_t repair_length{0};
         int32_t repair_flips{0};
+        int32_t subframe_id{0};
+        int32_t tow_s{0};
         bool all_parity{false};
+        bool structural_ok{false};
+        bool sequence_ok{false};
         bool repaired{false};
     };
 
@@ -391,8 +477,62 @@ bool gps_l1_ca_telemetry_decoder_gs::decode_subframe(double cn0, bool flag_inver
         candidate.last_word = previous_word;
     };
 
+    auto nav_sequence_ok = [&](const DecodeCandidate& candidate) {
+        if (!candidate.structural_ok)
+            {
+                return false;
+            }
+        if (d_last_nav_tow_s <= 0 || d_last_nav_subframe_id <= 0)
+            {
+                return true;
+            }
+
+        constexpr int32_t GPS_WEEK_SECONDS = 604800;
+        constexpr int32_t GPS_SUBFRAME_SECONDS = 6;
+        int32_t tow_delta_s = candidate.tow_s - d_last_nav_tow_s;
+        if (tow_delta_s < 0)
+            {
+                tow_delta_s += GPS_WEEK_SECONDS;
+            }
+        if (tow_delta_s <= 0 || tow_delta_s % GPS_SUBFRAME_SECONDS != 0)
+            {
+                return false;
+            }
+
+        const int32_t subframe_steps = tow_delta_s / GPS_SUBFRAME_SECONDS;
+        if (subframe_steps < 1 || subframe_steps > 5)
+            {
+                return false;
+            }
+        const int32_t expected_subframe_id = ((d_last_nav_subframe_id - 1 + subframe_steps) % 5) + 1;
+        return candidate.subframe_id == expected_subframe_id;
+    };
+
+    auto annotate_candidate = [&](DecodeCandidate& candidate) {
+        candidate.structural_ok = false;
+        candidate.sequence_ok = false;
+        if (!candidate.all_parity)
+            {
+                return;
+            }
+
+        Gps_Navigation_Message nav_probe = d_nav;
+        const int32_t subframe_id = nav_probe.subframe_decoder(candidate.subframe.data());
+        const int32_t tow_s = nav_probe.get_TOW();
+        candidate.subframe_id = subframe_id;
+        candidate.tow_s = tow_s;
+        candidate.structural_ok =
+            subframe_id >= 1 &&
+            subframe_id <= 5 &&
+            tow_s > 0 &&
+            tow_s < 604800 &&
+            tow_s % 6 == 0;
+        candidate.sequence_ok = nav_sequence_ok(candidate);
+    };
+
     DecodeCandidate nominal_candidate;
     assemble_candidate(decoded_bits, nominal_candidate);
+    annotate_candidate(nominal_candidate);
     DecodeCandidate final_candidate = nominal_candidate;
 
     // A Costas loop can remain carrier-locked while slipping between the 0 and
@@ -424,7 +564,8 @@ bool gps_l1_ca_telemetry_decoder_gs::decode_subframe(double cn0, bool flag_inver
 
                                     DecodeCandidate repair_candidate;
                                     assemble_candidate(repaired_bits, repair_candidate);
-                                    if (repair_candidate.all_parity)
+                                    annotate_candidate(repair_candidate);
+                                    if (repair_candidate.all_parity && repair_candidate.structural_ok && repair_candidate.sequence_ok)
                                         {
                                             repair_candidate.repaired = true;
                                             repair_candidate.repair_period = period;
@@ -439,7 +580,7 @@ bool gps_l1_ca_telemetry_decoder_gs::decode_subframe(double cn0, bool flag_inver
                 }
         }
 
-    const bool subframe_synchro_confirmation = final_candidate.all_parity;
+    const bool subframe_synchro_confirmation = final_candidate.all_parity && final_candidate.structural_ok && final_candidate.sequence_ok;
     std::array<char, GPS_SUBFRAME_LENGTH> subframe = final_candidate.subframe;
     if (d_dump_crc_stats)
         {
@@ -471,6 +612,10 @@ bool gps_l1_ca_telemetry_decoder_gs::decode_subframe(double cn0, bool flag_inver
                 << " repair_start=" << final_candidate.repair_start
                 << " repair_length=" << final_candidate.repair_length
                 << " repair_flips=" << final_candidate.repair_flips
+                << " subframe_id=" << final_candidate.subframe_id
+                << " tow_s=" << final_candidate.tow_s
+                << " structural_ok=" << final_candidate.structural_ok
+                << " sequence_ok=" << final_candidate.sequence_ok
                 << " parity_before=" << nominal_candidate.parity_ok
                 << " recovered_bits=" << final_candidate.bits
                 << " raw_recovered_bits=" << nominal_candidate.bits
@@ -518,32 +663,28 @@ bool gps_l1_ca_telemetry_decoder_gs::decode_subframe(double cn0, bool flag_inver
             const int32_t subframe_ID = d_nav.subframe_decoder(subframe.data());  // decode the subframe
             if (subframe_ID > 0 && subframe_ID < 6)
                 {
+                    d_last_nav_subframe_id = subframe_ID;
+                    d_last_nav_tow_s = d_nav.get_TOW();
                     switch (subframe_ID)
                         {
                         case 1:
                             if (d_nav.satellite_validation() == true)
                                 {
-                                    // get ephemeris object for this SV (mandatory)
-                                    const std::shared_ptr<Gps_Ephemeris> tmp_obj = std::make_shared<Gps_Ephemeris>(d_nav.get_ephemeris());
-                                    this->message_port_pub(pmt::mp("telemetry"), pmt::make_any(tmp_obj));
+                                    publish_frame_aligned_ephemeris();
                                 }
 
                             break;
                         case 2:
                             if (d_nav.satellite_validation() == true)
                                 {
-                                    // get ephemeris object for this SV (mandatory)
-                                    const std::shared_ptr<Gps_Ephemeris> tmp_obj = std::make_shared<Gps_Ephemeris>(d_nav.get_ephemeris());
-                                    this->message_port_pub(pmt::mp("telemetry"), pmt::make_any(tmp_obj));
+                                    publish_frame_aligned_ephemeris();
                                 }
 
                             break;
                         case 3:  // we have a new set of ephemeris data for the current SV
                             if (d_nav.satellite_validation() == true)
                                 {
-                                    // get ephemeris object for this SV (mandatory)
-                                    const std::shared_ptr<Gps_Ephemeris> tmp_obj = std::make_shared<Gps_Ephemeris>(d_nav.get_ephemeris());
-                                    this->message_port_pub(pmt::mp("telemetry"), pmt::make_any(tmp_obj));
+                                    publish_frame_aligned_ephemeris();
                                 }
                             break;
                         case 4:  // Possible IONOSPHERE and UTC model update (page 18)
@@ -591,12 +732,48 @@ bool gps_l1_ca_telemetry_decoder_gs::decode_subframe(double cn0, bool flag_inver
 }
 
 
+Gps_Ephemeris gps_l1_ca_telemetry_decoder_gs::get_frame_aligned_ephemeris() const
+{
+    Gps_Ephemeris ephemeris = d_nav.get_ephemeris();
+    if (d_ephemeris_frame_phase_offset_rad == 0.0 && d_ephemeris_time_offset_s == 0.0)
+        {
+            return ephemeris;
+        }
+
+    const double semi_major_axis_m = ephemeris.sqrtA * ephemeris.sqrtA;
+    if (semi_major_axis_m <= 0.0)
+        {
+            return ephemeris;
+        }
+
+    const double mean_motion_rad_s = std::sqrt(GPS_GM / (semi_major_axis_m * semi_major_axis_m * semi_major_axis_m)) + ephemeris.delta_n;
+    ephemeris.M_0 = normalize_gps_angle(ephemeris.M_0 + mean_motion_rad_s * d_ephemeris_time_offset_s);
+    ephemeris.OMEGA_0 = normalize_gps_angle(
+        ephemeris.OMEGA_0 +
+        d_ephemeris_frame_phase_offset_rad +
+        (ephemeris.OMEGAdot - GNSS_OMEGA_EARTH_DOT) * d_ephemeris_time_offset_s);
+    ephemeris.i_0 = normalize_gps_angle(ephemeris.i_0 + ephemeris.idot * d_ephemeris_time_offset_s);
+
+    return ephemeris;
+}
+
+
+void gps_l1_ca_telemetry_decoder_gs::publish_frame_aligned_ephemeris()
+{
+    const std::shared_ptr<Gps_Ephemeris> tmp_obj = std::make_shared<Gps_Ephemeris>(get_frame_aligned_ephemeris());
+    this->message_port_pub(pmt::mp("telemetry"), pmt::make_any(tmp_obj));
+}
+
+
 void gps_l1_ca_telemetry_decoder_gs::reset()
 {
     gr::thread::scoped_lock lock(d_setlock);  // require mutex with work function called by the scheduler
     d_last_valid_preamble = d_sample_counter;
     d_sent_tlm_failed_msg = false;
     d_flag_TOW_set = false;
+    d_flag_assisted_tow_seeded = false;
+    d_last_nav_subframe_id = 0;
+    d_last_nav_tow_s = 0;
     d_symbol_history.clear();
     d_stat = 0;
     DLOG(INFO) << "Telemetry decoder reset for satellite " << d_satellite;
@@ -615,6 +792,269 @@ void gps_l1_ca_telemetry_decoder_gs::check_tlm_separation()
                     d_sent_tlm_failed_msg = true;
                 }
         }
+}
+
+
+void gps_l1_ca_telemetry_decoder_gs::load_assisted_nav_bits(const std::string& nav_bits_file)
+{
+    d_assisted_nav_subframes.clear();
+    if (nav_bits_file.empty())
+        {
+            return;
+        }
+
+    std::ifstream input(nav_bits_file);
+    if (!input.is_open())
+        {
+            LOG(WARNING) << "Could not open assisted GPS L1 NAV bits file " << nav_bits_file;
+            return;
+        }
+
+    std::string line;
+    while (std::getline(input, line))
+        {
+            if (line.empty() || line[0] == '#')
+                {
+                    continue;
+                }
+
+            std::stringstream line_stream(line);
+            std::string prn_text;
+            std::string subframe_text;
+            std::string tow_text;
+            std::string bits;
+            if (!std::getline(line_stream, prn_text, ',') ||
+                !std::getline(line_stream, subframe_text, ',') ||
+                !std::getline(line_stream, tow_text, ',') ||
+                !std::getline(line_stream, bits))
+                {
+                    continue;
+                }
+
+            try
+                {
+                    const int32_t prn = std::stoi(prn_text);
+                    if (prn != static_cast<int32_t>(d_satellite.get_PRN()))
+                        {
+                            continue;
+                        }
+                    if (bits.size() != static_cast<size_t>(GPS_SUBFRAME_BITS))
+                        {
+                            continue;
+                        }
+                    bool valid_bits = true;
+                    for (const char bit : bits)
+                        {
+                            if (bit != '0' && bit != '1')
+                                {
+                                    valid_bits = false;
+                                    break;
+                                }
+                        }
+                    if (!valid_bits)
+                        {
+                            continue;
+                        }
+
+                    AssistedNavSubframe subframe;
+                    subframe.subframe_id = std::stoi(subframe_text);
+                    subframe.tow_at_current_symbol_ms = wrap_gps_week_ms(std::stoll(tow_text));
+                    subframe.bits = std::move(bits);
+                    d_assisted_nav_subframes.push_back(std::move(subframe));
+                }
+            catch (const std::exception&)
+                {
+                    continue;
+                }
+        }
+
+    if (!d_assisted_nav_subframes.empty())
+        {
+            LOG(INFO) << "Loaded " << d_assisted_nav_subframes.size()
+                      << " assisted GPS L1 NAV subframes for " << d_satellite
+                      << " from " << nav_bits_file;
+        }
+}
+
+
+bool gps_l1_ca_telemetry_decoder_gs::try_set_assisted_nav_truth_tow()
+{
+    if (d_assisted_nav_subframes.empty() || d_symbol_history.size() < static_cast<size_t>(GPS_SUBFRAME_BITS))
+        {
+            return false;
+        }
+
+    std::string recovered_bits;
+    recovered_bits.reserve(GPS_SUBFRAME_BITS);
+    for (float subframe_symbol : d_symbol_history)
+        {
+            bool decoded_bit = false;
+            if (d_flag_PLL_180_deg_phase_locked == false)
+                {
+                    decoded_bit = subframe_symbol > 0.0;
+                }
+            else
+                {
+                    decoded_bit = subframe_symbol < 0.0;
+                }
+            recovered_bits.push_back(decoded_bit ? '1' : '0');
+        }
+
+    int32_t best_score = -1;
+    int32_t second_best_score = -1;
+    bool best_inverted = false;
+    const AssistedNavSubframe* best_subframe = nullptr;
+
+    for (const auto& assisted_subframe : d_assisted_nav_subframes)
+        {
+            int32_t normal_score = 0;
+            int32_t inverted_score = 0;
+            for (int32_t bit_index = 0; bit_index < GPS_SUBFRAME_BITS; ++bit_index)
+                {
+                    const char recovered_bit = recovered_bits[static_cast<size_t>(bit_index)];
+                    const char truth_bit = assisted_subframe.bits[static_cast<size_t>(bit_index)];
+                    if (recovered_bit == truth_bit)
+                        {
+                            normal_score++;
+                        }
+                    else
+                        {
+                            inverted_score++;
+                        }
+                }
+
+            auto consider_match = [&](int32_t score, bool inverted) {
+                if (score > best_score)
+                    {
+                        second_best_score = best_score;
+                        best_score = score;
+                        best_inverted = inverted;
+                        best_subframe = &assisted_subframe;
+                    }
+                else if (score > second_best_score)
+                    {
+                        second_best_score = score;
+                    }
+            };
+            consider_match(normal_score, false);
+            consider_match(inverted_score, true);
+        }
+
+    if (best_subframe == nullptr || best_score < d_assisted_nav_min_match_bits)
+        {
+            if (mars_sync_debug_enabled() && mars_sync_debug_prn(d_satellite.get_PRN()))
+                {
+                    std::ostringstream oss;
+                    oss << "MARS_SYNC_DIAG stage=assisted_nav_truth_reject"
+                        << " channel=" << d_channel
+                        << " prn=" << d_satellite.get_PRN()
+                        << " sample_counter=" << d_sample_counter
+                        << " best_score=" << best_score
+                        << " second_best_score=" << second_best_score
+                        << " min_match_bits=" << d_assisted_nav_min_match_bits
+                        << " truth_subframes=" << d_assisted_nav_subframes.size();
+                    mars_sync_debug_line(oss.str());
+                }
+            return false;
+        }
+
+    if (best_inverted)
+        {
+            d_flag_PLL_180_deg_phase_locked = !d_flag_PLL_180_deg_phase_locked;
+        }
+    d_TOW_at_current_symbol_ms = best_subframe->tow_at_current_symbol_ms;
+    d_TOW_at_Preamble_ms = wrap_gps_week_ms(static_cast<int64_t>(best_subframe->tow_at_current_symbol_ms) - GPS_LNAV_SUBFRAME_DURATION_MS);
+    d_last_nav_subframe_id = best_subframe->subframe_id;
+    d_last_nav_tow_s = static_cast<int32_t>(best_subframe->tow_at_current_symbol_ms / 1000U);
+    d_flag_TOW_set = true;
+    d_flag_assisted_tow_seeded = true;
+
+    if (mars_sync_debug_enabled() && mars_sync_debug_prn(d_satellite.get_PRN()))
+        {
+            std::ostringstream oss;
+            oss << "MARS_SYNC_DIAG stage=assisted_nav_truth_accept"
+                << " channel=" << d_channel
+                << " prn=" << d_satellite.get_PRN()
+                << " sample_counter=" << d_sample_counter
+                << " score=" << best_score
+                << " second_best_score=" << second_best_score
+                << " min_match_bits=" << d_assisted_nav_min_match_bits
+                << " inverted=" << best_inverted
+                << " subframe_id=" << best_subframe->subframe_id
+                << " tow_ms=" << d_TOW_at_current_symbol_ms
+                << " preamble_tow_ms=" << d_TOW_at_Preamble_ms;
+            mars_sync_debug_line(oss.str());
+        }
+
+    return true;
+}
+
+
+bool gps_l1_ca_telemetry_decoder_gs::try_set_assisted_tow(const Gnss_Synchro &current_gs)
+{
+    if (!d_enable_assisted_tow || current_gs.fs <= 0 || !current_gs.Flag_valid_symbol_output)
+        {
+            return false;
+        }
+    if (current_gs.CN0_dB_hz < d_assisted_tow_min_cn0_dbhz)
+        {
+            return false;
+        }
+    if (!d_assisted_nav_subframes.empty())
+        {
+            return try_set_assisted_nav_truth_tow();
+        }
+
+    const double rx_elapsed_ms = static_cast<double>(current_gs.Tracking_sample_counter) * 1000.0 / static_cast<double>(current_gs.fs);
+    const double estimated_tx_tow_ms =
+        static_cast<double>(d_assisted_tow_start_ms) + rx_elapsed_ms - d_assisted_tow_light_time_ms;
+    const double nearest_symbol_ms = std::round(estimated_tx_tow_ms / static_cast<double>(GPS_L1_CA_BIT_PERIOD_MS)) * static_cast<double>(GPS_L1_CA_BIT_PERIOD_MS);
+    const double nearest_subframe_ms = std::round(estimated_tx_tow_ms / static_cast<double>(GPS_LNAV_SUBFRAME_DURATION_MS)) * static_cast<double>(GPS_LNAV_SUBFRAME_DURATION_MS);
+    const double boundary_error_ms = std::abs(estimated_tx_tow_ms - nearest_subframe_ms);
+    if (boundary_error_ms > d_assisted_tow_boundary_tolerance_ms)
+        {
+            if (mars_sync_debug_enabled() && mars_sync_debug_prn(d_satellite.get_PRN()))
+                {
+                    std::ostringstream oss;
+                    oss << "MARS_SYNC_DIAG stage=assisted_tow_reject"
+                        << " channel=" << d_channel
+                        << " prn=" << d_satellite.get_PRN()
+                        << " sample_counter=" << d_sample_counter
+                        << " tracking_sample_counter=" << current_gs.Tracking_sample_counter
+                        << " estimated_tx_tow_ms=" << estimated_tx_tow_ms
+                        << " nearest_subframe_ms=" << nearest_subframe_ms
+                        << " boundary_error_ms=" << boundary_error_ms
+                        << " tolerance_ms=" << d_assisted_tow_boundary_tolerance_ms;
+                    mars_sync_debug_line(oss.str());
+                }
+            return false;
+        }
+
+    const auto tow_ms = wrap_gps_week_ms(static_cast<int64_t>(std::llround(nearest_symbol_ms)));
+    d_TOW_at_current_symbol_ms = tow_ms;
+    d_TOW_at_Preamble_ms = wrap_gps_week_ms(static_cast<int64_t>(std::llround(nearest_subframe_ms)) - GPS_LNAV_SUBFRAME_DURATION_MS);
+    d_flag_TOW_set = true;
+    d_flag_assisted_tow_seeded = true;
+
+    if (mars_sync_debug_enabled() && mars_sync_debug_prn(d_satellite.get_PRN()))
+        {
+            std::ostringstream oss;
+            oss << "MARS_SYNC_DIAG stage=assisted_tow_accept"
+                << " channel=" << d_channel
+                << " prn=" << d_satellite.get_PRN()
+                << " sample_counter=" << d_sample_counter
+                << " tracking_sample_counter=" << current_gs.Tracking_sample_counter
+                << " tow_ms=" << d_TOW_at_current_symbol_ms
+                << " preamble_tow_ms=" << d_TOW_at_Preamble_ms
+                << " estimated_tx_tow_ms=" << estimated_tx_tow_ms
+                << " nearest_symbol_ms=" << nearest_symbol_ms
+                << " nearest_subframe_ms=" << nearest_subframe_ms
+                << " boundary_error_ms=" << boundary_error_ms
+                << " light_time_ms=" << d_assisted_tow_light_time_ms;
+            mars_sync_debug_line(oss.str());
+        }
+
+    return true;
 }
 
 
@@ -684,8 +1124,40 @@ void gps_l1_ca_telemetry_decoder_gs::frame_synchronization(const Gnss_Synchro &c
                                     }
                                 d_stat = 1;  // preamble acquired
                             }
+                        else if (try_set_assisted_tow(current_gs))
+                            {
+                                d_CRC_error_counter = 0;
+                                d_last_valid_preamble = d_sample_counter;
+                                if (!d_flag_frame_sync)
+                                    {
+                                        d_flag_frame_sync = true;
+                                        DLOG(INFO) << "Assisted GPS L1 TOW sync SAT " << this->d_satellite;
+                                    }
+                                d_stat = 1;  // preamble timing acquired from the received signal; TOW comes from assistance
+                            }
                     }
-                d_flag_TOW_set = false;
+                else if (d_enable_assisted_tow &&
+                         d_symbol_history.size() >= d_required_symbols &&
+                         std::abs(corr_value) >= d_assisted_tow_min_preamble_score)
+                    {
+                        d_preamble_index = d_sample_counter;
+                        d_flag_PLL_180_deg_phase_locked = corr_value < 0;
+                        if (try_set_assisted_tow(current_gs))
+                            {
+                                d_CRC_error_counter = 0;
+                                d_last_valid_preamble = d_sample_counter;
+                                if (!d_flag_frame_sync)
+                                    {
+                                        d_flag_frame_sync = true;
+                                        DLOG(INFO) << "Assisted GPS L1 TOW sync SAT " << this->d_satellite;
+                                    }
+                                d_stat = 1;
+                            }
+                    }
+                if (!d_flag_assisted_tow_seeded)
+                    {
+                        d_flag_TOW_set = false;
+                    }
                 break;
             }
         case 1:  // preamble acquired
@@ -721,6 +1193,16 @@ void gps_l1_ca_telemetry_decoder_gs::frame_synchronization(const Gnss_Synchro &c
                                         DLOG(INFO) << " Frame sync SAT " << this->d_satellite;
                                     }
                             }
+                        else if (try_set_assisted_tow(current_gs))
+                            {
+                                d_CRC_error_counter = 0;
+                                d_last_valid_preamble = d_sample_counter;
+                                if (!d_flag_frame_sync)
+                                    {
+                                        d_flag_frame_sync = true;
+                                        DLOG(INFO) << "Assisted GPS L1 TOW sync SAT " << this->d_satellite;
+                                    }
+                            }
                         else
                             {
                                 d_CRC_error_counter++;
@@ -743,6 +1225,8 @@ void gps_l1_ca_telemetry_decoder_gs::frame_synchronization(const Gnss_Synchro &c
                                         d_TOW_at_Preamble_ms = 0;
                                         d_CRC_error_counter = 0;
                                         d_flag_TOW_set = false;
+                                        d_last_nav_subframe_id = 0;
+                                        d_last_nav_tow_s = 0;
                                     }
                             }
                     }
@@ -827,6 +1311,7 @@ int gps_l1_ca_telemetry_decoder_gs::general_work(int noutput_items __attribute__
         }
     consume_each(1);
     d_flag_preamble = false;
+    d_flag_assisted_tow_seeded = false;
 
     // check if there is a problem with the telemetry of the current satellite
     check_tlm_separation();
@@ -844,9 +1329,13 @@ int gps_l1_ca_telemetry_decoder_gs::general_work(int noutput_items __attribute__
                     d_flag_TOW_set = true;
                 }
             else
-                {
-                    DLOG(INFO) << "Received GPS L1 TOW equal to zero at sat " << d_nav.get_satellite_PRN();
-                }
+            {
+                DLOG(INFO) << "Received GPS L1 TOW equal to zero at sat " << d_nav.get_satellite_PRN();
+            }
+        }
+    else if (d_flag_assisted_tow_seeded)
+        {
+            // The assisted value already corresponds to the current symbol.
         }
     else
         {
