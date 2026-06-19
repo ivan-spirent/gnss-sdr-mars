@@ -18,6 +18,7 @@ const COLORS = {
   firstFix: "#2f6db5",
   finalFix: "#c2472b",
   error: "#c2472b",
+  horizontalError: "#156c7b",
   iAxis: "#2f6db5",
   qAxis: "#c2472b",
   mixed: "#7a5f12",
@@ -68,6 +69,7 @@ const els = {
   mapCanvas: document.getElementById("mapCanvas"),
   satCanvas: document.getElementById("satCanvas"),
   errorCanvas: document.getElementById("errorCanvas"),
+  horizontalErrorCanvas: document.getElementById("horizontalErrorCanvas"),
   iqCanvas: document.getElementById("iqCanvas"),
   channelTable: document.querySelector("#channelTable tbody"),
   eventList: document.getElementById("eventList"),
@@ -78,6 +80,7 @@ const els = {
   pvtOffset: document.getElementById("pvtOffset"),
   satCountSummary: document.getElementById("satCountSummary"),
   errorSummary: document.getElementById("errorSummary"),
+  horizontalErrorSummary: document.getElementById("horizontalErrorSummary"),
   iqSummary: document.getElementById("iqSummary"),
   channelSummary: document.getElementById("channelSummary")
 };
@@ -722,12 +725,14 @@ function pvtErrorSeries(points = activePvtPoints()) {
     .filter((sample) => Number.isFinite(sample.simTime) && Number.isFinite(sample.error3d));
 }
 
-function pvtErrorStats(points = activePvtPoints()) {
+function pvtErrorStats(points = activePvtPoints(), metric = "error3d") {
   const samples = pvtErrorSeries(points);
   if (!samples.length) return null;
-  const rms = Math.sqrt(samples.reduce((sum, sample) => sum + sample.error3d ** 2, 0) / samples.length);
-  const max = Math.max(...samples.map((sample) => sample.error3d));
-  const final = samples[samples.length - 1].error3d;
+  const values = samples.map((sample) => sample[metric]).filter(Number.isFinite);
+  if (!values.length) return null;
+  const rms = Math.sqrt(values.reduce((sum, value) => sum + value ** 2, 0) / values.length);
+  const max = Math.max(...values);
+  const final = samples[samples.length - 1][metric];
   return { samples, rms, max, final };
 }
 
@@ -1197,21 +1202,8 @@ function renderMap() {
   els.pvtOffset.textContent = stats ? `${finalPositionLabel}, h ${fmtNumber(finalPoint.height, 1)} m` : "";
 }
 
-function renderError() {
-  if (!els.errorCanvas) return;
-  const samples = pvtErrorSeries();
-  if (!samples.length) {
-    if (els.errorSummary) els.errorSummary.textContent = "";
-    drawEmpty(els.errorCanvas, "No PVT positions");
-    return;
-  }
-
-  const stats = pvtErrorStats();
-  if (els.errorSummary) {
-    els.errorSummary.textContent = `RMS ${fmtMeters(stats.rms)} | max ${fmtMeters(stats.max)} | final ${fmtMeters(stats.final)}`;
-  }
-
-  const { ctx, width, height } = resizeCanvas(els.errorCanvas);
+function drawErrorSeriesChart(canvas, samples, metric, axisLabel, color, fillColor) {
+  const { ctx, width, height } = resizeCanvas(canvas);
   ctx.clearRect(0, 0, width, height);
   const left = 64;
   const right = 22;
@@ -1220,7 +1212,7 @@ function renderError() {
   const minTime = Math.min(...samples.map((sample) => sample.simTime));
   const maxTime = Math.max(...samples.map((sample) => sample.simTime));
   const span = maxTime - minTime || 1;
-  const maxError = Math.max(...samples.map((sample) => sample.error3d));
+  const maxError = Math.max(...samples.map((sample) => sample[metric]).filter(Number.isFinite));
   const yMax = niceLimit(maxError * 1.08);
   const useTimeOfDay = samples.some((sample) => sample.timeIsTod);
   const x = (time) => left + ((time - minTime) / span) * (width - left - right);
@@ -1228,7 +1220,7 @@ function renderError() {
 
   ctx.fillStyle = "#fbfcfd";
   ctx.fillRect(0, 0, width, height);
-  drawAxes(ctx, width, height, left, top, right, bottom, useTimeOfDay ? "simulation time" : "time", "3D error");
+  drawAxes(ctx, width, height, left, top, right, bottom, useTimeOfDay ? "simulation time" : "time", axisLabel);
 
   for (let i = 0; i <= 4; i++) {
     const value = (i / 4) * yMax;
@@ -1262,22 +1254,22 @@ function renderError() {
   ctx.beginPath();
   samples.forEach((sample, index) => {
     const px = x(sample.simTime);
-    const py = y(sample.error3d);
+    const py = y(sample[metric]);
     if (index === 0) ctx.moveTo(px, py);
     else ctx.lineTo(px, py);
   });
   ctx.lineTo(x(samples[samples.length - 1].simTime), height - bottom);
   ctx.lineTo(x(samples[0].simTime), height - bottom);
   ctx.closePath();
-  ctx.fillStyle = "rgba(194, 71, 43, 0.11)";
+  ctx.fillStyle = fillColor;
   ctx.fill();
 
-  ctx.strokeStyle = COLORS.error;
+  ctx.strokeStyle = color;
   ctx.lineWidth = 2.25;
   ctx.beginPath();
   samples.forEach((sample, index) => {
     const px = x(sample.simTime);
-    const py = y(sample.error3d);
+    const py = y(sample[metric]);
     if (index === 0) ctx.moveTo(px, py);
     else ctx.lineTo(px, py);
   });
@@ -1292,7 +1284,7 @@ function renderError() {
     ctx.strokeStyle = "#ffffff";
     ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.arc(x(sample.simTime), y(sample.error3d), 4.5, 0, Math.PI * 2);
+    ctx.arc(x(sample.simTime), y(sample[metric]), 4.5, 0, Math.PI * 2);
     ctx.fill();
     ctx.stroke();
   });
@@ -1301,6 +1293,33 @@ function renderError() {
   ctx.font = "11px system-ui, sans-serif";
   ctx.textAlign = "left";
   ctx.fillText(truthLabel(), left, 12);
+}
+
+function renderError() {
+  const samples = pvtErrorSeries();
+  if (!samples.length) {
+    if (els.errorSummary) els.errorSummary.textContent = "";
+    if (els.horizontalErrorSummary) els.horizontalErrorSummary.textContent = "";
+    if (els.errorCanvas) drawEmpty(els.errorCanvas, "No PVT positions");
+    if (els.horizontalErrorCanvas) drawEmpty(els.horizontalErrorCanvas, "No PVT positions");
+    return;
+  }
+
+  const stats3d = pvtErrorStats(activePvtPoints(), "error3d");
+  if (els.errorSummary && stats3d) {
+    els.errorSummary.textContent = `RMS ${fmtMeters(stats3d.rms)} | max ${fmtMeters(stats3d.max)} | final ${fmtMeters(stats3d.final)}`;
+  }
+  if (els.errorCanvas) {
+    drawErrorSeriesChart(els.errorCanvas, samples, "error3d", "3D error", COLORS.error, "rgba(194, 71, 43, 0.11)");
+  }
+
+  const stats2d = pvtErrorStats(activePvtPoints(), "horizontal");
+  if (els.horizontalErrorSummary && stats2d) {
+    els.horizontalErrorSummary.textContent = `RMS ${fmtMeters(stats2d.rms)} | max ${fmtMeters(stats2d.max)} | final ${fmtMeters(stats2d.final)}`;
+  }
+  if (els.horizontalErrorCanvas) {
+    drawErrorSeriesChart(els.horizontalErrorCanvas, samples, "horizontal", "2D error", COLORS.horizontalError, "rgba(21, 108, 123, 0.11)");
+  }
 }
 
 function renderIqDominance() {
