@@ -56,6 +56,8 @@ public:
     float y_intercept{1.0};
     float cn0_smoother_alpha{0.002};
     float carrier_lock_test_smoother_alpha{0.002};
+    float bit_sync_preamble_min_total_evidence_ratio{0.875};
+    float bit_sync_preamble_min_bit_evidence_ratio{0.6};
     uint32_t pull_in_time_s{10U};
     uint32_t bit_synchronization_time_limit_s{20U};
     uint32_t vector_length{0U};

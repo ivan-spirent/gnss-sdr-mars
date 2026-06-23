@@ -18,6 +18,7 @@
 #include "dll_pll_conf.h"
 #include "gnss_sdr_flags.h"
 #include "item_type_helpers.h"
+#include <algorithm>
 
 #if USE_GLOG_AND_GFLAGS
 #include <glog/logging.h>
@@ -124,6 +125,10 @@ void Dll_Pll_Conf::SetFromConfiguration(const ConfigurationInterface *configurat
     fll_bw_hz = configuration->property(role + ".fll_bw_hz", fll_bw_hz);
     pull_in_time_s = configuration->property(role + ".pull_in_time_s", pull_in_time_s);
     bit_synchronization_time_limit_s = configuration->property(role + ".bit_synchronization_time_limit_s", bit_synchronization_time_limit_s);
+    bit_sync_preamble_min_total_evidence_ratio = configuration->property(role + ".bit_sync_preamble_min_total_evidence_ratio", bit_sync_preamble_min_total_evidence_ratio);
+    bit_sync_preamble_min_total_evidence_ratio = std::min(std::max(bit_sync_preamble_min_total_evidence_ratio, 0.0F), 1.0F);
+    bit_sync_preamble_min_bit_evidence_ratio = configuration->property(role + ".bit_sync_preamble_min_bit_evidence_ratio", bit_sync_preamble_min_bit_evidence_ratio);
+    bit_sync_preamble_min_bit_evidence_ratio = std::min(std::max(bit_sync_preamble_min_bit_evidence_ratio, 0.0F), 1.0F);
     early_late_space_chips = configuration->property(role + ".early_late_space_chips", early_late_space_chips);
     early_late_space_narrow_chips = configuration->property(role + ".early_late_space_narrow_chips", early_late_space_narrow_chips);
     very_early_late_space_chips = configuration->property(role + ".very_early_late_space_chips", very_early_late_space_chips);

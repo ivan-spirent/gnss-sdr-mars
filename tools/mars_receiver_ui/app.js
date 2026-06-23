@@ -32,11 +32,10 @@ const COLORS = {
 
 const DEFAULT_SOURCES = {
   log: [
-    "/build/gnss_sdr_gps_like_iau_probe.log",
-    "/build/gnss_sdr_run_fixed.log"
+    "/build/gnss_sdr_gps_like_runtime_orbit_corrected_no_frame.log"
   ],
   nmea: ["/build/gnss_sdr_pvt.nmea"],
-  geojson: ["/build/latest_pvt.geojson", "/build/PVT_260617_142203.geojson"],
+  geojson: ["/build/gps_like_runtime_orbit_corrected_no_frame_geojson/latest_pvt.geojson"],
   iq: ["/build/gnss_sdr_gps_like_iq_summary.json"]
 };
 

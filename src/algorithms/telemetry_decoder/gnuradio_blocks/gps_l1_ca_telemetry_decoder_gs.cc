@@ -185,6 +185,7 @@ gps_l1_ca_telemetry_decoder_gs::gps_l1_ca_telemetry_decoder_gs(
                             d_assisted_tow_light_time_ms(conf.assisted_tow_light_time_ms),
                             d_assisted_tow_boundary_tolerance_ms(conf.assisted_tow_boundary_tolerance_ms),
                             d_assisted_tow_min_cn0_dbhz(conf.assisted_tow_min_cn0_dbhz),
+                            d_apply_ephemeris_frame_alignment(conf.apply_ephemeris_frame_alignment),
                             d_ephemeris_frame_phase_offset_rad(conf.ephemeris_mars_frame_phase_offset_rad + conf.ephemeris_mars_frame_phase_offset_s * GNSS_OMEGA_EARTH_DOT),
                             d_ephemeris_time_offset_s(conf.ephemeris_time_offset_s),
                             d_assisted_nav_bits_file(conf.assisted_nav_bits_file),
@@ -221,11 +222,16 @@ gps_l1_ca_telemetry_decoder_gs::gps_l1_ca_telemetry_decoder_gs(
 
     d_satellite = Gnss_Satellite(satellite.get_system(), satellite.get_PRN());
     load_assisted_nav_bits(conf.assisted_nav_bits_file);
-    if (std::abs(d_ephemeris_frame_phase_offset_rad) > 0.0 || std::abs(d_ephemeris_time_offset_s) > 0.0)
+    if ((std::abs(d_ephemeris_frame_phase_offset_rad) > 0.0 || std::abs(d_ephemeris_time_offset_s) > 0.0) &&
+        d_apply_ephemeris_frame_alignment)
         {
             LOG(INFO) << "GPS L1 telemetry decoder will align decoded ephemerides with frame_phase_rad="
                       << d_ephemeris_frame_phase_offset_rad
                       << " ephemeris_time_offset_s=" << d_ephemeris_time_offset_s;
+        }
+    else if (std::abs(d_ephemeris_frame_phase_offset_rad) > 0.0 || std::abs(d_ephemeris_time_offset_s) > 0.0)
+        {
+            LOG(INFO) << "GPS L1 telemetry decoder ephemeris frame alignment is disabled; decoded broadcast ephemerides will be published without frame/time offsets";
         }
     DLOG(INFO) << "Initializing GPS L1 TELEMETRY DECODER";
 
@@ -735,7 +741,8 @@ bool gps_l1_ca_telemetry_decoder_gs::decode_subframe(double cn0, bool flag_inver
 Gps_Ephemeris gps_l1_ca_telemetry_decoder_gs::get_frame_aligned_ephemeris() const
 {
     Gps_Ephemeris ephemeris = d_nav.get_ephemeris();
-    if (d_ephemeris_frame_phase_offset_rad == 0.0 && d_ephemeris_time_offset_s == 0.0)
+    if (!d_apply_ephemeris_frame_alignment ||
+        (d_ephemeris_frame_phase_offset_rad == 0.0 && d_ephemeris_time_offset_s == 0.0))
         {
             return ephemeris;
         }

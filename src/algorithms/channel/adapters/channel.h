@@ -107,10 +107,12 @@ private:
     std::string role_;
     std::mutex mx_;
     uint32_t channel_;
+    int acquisition_doppler_center_hz_;
     int glonass_extend_correlation_ms_;
     bool connected_;
     bool repeat_;
     bool flag_enable_fpga_;
+    bool has_acquisition_doppler_center_;
 };
 
 

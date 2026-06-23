@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mars Range Residual Viewer</title>
+  <link rel="stylesheet" href="./styles.css?v=20260623">
+</head>
+<body>
+  <header class="topbar">
+    <div class="title-block">
+      <h1>Mars Range Residual Viewer</h1>
+      <p id="statusLine">Loading post-fit range residuals...</p>
+    </div>
+    <div class="toolbar">
+      <button id="reloadButton" class="primary">Reload</button>
+      <button id="toggleUsedOnly">Used PRNs</button>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="summary-grid" aria-label="Residual summary">
+      <article class="metric">
+        <span class="label">Residual RMS</span>
+        <strong id="residualRms">-</strong>
+        <span id="residualNote" class="note">-</span>
+      </article>
+      <article class="metric">
+        <span class="label">Late East Drift</span>
+        <strong id="eastDrift">-</strong>
+        <span id="eastNote" class="note">-</span>
+      </article>
+      <article class="metric">
+        <span class="label">Worst Trend</span>
+        <strong id="worstTrend">-</strong>
+        <span id="worstTrendNote" class="note">-</span>
+      </article>
+      <article class="metric">
+        <span class="label">Selected PRN</span>
+        <strong id="selectedMetric">-</strong>
+        <span id="selectedMetricNote" class="note">-</span>
+      </article>
+    </section>
+
+    <section class="panel span-12">
+      <div class="panel-head">
+        <h2>Post-Fit Range Residuals</h2>
+        <span id="residualChartNote" class="muted">predicted range minus simulator range</span>
+      </div>
+      <canvas id="residualCanvas" height="320"></canvas>
+      <div id="residualLegend" class="legend"></div>
+    </section>
+
+    <section class="panel span-12">
+      <div class="panel-head">
+        <h2>Receiver East Error</h2>
+        <span id="eastChartNote" class="muted">from NMEA against Mars 30 deg, 30 deg, 30 m truth</span>
+      </div>
+      <canvas id="eastCanvas" height="240"></canvas>
+    </section>
+
+    <section class="panel span-7">
+      <div class="panel-head">
+        <h2>Selected PRN Detail</h2>
+        <span id="selectedPrnLabel" class="muted">click a PRN row</span>
+      </div>
+      <canvas id="selectedCanvas" height="260"></canvas>
+    </section>
+
+    <section class="panel span-5">
+      <div class="panel-head">
+        <h2>Drift Ranking</h2>
+        <span class="muted">late window slope and east correlation</span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>PRN</th>
+              <th>Late Slope</th>
+              <th>Late RMS</th>
+              <th>East Corr.</th>
+              <th>Used</th>
+            </tr>
+          </thead>
+          <tbody id="rankingRows"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="./app.js?v=20260623"></script>
+</body>
+</html>

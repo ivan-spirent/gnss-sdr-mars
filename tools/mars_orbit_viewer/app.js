@@ -29,22 +29,18 @@ const PRN_COLORS = [
 ];
 
 const DEFAULT_GEOJSON_SOURCES = [
-  "/build/latest_pvt.geojson",
-  "/build/PVT_260617_142203.geojson"
+  "/build/gps_like_runtime_orbit_corrected_no_frame_geojson/latest_pvt.geojson"
 ];
 
 const DEFAULT_SCENARIO_SOURCES = {
   xml: [
-    "/Mars-GPS-like-5min/GPS_orbits_mars%201.gps",
-    "/Scenario%20Data/GPS_Mars.gps"
+    "/Mars-GPS-like-5min/GPS_orbits_mars%201.gps"
   ],
   sat: [
-    "/Mars-GPS-like-5min/sat_data_V1A1.csv",
-    "/Scenario%20Data/sat_data_V1A1.csv"
+    "/Mars-GPS-like-5min/sat_data_V1A1.csv"
   ],
   motion: [
-    "/Mars-GPS-like-5min/motion_V1.csv",
-    "/Scenario%20Data/motion_V1.csv"
+    "/Mars-GPS-like-5min/motion_V1.csv"
   ]
 };
 
@@ -537,7 +533,7 @@ function createSceneObjects() {
   meshes.receiver = makeSphere(110, COLORS.receiver, 24);
   meshes.receiver.position.copy(receiverPos);
   marsGroup.add(meshes.receiver);
-  meshes.receiverLabel = makeLabel("RX 30/30", "#bdf4ed");
+  meshes.receiverLabel = makeLabel("RX 0/0", "#bdf4ed");
   meshes.receiverLabel.position.copy(receiverPos.clone().multiplyScalar(1.06));
   labelGroup.add(meshes.receiverLabel);
 
@@ -933,7 +929,7 @@ async function loadDefaults() {
   state.data = { orbits, epochs, motion, pvt, capturedPrns, nmeaUsed, receiverFixes };
   state.currentIndex = Math.max(0, Math.min(state.currentIndex, epochs.length - 1));
   state.selectedPrn = capturedPrns.includes(state.selectedPrn) ? state.selectedPrn : capturedPrns[0];
-  const scenarioName = xmlSource.url.includes("Mars-GPS-like-5min") ? "GPS-like 5 min" : "Mars SPIR";
+  const scenarioName = "GPS-like 5 min, runtime orbit corrected, frame offsets off";
   els.statusLine.textContent = `${scenarioName}: ${orbits.length} XML satellites, ${capturedPrns.length} captured PRNs, ${epochs.length} scenario epochs`;
   createSceneObjects();
   resize();

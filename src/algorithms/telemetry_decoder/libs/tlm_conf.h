@@ -51,6 +51,7 @@ public:
     double assisted_tow_light_time_ms{100.0};
     double assisted_tow_boundary_tolerance_ms{120.0};
     double assisted_tow_min_cn0_dbhz{0.0};
+    bool apply_ephemeris_frame_alignment{true};
     double ephemeris_mars_frame_phase_offset_s{0.0};
     double ephemeris_mars_frame_phase_offset_rad{0.0};
     double ephemeris_time_offset_s{0.0};

@@ -37,6 +37,7 @@ void Tlm_Conf::SetFromConfiguration(const ConfigurationInterface *configuration,
     assisted_tow_light_time_ms = configuration->property(role + ".assisted_tow_light_time_ms", assisted_tow_light_time_ms);
     assisted_tow_boundary_tolerance_ms = configuration->property(role + ".assisted_tow_boundary_tolerance_ms", assisted_tow_boundary_tolerance_ms);
     assisted_tow_min_cn0_dbhz = configuration->property(role + ".assisted_tow_min_cn0_dbhz", assisted_tow_min_cn0_dbhz);
+    apply_ephemeris_frame_alignment = configuration->property(role + ".apply_ephemeris_frame_alignment", apply_ephemeris_frame_alignment);
     ephemeris_mars_frame_phase_offset_s = configuration->property(role + ".ephemeris_mars_frame_phase_offset_s", ephemeris_mars_frame_phase_offset_s);
     ephemeris_mars_frame_phase_offset_rad = configuration->property(role + ".ephemeris_mars_frame_phase_offset_rad", ephemeris_mars_frame_phase_offset_rad);
     ephemeris_time_offset_s = configuration->property(role + ".ephemeris_time_offset_s", ephemeris_time_offset_s);

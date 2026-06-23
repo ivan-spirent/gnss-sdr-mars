@@ -149,6 +149,12 @@ def main():
         default=None,
         help="Optional TOE/TOW to write after advancing M0 from the scenario TOA. By default, keep each satellite's source TOA.",
     )
+    parser.add_argument(
+        "--max-sqrt-a",
+        type=float,
+        default=0.0,
+        help="Optional maximum SQRT_A filter. Values <= 0 disable filtering.",
+    )
     args = parser.parse_args()
 
     root = ET.parse(args.input).getroot()
@@ -157,7 +163,7 @@ def main():
         if text_of(satellite, "enabled", "no").lower() != "yes":
             continue
         sqrt_a = float_of(satellite, "SQRT_A")
-        if sqrt_a >= 4000.0:
+        if args.max_sqrt_a > 0.0 and sqrt_a >= args.max_sqrt_a:
             continue
         ephemerides.append(ephemeris_from_satellite(satellite, args.target_toe))
 

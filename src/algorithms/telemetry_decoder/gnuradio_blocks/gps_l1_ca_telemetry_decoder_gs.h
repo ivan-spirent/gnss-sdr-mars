@@ -121,6 +121,7 @@ private:
     double d_assisted_tow_light_time_ms;
     double d_assisted_tow_boundary_tolerance_ms;
     double d_assisted_tow_min_cn0_dbhz;
+    bool d_apply_ephemeris_frame_alignment;
     double d_ephemeris_frame_phase_offset_rad;
     double d_ephemeris_time_offset_s;
     std::string d_assisted_nav_bits_file;

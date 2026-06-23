@@ -1075,8 +1075,10 @@ bool dll_pll_veml_tracking::acquire_secondary()
 
     const int32_t corr_abs = std::abs(corr_value);
     const bool exact_symbol_lock = corr_abs == static_cast<int32_t>(d_secondary_code_length);
-    const int32_t majority_evidence_threshold = (static_cast<int32_t>(d_secondary_code_length) * 7 + 7) / 8;  // 87.5%.
-    const int32_t per_bit_evidence_threshold = (d_symbols_per_bit * 3 + 4) / 5;                              // 60%.
+    const int32_t majority_evidence_threshold = static_cast<int32_t>(std::ceil(
+        static_cast<float>(d_secondary_code_length) * d_trk_parameters.bit_sync_preamble_min_total_evidence_ratio));
+    const int32_t per_bit_evidence_threshold = static_cast<int32_t>(std::ceil(
+        static_cast<float>(d_symbols_per_bit) * d_trk_parameters.bit_sync_preamble_min_bit_evidence_ratio));
     const bool bit_majority_lock =
         bit_sync_preamble &&
         std::abs(bit_corr_value) == bits_in_preamble &&

@@ -1097,6 +1097,11 @@ void Rtklib_Solver::correct_code_phase_ms_ambiguities(int obs_count)
 
     if (correction_obs.size() < 4U)
         {
+            if (std::getenv("GNSS_SDR_MARS_PVT_DEBUG") != nullptr)
+                {
+                    LOG(INFO) << "Code-phase ms ambiguity correction skipped: usable_gps_l1c_obs="
+                              << correction_obs.size();
+                }
             return;
         }
 
@@ -1108,6 +1113,7 @@ void Rtklib_Solver::correct_code_phase_ms_ambiguities(int obs_count)
         }
     const double raw_bias = median_or_zero(raw_diffs);
     const double raw_rms = residual_rms(raw_diffs, raw_bias);
+    const bool pvt_debug = std::getenv("GNSS_SDR_MARS_PVT_DEBUG") != nullptr;
 
     const int max_ms = d_conf.code_phase_ms_ambiguity_max_ms;
     const double range_per_ms_m = SPEED_OF_LIGHT_M_MS;
@@ -1174,6 +1180,21 @@ void Rtklib_Solver::correct_code_phase_ms_ambiguities(int obs_count)
         best_rms > d_conf.code_phase_ms_ambiguity_residual_threshold_m ||
         raw_rms - best_rms < d_conf.code_phase_ms_ambiguity_min_improvement_m)
         {
+            if (pvt_debug)
+                {
+                    std::string residuals_msg;
+                    for (size_t i = 0; i < correction_obs.size(); ++i)
+                        {
+                            residuals_msg += " G" + std::to_string(correction_obs[i].prn) +
+                                             ":" + std::to_string(raw_diffs[i] - raw_bias);
+                        }
+                    LOG(INFO) << "Code-phase ms ambiguity correction rejected: raw_rms_m=" << raw_rms
+                              << " best_rms_m=" << best_rms
+                              << " raw_bias_m=" << raw_bias
+                              << " threshold_m=" << d_conf.code_phase_ms_ambiguity_residual_threshold_m
+                              << " min_improvement_m=" << d_conf.code_phase_ms_ambiguity_min_improvement_m
+                              << " centered_residuals_m=" << residuals_msg;
+                }
             return;
         }
 

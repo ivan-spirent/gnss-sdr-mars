@@ -22,6 +22,7 @@
 #include "gnss_sdr_flags.h"
 #include "telemetry_decoder_interface.h"
 #include "tracking_interface.h"
+#include <limits>
 #include <stdexcept>  // for std::invalid_argument
 #include <utility>    // for std::move
 
@@ -44,10 +45,12 @@ Channel::Channel(const ConfigurationInterface* configuration,
       nav_(std::move(nav)),
       role_(role),
       channel_(channel),
+      acquisition_doppler_center_hz_(0),
       glonass_extend_correlation_ms_(configuration->property("Tracking_1G.extend_correlation_ms", 0) + configuration->property("Tracking_2G.extend_correlation_ms", 0)),
       connected_(false),
       repeat_(configuration->property("Acquisition_" + signal_str + ".repeat_satellite", false)),
-      flag_enable_fpga_(configuration->property("GNSS-SDR.enable_FPGA", false))
+      flag_enable_fpga_(configuration->property("GNSS-SDR.enable_FPGA", false)),
+      has_acquisition_doppler_center_(false)
 {
     channel_fsm_ = std::make_shared<ChannelFsm>();
 
@@ -94,6 +97,13 @@ Channel::Channel(const ConfigurationInterface* configuration,
 #endif
     DLOG(INFO) << "Channel " << channel_ << " Doppler_step = " << doppler_step;
 
+    uint32_t doppler_max = configuration->property("Acquisition_" + signal_str + std::to_string(channel_) + ".doppler_max", 0);
+    if (doppler_max != 0)
+        {
+            DLOG(INFO) << "Channel " << channel_ << " Doppler_max = " << doppler_max;
+            acq_->set_doppler_max(doppler_max);
+        }
+
     acq_->set_doppler_step(doppler_step);
 
     float threshold = configuration->property("Acquisition_" + signal_str + std::to_string(channel_) + ".threshold", static_cast<float>(0.0));
@@ -103,6 +113,18 @@ Channel::Channel(const ConfigurationInterface* configuration,
         }
 
     acq_->set_threshold(threshold);
+
+    constexpr int unset_doppler_center = std::numeric_limits<int>::min();
+    int configured_doppler_center = configuration->property("Acquisition_" + signal_str + ".doppler_center", unset_doppler_center);
+    configured_doppler_center = configuration->property("Acquisition_" + signal_str + std::to_string(channel_) + ".doppler_center", configured_doppler_center);
+    if (configured_doppler_center != unset_doppler_center)
+        {
+            has_acquisition_doppler_center_ = true;
+            acquisition_doppler_center_hz_ = configured_doppler_center;
+            acq_->set_doppler_center(acquisition_doppler_center_hz_);
+            LOG(INFO) << "Channel " << channel_ << " configured acquisition Doppler center "
+                      << acquisition_doppler_center_hz_ << " Hz";
+        }
 
     // MARS - 6 Feb 2026
     LOG(INFO) << "Channel " << channel_ << " initializing acquisition ("
@@ -270,6 +292,11 @@ void Channel::stop_channel()
 
 void Channel::assist_acquisition_doppler(double Carrier_Doppler_hz)
 {
+    if (Carrier_Doppler_hz == 0.0 && has_acquisition_doppler_center_)
+        {
+            acq_->set_doppler_center(acquisition_doppler_center_hz_);
+            return;
+        }
     acq_->set_doppler_center(static_cast<int>(Carrier_Doppler_hz));
 }
 
