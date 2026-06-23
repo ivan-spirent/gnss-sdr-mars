@@ -9,7 +9,7 @@ const TRUTH = { lat: 30, lon: 30, height: 30 };
 const SOURCES = {
   satData: "/Mars-GPS-like-5min/sat_data_V1A1.csv",
   ephemeris: "/gps_mars_gps_like_5min_nav_ephemeris.xml",
-  corrections: "/gps_mars_gps_like_5min_ephemeris_corrections_no_frame_wide.csv",
+  corrections: "/gps_mars_gps_like_5min_ephemeris_corrections_no_frame_dynamic.csv",
   nmea: "/build/gnss_sdr_pvt.nmea"
 };
 
@@ -162,36 +162,49 @@ function parseEphemerisXml(text) {
 function parseCorrections(text) {
   const corrections = new Map();
   for (const line of text.split(/\r?\n/)) {
-    const trimmed = line.trim();
+    const trimmed = line.split("#", 1)[0].trim();
     if (!trimmed || trimmed.startsWith("#")) continue;
     const values = trimmed.split(",").map((value) => value.trim());
     const prn = parseNumber(values[0]);
     if (!Number.isFinite(prn)) continue;
-    corrections.set(prn, {
-      deltaM0: parseNumber(values[1], 0),
-      deltaOmega0: parseNumber(values[2], 0),
-      deltaI0: parseNumber(values[3], 0),
-      deltaOmega: parseNumber(values[4], 0),
-      deltaSqrtA: parseNumber(values[5], 0)
-    });
+    if (values.length >= 12) {
+      corrections.set(prn, {
+        referenceTowS: parseNumber(values[1], 0),
+        deltaM0: parseNumber(values[2], 0),
+        deltaOmega0: parseNumber(values[3], 0),
+        deltaI0: parseNumber(values[4], 0),
+        deltaOmega: parseNumber(values[5], 0),
+        deltaSqrtA: parseNumber(values[6], 0),
+        deltaM0Rate: parseNumber(values[7], 0),
+        deltaOmega0Rate: parseNumber(values[8], 0),
+        deltaI0Rate: parseNumber(values[9], 0),
+        deltaOmegaRate: parseNumber(values[10], 0),
+        deltaSqrtARate: parseNumber(values[11], 0)
+      });
+    } else if (values.length >= 6) {
+      corrections.set(prn, {
+        deltaM0: parseNumber(values[1], 0),
+        deltaOmega0: parseNumber(values[2], 0),
+        deltaI0: parseNumber(values[3], 0),
+        deltaOmega: parseNumber(values[4], 0),
+        deltaSqrtA: parseNumber(values[5], 0)
+      });
+    }
   }
   return corrections;
 }
 
-function correctedEphemerides(ephemerides, corrections) {
-  const result = new Map();
-  for (const [prn, eph] of ephemerides.entries()) {
-    const correction = corrections.get(prn) || {};
-    result.set(prn, {
-      ...eph,
-      M_0: eph.M_0 + (correction.deltaM0 || 0),
-      OMEGA_0: eph.OMEGA_0 + (correction.deltaOmega0 || 0),
-      i_0: eph.i_0 + (correction.deltaI0 || 0),
-      omega: eph.omega + (correction.deltaOmega || 0),
-      sqrtA: eph.sqrtA + (correction.deltaSqrtA || 0)
-    });
-  }
-  return result;
+function correctedEphemeris(eph, correction = {}, timeS = NaN) {
+  const referenceTowS = Number.isFinite(correction.referenceTowS) ? correction.referenceTowS : timeS;
+  const dt = Number.isFinite(timeS) && Number.isFinite(referenceTowS) ? timeS - referenceTowS : 0;
+  return {
+    ...eph,
+    M_0: eph.M_0 + (correction.deltaM0 || 0) + (correction.deltaM0Rate || 0) * dt,
+    OMEGA_0: eph.OMEGA_0 + (correction.deltaOmega0 || 0) + (correction.deltaOmega0Rate || 0) * dt,
+    i_0: eph.i_0 + (correction.deltaI0 || 0) + (correction.deltaI0Rate || 0) * dt,
+    omega: eph.omega + (correction.deltaOmega || 0) + (correction.deltaOmegaRate || 0) * dt,
+    sqrtA: eph.sqrtA + (correction.deltaSqrtA || 0) + (correction.deltaSqrtARate || 0) * dt
+  };
 }
 
 function normalizeAngle(angle) {
@@ -262,7 +275,7 @@ function geometricRange(a, b) {
   return Math.hypot(a.x - b.x, a.y - b.y, a.z - b.z);
 }
 
-function computeResiduals(satRows, ephemerides) {
+function computeResiduals(satRows, ephemerides, corrections) {
   const receiver = marsGeodeticToEcef(TRUTH.lat, TRUTH.lon, TRUTH.height);
   const byPrn = new Map();
   const all = [];
@@ -270,7 +283,7 @@ function computeResiduals(satRows, ephemerides) {
     const eph = ephemerides.get(row.prn);
     if (!eph) continue;
     const timeS = row.towMs / 1000;
-    const sat = satellitePosition(eph, timeS);
+    const sat = satellitePosition(correctedEphemeris(eph, corrections.get(row.prn), timeS), timeS);
     const residual = geometricRange(sat, receiver) - row.rangeM;
     const sample = {
       prn: row.prn,
@@ -705,8 +718,8 @@ async function loadDefaults() {
   ]);
 
   const satRows = parseSatData(satText);
-  const ephemerides = correctedEphemerides(parseEphemerisXml(ephText), parseCorrections(correctionText));
-  const residualResult = computeResiduals(satRows, ephemerides);
+  const corrections = parseCorrections(correctionText);
+  const residualResult = computeResiduals(satRows, parseEphemerisXml(ephText), corrections);
   state.residualsByPrn = residualResult.byPrn;
   state.residuals = residualResult.all;
   state.pvt = parseNmea(nmeaText).sort((a, b) => a.x - b.x);

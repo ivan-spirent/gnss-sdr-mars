@@ -348,9 +348,41 @@ GPS-like 5 minute validation after PVT ephemeris corrections:
   - 3D final: 38.4 m
 - `build/latest_pvt.geojson` now points at `PVT_260619_161428.geojson`, and both web UIs load the corrected full-run NMEA and GeoJSON outputs.
 
+GPS-like dynamic no-frame orbit-correction validation:
+
+- A new dynamic correction path was added to `PVT.gps_ephemeris_corrections_file`.
+- Static correction rows remain supported. Dynamic rows add a per-PRN GPS TOW reference plus linear rates for `M_0`, `OMEGA_0`, `i_0`, `omega`, and `sqrtA`.
+- The correction is applied at each observation epoch using `interp_TOW_ms` from the observables, with `TOW_at_current_symbol_ms` as a fallback. This keeps the model tied to GPS time.
+- `utils/scripts/fit_mars_gps_like_dynamic_ephemeris_corrections.py` generated `gps_mars_gps_like_5min_ephemeris_corrections_no_frame_dynamic.csv` from simulator ranges at the 30 deg, 30 deg, 30 m truth point.
+- In sampled simulator range space, the static no-frame correction residual improved from 11.445 m RMS to 0.164 m RMS after adding the dynamic rates.
+- Full dynamic corrected fixed-height 2D replay completed normally in 113.94 s.
+- PVT points: 551.
+- PVT observations: 5 to 7.
+- NMEA sentence counts:
+  - GGA: 551
+  - GSA: 551
+  - GSV: 1102
+- GSA satellites used across the run: PRNs 02, 04, 05, 09, 10, 12, 14, 24, and 30.
+- Final fix:
+  - Time: 2026-Mar-02 00:34:41.500000 UTC
+  - Latitude: 29.999944 deg
+  - Longitude: 29.999773 deg
+  - Height: 31.00 m
+  - Observations: 7
+- Error against 30 deg latitude, 30 deg longitude, and 30 m height:
+  - 2D RMS: 11.859 m
+  - 2D maximum: 14.454 m
+  - 2D final: 12.100 m
+  - 3D RMS: 11.926 m
+  - 3D maximum: 14.622 m
+  - 3D final: 12.142 m
+- The remaining error is a small mostly horizontal bias. The previous late-run growth to roughly 40 m final error is removed.
+- The receiver, orbit, and residual web UIs now default to the dynamic no-frame orbit-corrected run.
+
 ## Known Limitations and Follow-Up
 
 - For the GPS-like 5 minute capture, the kilometre-class 2D PVT error is addressed by applying simulator-derived orbit-fit corrections after normal NAV acceptance. This is generic for future Spirent Mars captures that include equivalent satellite range/orbit logs, but it still depends on those logs being available.
+- The dynamic correction is still a simulator-derived orbit product, not a hard-coded receiver position and not a NAV acceptance bypass. A fully standalone operational solution would require the broadcast LNAV parameters themselves, or an external precise-orbit product, to be dynamically consistent with the simulator/SPICE trajectory.
 - A complete standalone receiver fix would require broadcast NAV parameters that are dynamically consistent with the I/Q generator, or a precise ephemeris/orbit-correction product generated from the same SPICE trajectories used by the simulator.
 - The older Mars-SPIR scenario still has separate telemetry/Costas-branch mitigation work and should not be conflated with the GPS-like orbit-fit correction result.
 - `TelemetryDecoder_1C.enable_costas_branch_repair` is intentionally opt-in. It is enabled in the Mars configs, but remains disabled by default for normal GNSS-SDR use.
@@ -365,6 +397,12 @@ Normal Mars replay from repository root:
 
 ```sh
 ./build/src/main/gnss-sdr --config_file=./conf/File_input/GPS/gnss-sdr_GPS_L1_CA_Mars_SPIR.conf
+```
+
+GPS-like 5 minute dynamic no-frame orbit-corrected replay from repository root:
+
+```sh
+HOME=/tmp ./build/src/main/gnss-sdr --config_file=./conf/File_input/GPS/gnss-sdr_GPS_L1_CA_Mars_GPS_like_5min_dynamic_orbit_corrected_no_frame.conf
 ```
 
 Telemetry diagnostic replay from repository root:

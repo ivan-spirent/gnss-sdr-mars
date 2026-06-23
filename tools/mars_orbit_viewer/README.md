@@ -16,10 +16,10 @@ http://127.0.0.1:8767/tools/mars_orbit_viewer/
 
 Default data sources:
 
-- `/Scenario Data/GPS_Mars.gps`
-- `/Scenario Data/sat_data_V1A1.csv`
-- `/Scenario Data/motion_V1.csv`
-- `/build/latest_pvt.geojson`
+- `/Mars-GPS-like-5min/GPS_orbits_mars 1.gps`
+- `/Mars-GPS-like-5min/sat_data_V1A1.csv`
+- `/Mars-GPS-like-5min/motion_V1.csv`
+- `/build/gps_like_dynamic_orbit_corrected_no_frame_geojson/latest_pvt.geojson`
 - `/build/gnss_sdr_pvt.nmea`
 
 Three.js is vendored in `vendor/` with its MIT license.

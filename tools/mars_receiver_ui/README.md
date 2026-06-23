@@ -16,9 +16,9 @@ http://127.0.0.1:8770/tools/mars_receiver_ui/
 
 The `Load build outputs` button reads:
 
-- `/build/gnss_sdr_gps_like_runtime_orbit_corrected_no_frame.log`
+- `/build/gnss_sdr_gps_like_dynamic_orbit_corrected_no_frame.log`
 - `/build/gnss_sdr_pvt.nmea`
-- `/build/gps_like_runtime_orbit_corrected_no_frame_geojson/latest_pvt.geojson`
+- `/build/gps_like_dynamic_orbit_corrected_no_frame_geojson/latest_pvt.geojson`
 - `/build/gnss_sdr_gps_like_iq_summary.json`
 
 The file pickers can load a different receiver log, NMEA file, or GeoJSON trajectory.

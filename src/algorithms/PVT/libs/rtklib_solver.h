@@ -130,11 +130,18 @@ public:
 private:
     struct Gps_Ephemeris_Correction
     {
+        double reference_tow_s = 0.0;
         double delta_m0_rad = 0.0;
         double delta_omega0_rad = 0.0;
         double delta_i0_rad = 0.0;
         double delta_omega_rad = 0.0;
         double delta_sqrtA = 0.0;
+        double delta_m0_rate_rad_s = 0.0;
+        double delta_omega0_rate_rad_s = 0.0;
+        double delta_i0_rate_rad_s = 0.0;
+        double delta_omega_rate_rad_s = 0.0;
+        double delta_sqrtA_rate_s = 0.0;
+        bool has_dynamic_terms = false;
     };
 
     bool save_matfile() const;
@@ -144,7 +151,7 @@ private:
     void get_current_has_obs_correction(const std::string& signal, uint32_t tow_obs, int prn);
     void correct_code_phase_ms_ambiguities(int obs_count);
     void load_gps_ephemeris_corrections(const std::string& file_path);
-    Gps_Ephemeris apply_gps_ephemeris_correction(const Gps_Ephemeris& ephemeris) const;
+    Gps_Ephemeris apply_gps_ephemeris_correction(const Gps_Ephemeris& ephemeris, double tow_s) const;
 
     std::array<obsd_t, MAXOBS> d_obs_data{};
     std::array<double, 4> d_dop{};

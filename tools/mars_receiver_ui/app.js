@@ -32,10 +32,10 @@ const COLORS = {
 
 const DEFAULT_SOURCES = {
   log: [
-    "/build/gnss_sdr_gps_like_runtime_orbit_corrected_no_frame.log"
+    "/build/gnss_sdr_gps_like_dynamic_orbit_corrected_no_frame.log"
   ],
   nmea: ["/build/gnss_sdr_pvt.nmea"],
-  geojson: ["/build/gps_like_runtime_orbit_corrected_no_frame_geojson/latest_pvt.geojson"],
+  geojson: ["/build/gps_like_dynamic_orbit_corrected_no_frame_geojson/latest_pvt.geojson"],
   iq: ["/build/gnss_sdr_gps_like_iq_summary.json"]
 };
 
@@ -428,7 +428,7 @@ function parseLog(text) {
       state.pvtLog.push(point);
       state.satCounts.push({
         source: "pvt",
-        time: currentSec,
+        time: Number.isFinite(point.utcSeconds) ? point.utcSeconds : currentSec,
         count: point.observations
       });
       addEvent({
@@ -693,18 +693,25 @@ function truthLabel() {
   return `truth ${fmtNumber(TRUTH_POSITION.lat, 6)}, ${fmtNumber(TRUTH_POSITION.lon, 6)}, h ${fmtNumber(TRUTH_POSITION.height, 0)} m`;
 }
 
-function pvtErrorSeries(points = activePvtPoints()) {
+function localEnuFromTruth(position) {
   const truth = marsGeodeticToCartesian(TRUTH_POSITION.lat, TRUTH_POSITION.lon, TRUTH_POSITION.height);
+  const lat = TRUTH_POSITION.lat * DEG_TO_RAD;
+  const lon = TRUTH_POSITION.lon * DEG_TO_RAD;
+  const dx = position.x - truth.x;
+  const dy = position.y - truth.y;
+  const dz = position.z - truth.z;
+  const east = -Math.sin(lon) * dx + Math.cos(lon) * dy;
+  const north = -Math.sin(lat) * Math.cos(lon) * dx - Math.sin(lat) * Math.sin(lon) * dy + Math.cos(lat) * dz;
+  const up = Math.cos(lat) * Math.cos(lon) * dx + Math.cos(lat) * Math.sin(lon) * dy + Math.sin(lat) * dz;
+  return { east, north, up };
+}
+
+function pvtErrorSeries(points = activePvtPoints()) {
   return points
     .map((point, index) => {
       const height = Number.isFinite(point.height) ? point.height : 0;
       const position = marsGeodeticToCartesian(point.lat, point.lon, height);
-      const east = (point.lon - TRUTH_POSITION.lon) * DEG_TO_RAD * MARS_EQUATORIAL_RADIUS_M * Math.cos(TRUTH_POSITION.lat * DEG_TO_RAD);
-      const north = (point.lat - TRUTH_POSITION.lat) * DEG_TO_RAD * MARS_EQUATORIAL_RADIUS_M;
-      const up = height - TRUTH_POSITION.height;
-      const dx = position.x - truth.x;
-      const dy = position.y - truth.y;
-      const dz = position.z - truth.z;
+      const { east, north, up } = localEnuFromTruth(position);
       const simTime = Number.isFinite(point.utcSeconds)
         ? point.utcSeconds
         : Number.isFinite(point.time)
@@ -718,7 +725,7 @@ function pvtErrorSeries(points = activePvtPoints()) {
         north,
         up,
         horizontal: Math.hypot(east, north),
-        error3d: Math.hypot(dx, dy, dz)
+        error3d: Math.hypot(east, north, up)
       };
     })
     .filter((sample) => Number.isFinite(sample.simTime) && Number.isFinite(sample.error3d));
@@ -735,6 +742,33 @@ function pvtErrorStats(points = activePvtPoints(), metric = "error3d") {
   return { samples, rms, max, final };
 }
 
+function satCountSourceLabel(source) {
+  if (source === "nmea") return "NMEA GGA";
+  if (source === "pvt") return "PVT log";
+  if (source === "observables") return "observables";
+  return source || "samples";
+}
+
+function activeSatCountSeries() {
+  const priority = ["nmea", "pvt", "observables"];
+  const source = priority.find((candidate) =>
+    state.satCounts.some((point) => point.source === candidate && Number.isFinite(point.time) && Number.isFinite(point.count))
+  );
+  if (!source) return { source: "", counts: [] };
+
+  const byTime = new Map();
+  state.satCounts
+    .filter((point) => point.source === source && Number.isFinite(point.time) && Number.isFinite(point.count))
+    .forEach((point) => {
+      const key = point.time.toFixed(3);
+      byTime.set(key, point);
+    });
+  return {
+    source,
+    counts: [...byTime.values()].sort((a, b) => a.time - b.time)
+  };
+}
+
 function niceLimit(value) {
   if (!Number.isFinite(value) || value <= 0) return 1;
   const exponent = Math.floor(Math.log10(value));
@@ -748,7 +782,8 @@ function renderSummary() {
   const points = activePvtPoints();
   const errorStats = pvtErrorStats(points);
   const firstFix = state.pvtLog.find((point) => point.fixType === "first") || points[0];
-  const maxObs = Math.max(0, ...state.satCounts.map((point) => point.count || 0));
+  const satSeries = activeSatCountSeries();
+  const maxObs = Math.max(0, ...satSeries.counts.map((point) => point.count || 0));
   const maxCn0 = Math.max(0, ...state.navMessages.map((event) => event.cn0 || 0));
   const channels = [...state.channels.values()].length;
   const navCount = state.navMessages.filter((event) => event.source !== "nmea").length;
@@ -1429,9 +1464,7 @@ function renderIqDominance() {
 }
 
 function renderSatCounts() {
-  const counts = state.satCounts
-    .filter((point) => Number.isFinite(point.time) && Number.isFinite(point.count))
-    .sort((a, b) => a.time - b.time);
+  const { source, counts } = activeSatCountSeries();
 
   if (!counts.length) {
     els.satCountSummary.textContent = "";
@@ -1445,9 +1478,11 @@ function renderSatCounts() {
   const right = 18;
   const top = 18;
   const bottom = 32;
-  const maxTime = Math.max(1, ...counts.map((point) => point.time));
+  const minTime = Math.min(...counts.map((point) => point.time));
+  const maxTime = Math.max(...counts.map((point) => point.time));
+  const span = maxTime - minTime || 1;
   const maxCount = Math.max(4, ...counts.map((point) => point.count));
-  const x = (time) => left + (time / maxTime) * (width - left - right);
+  const x = (time) => left + ((time - minTime) / span) * (width - left - right);
   const y = (value) => height - bottom - (value / maxCount) * (height - top - bottom);
 
   ctx.fillStyle = "#fbfcfd";
@@ -1466,24 +1501,39 @@ function renderSatCounts() {
     ctx.fillText(String(i), left - 8, y(i) + 4);
   }
 
-  const groups = ["observables", "pvt", "nmea"];
-  const palette = { observables: COLORS.start, pvt: COLORS.pvt, nmea: COLORS.nmea };
-  groups.forEach((group) => {
-    const series = counts.filter((point) => point.source === group);
-    if (!series.length) return;
-    ctx.strokeStyle = palette[group];
-    ctx.lineWidth = 2;
+  const tickCount = width < 520 ? 2 : 4;
+  const useTimeOfDay = source === "pvt" && minTime >= 0 && maxTime <= 86400;
+  for (let i = 0; i <= tickCount; i++) {
+    const time = minTime + (i / tickCount) * span;
+    const gx = x(time);
+    ctx.strokeStyle = "#edf2f4";
     ctx.beginPath();
-    series.forEach((point, index) => {
-      const px = x(point.time);
-      const py = y(point.count);
-      if (index === 0) ctx.moveTo(px, py);
-      else ctx.lineTo(px, py);
-    });
+    ctx.moveTo(gx, top);
+    ctx.lineTo(gx, height - bottom);
     ctx.stroke();
-  });
+    ctx.fillStyle = COLORS.muted;
+    ctx.font = "11px system-ui, sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText(useTimeOfDay ? fmtTimeOfDay(time) : fmtSeconds(time - minTime), gx, height - 12);
+  }
 
-  els.satCountSummary.textContent = `max ${Math.max(...counts.map((point) => point.count))}`;
+  ctx.strokeStyle = COLORS.pvt;
+  ctx.lineWidth = 2.25;
+  ctx.beginPath();
+  counts.forEach((point, index) => {
+    const px = x(point.time);
+    const py = y(point.count);
+    if (index === 0) ctx.moveTo(px, py);
+    else ctx.lineTo(px, py);
+  });
+  ctx.stroke();
+
+  ctx.fillStyle = COLORS.muted;
+  ctx.font = "11px system-ui, sans-serif";
+  ctx.textAlign = "left";
+  ctx.fillText(satCountSourceLabel(source), left, 12);
+
+  els.satCountSummary.textContent = `${satCountSourceLabel(source)} | max ${Math.max(...counts.map((point) => point.count))}`;
 }
 
 function renderChannelTable() {

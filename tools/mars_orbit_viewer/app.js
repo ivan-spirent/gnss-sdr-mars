@@ -29,7 +29,7 @@ const PRN_COLORS = [
 ];
 
 const DEFAULT_GEOJSON_SOURCES = [
-  "/build/gps_like_runtime_orbit_corrected_no_frame_geojson/latest_pvt.geojson"
+  "/build/gps_like_dynamic_orbit_corrected_no_frame_geojson/latest_pvt.geojson"
 ];
 
 const DEFAULT_SCENARIO_SOURCES = {
