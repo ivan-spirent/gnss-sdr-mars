@@ -4,9 +4,9 @@ const MARS_RADIUS_M = MARS_EQUATORIAL_RADIUS_M;
 const MARS_FLATTENING = (MARS_EQUATORIAL_RADIUS_M - MARS_POLAR_RADIUS_M) / MARS_EQUATORIAL_RADIUS_M;
 const DEG_TO_RAD = Math.PI / 180;
 const TRUTH_POSITION = {
-  lat: 30,
-  lon: 30,
-  height: 30
+  lat: 0,
+  lon: 0,
+  height: 0
 };
 const COLORS = {
   start: "#2f6db5",
@@ -32,11 +32,11 @@ const COLORS = {
 
 const DEFAULT_SOURCES = {
   log: [
-    "/build/gnss_sdr_gps_like_dynamic_orbit_corrected_no_frame.log"
+    "/build/gnss_sdr_molli_external_truth_3d.log"
   ],
-  nmea: ["/build/gnss_sdr_pvt.nmea"],
-  geojson: ["/build/gps_like_dynamic_orbit_corrected_no_frame_geojson/latest_pvt.geojson"],
-  iq: ["/build/gnss_sdr_gps_like_iq_summary.json"]
+  nmea: ["/build/gnss_sdr_molli_external_truth_3d_pvt.nmea"],
+  geojson: ["/build/molli_external_truth_satpos_3d_geojson/latest_pvt.geojson"],
+  iq: ["/build/gnss_sdr_molli_iq_summary.json"]
 };
 
 const state = {

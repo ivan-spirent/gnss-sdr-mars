@@ -114,7 +114,8 @@ void Rtklib_Solver::load_gps_ephemeris_corrections(const std::string& file_path)
 
     std::string line;
     int loaded = 0;
-    int dynamic_loaded = 0;
+    int linear_loaded = 0;
+    int true_dynamic_loaded = 0;
     while (std::getline(input, line))
         {
             const auto comment_pos = line.find('#');
@@ -147,6 +148,19 @@ void Rtklib_Solver::load_gps_ephemeris_corrections(const std::string& file_path)
                     correction.delta_omega_rad = values[3];
                     correction.delta_sqrtA = values[4];
                 }
+            else if (values.size() == 6)
+                {
+                    correction.reference_tow_s = values[0];
+                    correction.delta_m0_rad = values[1];
+                    correction.delta_omega0_rad = values[2];
+                    correction.delta_i0_rad = values[3];
+                    correction.delta_omega_rad = values[4];
+                    correction.delta_sqrtA = values[5];
+                    d_gps_ephemeris_true_dynamic_corrections[prn].push_back(correction);
+                    true_dynamic_loaded++;
+                    loaded++;
+                    continue;
+                }
             else if (values.size() == 11)
                 {
                     correction.reference_tow_s = values[0];
@@ -161,7 +175,7 @@ void Rtklib_Solver::load_gps_ephemeris_corrections(const std::string& file_path)
                     correction.delta_omega_rate_rad_s = values[9];
                     correction.delta_sqrtA_rate_s = values[10];
                     correction.has_dynamic_terms = true;
-                    dynamic_loaded++;
+                    linear_loaded++;
                 }
             else
                 {
@@ -173,20 +187,67 @@ void Rtklib_Solver::load_gps_ephemeris_corrections(const std::string& file_path)
             loaded++;
         }
 
+    for (auto& [prn, corrections] : d_gps_ephemeris_true_dynamic_corrections)
+        {
+            std::sort(corrections.begin(), corrections.end(),
+                [](const auto& left, const auto& right) {
+                    return left.reference_tow_s < right.reference_tow_s;
+                });
+        }
+
     LOG(INFO) << "Loaded " << loaded << " GPS ephemeris correction rows from " << file_path
-              << " (" << dynamic_loaded << " dynamic)";
+              << " (" << linear_loaded << " linear fit, "
+              << true_dynamic_loaded << " true dynamic samples)";
 }
 
 
 Gps_Ephemeris Rtklib_Solver::apply_gps_ephemeris_correction(const Gps_Ephemeris& ephemeris, double tow_s) const
 {
+    Gps_Ephemeris_Correction correction;
+    bool has_correction = false;
+    const auto true_dynamic_iter = d_gps_ephemeris_true_dynamic_corrections.find(ephemeris.PRN);
+    if (true_dynamic_iter != d_gps_ephemeris_true_dynamic_corrections.cend() && !true_dynamic_iter->second.empty())
+        {
+            const auto& corrections = true_dynamic_iter->second;
+            has_correction = true;
+            if ((!std::isfinite(tow_s)) || corrections.size() == 1 || tow_s <= corrections.front().reference_tow_s)
+                {
+                    correction = corrections.front();
+                }
+            else if (tow_s >= corrections.back().reference_tow_s)
+                {
+                    correction = corrections.back();
+                }
+            else
+                {
+                    const auto upper = std::lower_bound(corrections.cbegin(), corrections.cend(), tow_s,
+                        [](const auto& sample, double time_s) {
+                            return sample.reference_tow_s < time_s;
+                        });
+                    const auto lower = upper - 1;
+                    const double span_s = upper->reference_tow_s - lower->reference_tow_s;
+                    const double weight = span_s > 0.0 ? (tow_s - lower->reference_tow_s) / span_s : 0.0;
+
+                    correction.reference_tow_s = tow_s;
+                    correction.delta_m0_rad = lower->delta_m0_rad + (upper->delta_m0_rad - lower->delta_m0_rad) * weight;
+                    correction.delta_omega0_rad = lower->delta_omega0_rad + (upper->delta_omega0_rad - lower->delta_omega0_rad) * weight;
+                    correction.delta_i0_rad = lower->delta_i0_rad + (upper->delta_i0_rad - lower->delta_i0_rad) * weight;
+                    correction.delta_omega_rad = lower->delta_omega_rad + (upper->delta_omega_rad - lower->delta_omega_rad) * weight;
+                    correction.delta_sqrtA = lower->delta_sqrtA + (upper->delta_sqrtA - lower->delta_sqrtA) * weight;
+                }
+        }
+
     const auto correction_iter = d_gps_ephemeris_corrections.find(ephemeris.PRN);
-    if (correction_iter == d_gps_ephemeris_corrections.cend())
+    if (!has_correction && correction_iter == d_gps_ephemeris_corrections.cend())
         {
             return ephemeris;
         }
 
-    const auto& correction = correction_iter->second;
+    if (!has_correction)
+        {
+            correction = correction_iter->second;
+        }
+
     const double correction_dt_s = (correction.has_dynamic_terms && std::isfinite(tow_s)) ? tow_s - correction.reference_tow_s : 0.0;
 
     Gps_Ephemeris corrected = ephemeris;
@@ -211,7 +272,14 @@ Rtklib_Solver::Rtklib_Solver(const rtk_t &rtk,
                              d_flag_dump_enabled(flag_dump_to_file),
                              d_flag_dump_mat_enabled(flag_dump_to_mat)
 {
-    load_gps_ephemeris_corrections(d_conf.gps_ephemeris_corrections_file);
+    if (d_conf.enable_gps_ephemeris_corrections)
+        {
+            load_gps_ephemeris_corrections(d_conf.gps_ephemeris_corrections_file);
+        }
+    else if (!d_conf.gps_ephemeris_corrections_file.empty())
+        {
+            LOG(INFO) << "GPS ephemeris corrections disabled by PVT.enable_gps_ephemeris_corrections=false";
+        }
 
     // see freq index at src/algorithms/libs/rtklib/rtklib_rtkcmn.cc
     // function: satwavelen

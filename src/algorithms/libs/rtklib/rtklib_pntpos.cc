@@ -39,11 +39,366 @@
 #include "rtklib_sbas.h"
 #include <armadillo>
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <cstdlib>
 #include <cstring>
+#include <exception>
+#include <fstream>
 #include <iostream>
+#include <map>
+#include <sstream>
+#include <string>
 #include <vector>
+
+namespace
+{
+struct ExternalSatTruthSample
+{
+    double tow_s = 0.0;
+    std::array<double, 3> pos{};
+    std::array<double, 3> vel{};
+};
+
+struct ExternalSatTruthCache
+{
+    std::string sat_file;
+    std::string motion_file;
+    bool attempted = false;
+    bool valid = false;
+    std::map<int, std::vector<ExternalSatTruthSample>> sat_samples;
+    std::vector<ExternalSatTruthSample> receiver_samples;
+};
+
+std::vector<std::string> split_csv_fields(const std::string& line)
+{
+    std::vector<std::string> fields;
+    std::string field;
+    std::istringstream stream(line);
+    while (std::getline(stream, field, ','))
+        {
+            if (!field.empty() && field.back() == '\r')
+                {
+                    field.pop_back();
+                }
+            fields.push_back(field);
+        }
+    return fields;
+}
+
+
+int column_index(const std::vector<std::string>& header, const std::string& name)
+{
+    for (size_t i = 0; i < header.size(); ++i)
+        {
+            if (header[i] == name)
+                {
+                    return static_cast<int>(i);
+                }
+        }
+    return -1;
+}
+
+
+bool read_csv_header(std::ifstream& input, std::vector<std::string>& header)
+{
+    std::string line;
+    while (std::getline(input, line))
+        {
+            if (line.rfind("TOW_ms,", 0) == 0)
+                {
+                    header = split_csv_fields(line);
+                    return true;
+                }
+        }
+    return false;
+}
+
+
+bool parse_double_field(const std::vector<std::string>& fields, int index, double& value)
+{
+    if (index < 0 || static_cast<size_t>(index) >= fields.size())
+        {
+            return false;
+        }
+    try
+        {
+            value = std::stod(fields[static_cast<size_t>(index)]);
+        }
+    catch (const std::exception&)
+        {
+            return false;
+        }
+    return true;
+}
+
+
+bool load_receiver_motion(const std::string& file_path, std::vector<ExternalSatTruthSample>& samples)
+{
+    std::ifstream input(file_path);
+    if (!input.is_open())
+        {
+            std::cerr << "Unable to open external receiver motion file " << file_path << '\n';
+            return false;
+        }
+
+    std::vector<std::string> header;
+    if (!read_csv_header(input, header))
+        {
+            std::cerr << "Unable to find TOW_ms header in external receiver motion file " << file_path << '\n';
+            return false;
+        }
+
+    const int tow_idx = column_index(header, "TOW_ms");
+    const int pos_x_idx = column_index(header, "Pos_X");
+    const int pos_y_idx = column_index(header, "Pos_Y");
+    const int pos_z_idx = column_index(header, "Pos_Z");
+    const int vel_x_idx = column_index(header, "Vel_X");
+    const int vel_y_idx = column_index(header, "Vel_Y");
+    const int vel_z_idx = column_index(header, "Vel_Z");
+    if (tow_idx < 0 || pos_x_idx < 0 || pos_y_idx < 0 || pos_z_idx < 0 ||
+        vel_x_idx < 0 || vel_y_idx < 0 || vel_z_idx < 0)
+        {
+            std::cerr << "External receiver motion file is missing required columns: " << file_path << '\n';
+            return false;
+        }
+
+    std::string line;
+    while (std::getline(input, line))
+        {
+            const auto fields = split_csv_fields(line);
+            double tow_ms = 0.0;
+            ExternalSatTruthSample sample;
+            if (!parse_double_field(fields, tow_idx, tow_ms) ||
+                !parse_double_field(fields, pos_x_idx, sample.pos[0]) ||
+                !parse_double_field(fields, pos_y_idx, sample.pos[1]) ||
+                !parse_double_field(fields, pos_z_idx, sample.pos[2]) ||
+                !parse_double_field(fields, vel_x_idx, sample.vel[0]) ||
+                !parse_double_field(fields, vel_y_idx, sample.vel[1]) ||
+                !parse_double_field(fields, vel_z_idx, sample.vel[2]))
+                {
+                    continue;
+                }
+            sample.tow_s = tow_ms * 0.001;
+            samples.push_back(sample);
+        }
+
+    std::sort(samples.begin(), samples.end(),
+        [](const auto& left, const auto& right) {
+            return left.tow_s < right.tow_s;
+        });
+    return !samples.empty();
+}
+
+
+bool load_satellite_truth(const std::string& file_path, std::map<int, std::vector<ExternalSatTruthSample>>& samples_by_prn)
+{
+    std::ifstream input(file_path);
+    if (!input.is_open())
+        {
+            std::cerr << "Unable to open external satellite position file " << file_path << '\n';
+            return false;
+        }
+
+    std::vector<std::string> header;
+    if (!read_csv_header(input, header))
+        {
+            std::cerr << "Unable to find TOW_ms header in external satellite position file " << file_path << '\n';
+            return false;
+        }
+
+    const int tow_idx = column_index(header, "TOW_ms");
+    const int prn_idx = column_index(header, "Sat_PRN");
+    const int pos_x_idx = column_index(header, "Sat_Pos_X");
+    const int pos_y_idx = column_index(header, "Sat_Pos_Y");
+    const int pos_z_idx = column_index(header, "Sat_Pos_Z");
+    const int vel_x_idx = column_index(header, "Sat_Vel_X");
+    const int vel_y_idx = column_index(header, "Sat_Vel_Y");
+    const int vel_z_idx = column_index(header, "Sat_Vel_Z");
+    if (tow_idx < 0 || prn_idx < 0 || pos_x_idx < 0 || pos_y_idx < 0 || pos_z_idx < 0 ||
+        vel_x_idx < 0 || vel_y_idx < 0 || vel_z_idx < 0)
+        {
+            std::cerr << "External satellite position file is missing required columns: " << file_path << '\n';
+            return false;
+        }
+
+    std::string line;
+    while (std::getline(input, line))
+        {
+            const auto fields = split_csv_fields(line);
+            double tow_ms = 0.0;
+            double prn_value = 0.0;
+            ExternalSatTruthSample sample;
+            if (!parse_double_field(fields, tow_idx, tow_ms) ||
+                !parse_double_field(fields, prn_idx, prn_value) ||
+                !parse_double_field(fields, pos_x_idx, sample.pos[0]) ||
+                !parse_double_field(fields, pos_y_idx, sample.pos[1]) ||
+                !parse_double_field(fields, pos_z_idx, sample.pos[2]) ||
+                !parse_double_field(fields, vel_x_idx, sample.vel[0]) ||
+                !parse_double_field(fields, vel_y_idx, sample.vel[1]) ||
+                !parse_double_field(fields, vel_z_idx, sample.vel[2]))
+                {
+                    continue;
+                }
+            sample.tow_s = tow_ms * 0.001;
+            samples_by_prn[static_cast<int>(std::lround(prn_value))].push_back(sample);
+        }
+
+    for (auto& [prn, samples] : samples_by_prn)
+        {
+            std::sort(samples.begin(), samples.end(),
+                [](const auto& left, const auto& right) {
+                    return left.tow_s < right.tow_s;
+                });
+        }
+    return !samples_by_prn.empty();
+}
+
+
+ExternalSatTruthCache& external_sat_truth_cache(const prcopt_t* opt)
+{
+    static ExternalSatTruthCache cache;
+    const std::string sat_file(opt->external_sat_positions_file);
+    const std::string motion_file(opt->external_receiver_motion_file);
+    if (cache.attempted && cache.sat_file == sat_file && cache.motion_file == motion_file)
+        {
+            return cache;
+        }
+
+    cache = {};
+    cache.sat_file = sat_file;
+    cache.motion_file = motion_file;
+    cache.attempted = true;
+    cache.valid = load_satellite_truth(sat_file, cache.sat_samples) &&
+                  load_receiver_motion(motion_file, cache.receiver_samples);
+    if (cache.valid)
+        {
+            size_t sat_rows = 0;
+            for (const auto& item : cache.sat_samples)
+                {
+                    sat_rows += item.second.size();
+                }
+            std::cerr << "Loaded external satellite truth: " << sat_rows
+                      << " satellite samples and " << cache.receiver_samples.size()
+                      << " receiver samples\n";
+        }
+    return cache;
+}
+
+
+bool interpolate_external_sample(const std::vector<ExternalSatTruthSample>& samples,
+    double tow_s,
+    double tolerance_s,
+    ExternalSatTruthSample& output)
+{
+    if (samples.empty())
+        {
+            return false;
+        }
+
+    if (tow_s <= samples.front().tow_s)
+        {
+            if (std::fabs(tow_s - samples.front().tow_s) > tolerance_s)
+                {
+                    return false;
+                }
+            output = samples.front();
+            output.tow_s = tow_s;
+            return true;
+        }
+
+    if (tow_s >= samples.back().tow_s)
+        {
+            if (std::fabs(tow_s - samples.back().tow_s) > tolerance_s)
+                {
+                    return false;
+                }
+            output = samples.back();
+            output.tow_s = tow_s;
+            return true;
+        }
+
+    const auto upper = std::lower_bound(samples.cbegin(), samples.cend(), tow_s,
+        [](const auto& sample, double time_s) {
+            return sample.tow_s < time_s;
+        });
+    const auto lower = upper - 1;
+    const double span_s = upper->tow_s - lower->tow_s;
+    if (span_s <= 0.0 || span_s > std::max(1.0, tolerance_s * 2.0))
+        {
+            return false;
+        }
+
+    const double weight = (tow_s - lower->tow_s) / span_s;
+    output.tow_s = tow_s;
+    for (int i = 0; i < 3; ++i)
+        {
+            output.pos[i] = lower->pos[i] + (upper->pos[i] - lower->pos[i]) * weight;
+            output.vel[i] = lower->vel[i] + (upper->vel[i] - lower->vel[i]) * weight;
+        }
+    return true;
+}
+
+
+void apply_external_sat_truth(gtime_t time,
+    const obsd_t* obs,
+    int n,
+    const prcopt_t* opt,
+    double* rs,
+    double* var,
+    int* svh)
+{
+    if (!opt->external_sat_positions ||
+        opt->external_sat_positions_file[0] == '\0' ||
+        opt->external_receiver_motion_file[0] == '\0')
+        {
+            return;
+        }
+
+    auto& cache = external_sat_truth_cache(opt);
+    if (!cache.valid)
+        {
+            return;
+        }
+
+    const double tow_s = time2gpst(time, nullptr);
+    const double tolerance_s = opt->external_sat_positions_time_tolerance_s;
+    ExternalSatTruthSample receiver_sample;
+    if (!interpolate_external_sample(cache.receiver_samples, tow_s, tolerance_s, receiver_sample))
+        {
+            return;
+        }
+
+    for (int i = 0; i < n; ++i)
+        {
+            int prn = 0;
+            if (satsys(obs[i].sat, &prn) != SYS_GPS)
+                {
+                    continue;
+                }
+            const auto sat_iter = cache.sat_samples.find(prn);
+            if (sat_iter == cache.sat_samples.cend())
+                {
+                    continue;
+                }
+
+            ExternalSatTruthSample sat_sample;
+            if (!interpolate_external_sample(sat_iter->second, tow_s, tolerance_s, sat_sample))
+                {
+                    continue;
+                }
+
+            for (int axis = 0; axis < 3; ++axis)
+                {
+                    rs[i * 6 + axis] = opt->external_sat_positions_receiver_ecef[axis] +
+                                       (sat_sample.pos[axis] - receiver_sample.pos[axis]);
+                    rs[i * 6 + axis + 3] = sat_sample.vel[axis] - receiver_sample.vel[axis];
+                }
+            var[i] = 1.0;
+            svh[i] = 0;
+        }
+}
+}  // namespace
 
 /* pseudorange measurement error variance ------------------------------------*/
 double varerr(const prcopt_t *opt, double el, int sys)
@@ -1389,6 +1744,7 @@ int pntpos(const obsd_t *obs, int n, const nav_t *nav,
         }
     /* satellite positions, velocities and clocks */
     satposs(sol->time, obs, n, nav, opt_.sateph, rs, dts, var, svh.data());
+    apply_external_sat_truth(sol->time, obs, n, &opt_, rs, var, svh.data());
 
     /* estimate receiver position with pseudorange */
     stat = estpos(obs, n, rs, dts, var, svh.data(), nav, &opt_, sol, azel_, vsat.data(), resp, msg);

@@ -27,6 +27,7 @@
 #include "pvt_conf.h"                  // for Pvt_Conf
 #include "rtklib_rtkcmn.h"             // for pos2ecef
 #include "rtklib_rtkpos.h"             // for rtkfree, rtkinit
+#include <cstring>                     // for std::strncpy
 #include <iostream>                    // for std::cout
 #include <utility>                     // for std::move
 #if USE_GLOG_AND_GFLAGS
@@ -826,6 +827,8 @@ Rtklib_Pvt::Rtklib_Pvt(const ConfigurationInterface* configuration,
     pvt_output_parameters.initial_height_m = initial_position_llh[2];
     pvt_output_parameters.enable_code_phase_ms_ambiguity_correction =
         configuration->property(role + ".enable_code_phase_ms_ambiguity_correction", false);
+    pvt_output_parameters.enable_gps_ephemeris_corrections =
+        configuration->property(role + ".enable_gps_ephemeris_corrections", true);
     pvt_output_parameters.code_phase_ms_ambiguity_max_ms =
         configuration->property(role + ".code_phase_ms_ambiguity_max_ms", 5);
     if (pvt_output_parameters.code_phase_ms_ambiguity_max_ms < 0)
@@ -848,6 +851,16 @@ Rtklib_Pvt::Rtklib_Pvt(const ConfigurationInterface* configuration,
     if (fixed_height_2d_mode)
         {
             pos2ecef(initial_position_llh, initial_position_ecef);
+        }
+    double configured_receiver_ecef[3] = {};
+    pos2ecef(initial_position_llh, configured_receiver_ecef);
+    const bool enable_external_sat_positions = configuration->property(role + ".enable_external_sat_positions", false);
+    const std::string external_sat_positions_file = configuration->property(role + ".external_sat_positions_file", std::string(""));
+    const std::string external_receiver_motion_file = configuration->property(role + ".external_receiver_motion_file", std::string(""));
+    double external_sat_positions_time_tolerance_s = configuration->property(role + ".external_sat_positions_time_tolerance_s", 2.0);
+    if (external_sat_positions_time_tolerance_s < 0.0)
+        {
+            external_sat_positions_time_tolerance_s = 0.0;
         }
 
     snrmask_t snrmask = {{}, {{}, {}}};
@@ -915,8 +928,24 @@ Rtklib_Pvt::Rtklib_Pvt(const ConfigurationInterface* configuration,
         fixed_height_2d_mode,                                                              /* enable constrained 2D solution with fixed ellipsoidal height */
         fixed_height_2d_m,                                                                 /* fixed ellipsoidal height [m] */
         fixed_height_2d_sigma_m,                                                           /* fixed-height constraint sigma [m] */
-        fixed_height_2d_min_observations                                                   /* minimum observations required for fixed-height 2D PVT */
+        fixed_height_2d_min_observations,                                                  /* minimum observations required for fixed-height 2D PVT */
+        false,                                                                             /* use external simulator satellite positions for diagnostic PVT */
+        {},                                                                                /* external satellite data CSV */
+        {},                                                                                /* external receiver motion CSV */
+        {},                                                                                /* external receiver truth point in ECEF */
+        2.0                                                                                /* external sample interpolation tolerance [s] */
     };
+    rtklib_configuration_options.external_sat_positions = enable_external_sat_positions;
+    std::strncpy(rtklib_configuration_options.external_sat_positions_file,
+        external_sat_positions_file.c_str(),
+        sizeof(rtklib_configuration_options.external_sat_positions_file) - 1);
+    std::strncpy(rtklib_configuration_options.external_receiver_motion_file,
+        external_receiver_motion_file.c_str(),
+        sizeof(rtklib_configuration_options.external_receiver_motion_file) - 1);
+    rtklib_configuration_options.external_sat_positions_receiver_ecef[0] = configured_receiver_ecef[0];
+    rtklib_configuration_options.external_sat_positions_receiver_ecef[1] = configured_receiver_ecef[1];
+    rtklib_configuration_options.external_sat_positions_receiver_ecef[2] = configured_receiver_ecef[2];
+    rtklib_configuration_options.external_sat_positions_time_tolerance_s = external_sat_positions_time_tolerance_s;
 
     rtkinit(&rtk, &rtklib_configuration_options);
 

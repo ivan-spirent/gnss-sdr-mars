@@ -5,7 +5,7 @@ const EARTH_RADIUS_KM = 6371;
 const MARS_MU_M3_S2 = 4.282837e13;
 const EARTH_CONTEXT_SEPARATION = 22000;
 const EARTH_CONTEXT_ORBIT_SCALE = 0.18;
-const TRUTH_POSITION = { latDeg: 30, lonDeg: 30, heightM: 30 };
+const TRUTH_POSITION = { latDeg: 0, lonDeg: 0, heightM: 0 };
 const DEG = 180 / Math.PI;
 const RAD = Math.PI / 180;
 
@@ -29,18 +29,18 @@ const PRN_COLORS = [
 ];
 
 const DEFAULT_GEOJSON_SOURCES = [
-  "/build/gps_like_dynamic_orbit_corrected_no_frame_geojson/latest_pvt.geojson"
+  "/build/molli_external_truth_satpos_3d_geojson/latest_pvt.geojson"
 ];
 
 const DEFAULT_SCENARIO_SOURCES = {
   xml: [
-    "/Mars-GPS-like-5min/GPS_orbits_mars%201.gps"
+    "/Mars%20Molli%2032%205%20min/5%20minutes%20IQ%2032%20SV%20Molli_scenario_data/GPS_Mars_32_SV.gps"
   ],
   sat: [
-    "/Mars-GPS-like-5min/sat_data_V1A1.csv"
+    "/Mars%20Molli%2032%205%20min/5%20minutes%20IQ%2032%20SV%20Molli_scenario_data/sat_data_V1A1.csv"
   ],
   motion: [
-    "/Mars-GPS-like-5min/motion_V1.csv"
+    "/Mars%20Molli%2032%205%20min/5%20minutes%20IQ%2032%20SV%20Molli_scenario_data/motion_V1.csv"
   ]
 };
 
@@ -48,7 +48,7 @@ const state = {
   mode: "mars",
   playing: false,
   currentIndex: 0,
-  selectedPrn: 15,
+  selectedPrn: 1,
   showXml: true,
   showCaptured: true,
   showPvt: true,
@@ -916,7 +916,7 @@ async function loadDefaults() {
     fetchFirstSource(DEFAULT_SCENARIO_SOURCES.sat),
     fetchFirstSource(DEFAULT_SCENARIO_SOURCES.motion),
     fetchFirstText(DEFAULT_GEOJSON_SOURCES),
-    fetchText("/build/gnss_sdr_pvt.nmea").catch(() => "")
+    fetchText("/build/gnss_sdr_molli_external_truth_3d_pvt.nmea").catch(() => "")
   ]);
 
   const orbits = parseGpsXml(xmlSource.text);
@@ -929,7 +929,7 @@ async function loadDefaults() {
   state.data = { orbits, epochs, motion, pvt, capturedPrns, nmeaUsed, receiverFixes };
   state.currentIndex = Math.max(0, Math.min(state.currentIndex, epochs.length - 1));
   state.selectedPrn = capturedPrns.includes(state.selectedPrn) ? state.selectedPrn : capturedPrns[0];
-  const scenarioName = "GPS-like 5 min, runtime orbit corrected, frame offsets off";
+  const scenarioName = "Molli 32-SV 5 min, true dynamic orbit corrected, frame offsets off";
   els.statusLine.textContent = `${scenarioName}: ${orbits.length} XML satellites, ${capturedPrns.length} captured PRNs, ${epochs.length} scenario epochs`;
   createSceneObjects();
   resize();

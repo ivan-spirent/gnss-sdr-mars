@@ -368,7 +368,12 @@ rtk_t configure_rtklib_options()
         false,                                                                             /* enable constrained 2D solution with fixed ellipsoidal height */
         0.0,                                                                               /* fixed ellipsoidal height [m] */
         10.0,                                                                              /* fixed-height constraint sigma [m] */
-        3                                                                                  /* minimum observations required for fixed-height 2D PVT */
+        3,                                                                                 /* minimum observations required for fixed-height 2D PVT */
+        false,                                                                             /* use external simulator satellite positions for diagnostic PVT */
+        {},                                                                                /* external satellite data CSV */
+        {},                                                                                /* external receiver motion CSV */
+        {},                                                                                /* external receiver truth point in ECEF */
+        2.0                                                                                /* external sample interpolation tolerance [s] */
     };
 
     rtk_t rtk;

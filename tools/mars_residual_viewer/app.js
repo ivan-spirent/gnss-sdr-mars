@@ -4,13 +4,13 @@ const MARS_A = 3396190.0;
 const MARS_B = 3376200.0;
 const MARS_F = (MARS_A - MARS_B) / MARS_A;
 const DEG_TO_RAD = Math.PI / 180;
-const TRUTH = { lat: 30, lon: 30, height: 30 };
+const TRUTH = { lat: 0, lon: 0, height: 0 };
 
 const SOURCES = {
-  satData: "/Mars-GPS-like-5min/sat_data_V1A1.csv",
-  ephemeris: "/gps_mars_gps_like_5min_nav_ephemeris.xml",
-  corrections: "/gps_mars_gps_like_5min_ephemeris_corrections_no_frame_dynamic.csv",
-  nmea: "/build/gnss_sdr_pvt.nmea"
+  satData: "/Mars%20Molli%2032%205%20min/5%20minutes%20IQ%2032%20SV%20Molli_scenario_data/sat_data_V1A1.csv",
+  ephemeris: "/gps_mars_molli_32_5min_nav_ephemeris.xml",
+  corrections: "/gps_mars_molli_32_5min_ephemeris_corrections_true_dynamic.csv",
+  nmea: "/build/gnss_sdr_molli_true_dynamic_pvt.nmea"
 };
 
 const COLORS = [

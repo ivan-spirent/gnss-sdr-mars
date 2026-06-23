@@ -1009,6 +1009,11 @@ typedef struct
     double fixed_height_2d_m;     /* fixed ellipsoidal height for constrained 2D solution (m) */
     double fixed_height_2d_sigma_m; /* standard deviation of fixed-height constraint (m) */
     int fixed_height_2d_min_observations; /* minimum observations required for constrained 2D PVT */
+    bool external_sat_positions;  /* use external simulator satellite positions for diagnostic PVT */
+    char external_sat_positions_file[1024]; /* simulator satellite data CSV */
+    char external_receiver_motion_file[1024]; /* simulator receiver motion CSV */
+    double external_sat_positions_receiver_ecef[3]; /* receiver truth point in solver ECEF frame */
+    double external_sat_positions_time_tolerance_s; /* max allowed interpolation/extrapolation time gap */
 } prcopt_t;
 
 

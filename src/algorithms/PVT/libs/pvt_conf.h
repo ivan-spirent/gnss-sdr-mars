@@ -98,6 +98,7 @@ public:
     bool use_unhealthy_sats = false;
     bool osnma_strict = false;
     bool enable_code_phase_ms_ambiguity_correction = false;
+    bool enable_gps_ephemeris_corrections = true;
 
     // PVT KF parameters
     bool enable_pvt_kf = false;

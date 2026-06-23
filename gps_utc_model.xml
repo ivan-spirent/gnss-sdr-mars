@@ -5,12 +5,12 @@
 	<A0>0.00000000000000000e+00</A0>
 	<A1>0.00000000000000000e+00</A1>
 	<A2>0.00000000000000000e+00</A2>
-	<tot>339968</tot>
-	<WN_T>104</WN_T>
-	<DeltaT_LS>18</DeltaT_LS>
-	<WN_LSF>102</WN_LSF>
-	<DN>2</DN>
-	<DeltaT_LSF>18</DeltaT_LSF>
+	<tot>0</tot>
+	<WN_T>0</WN_T>
+	<DeltaT_LS>0</DeltaT_LS>
+	<WN_LSF>0</WN_LSF>
+	<DN>0</DN>
+	<DeltaT_LSF>0</DeltaT_LSF>
 	<valid>1</valid>
 </GNSS-SDR_utc_model>
 </boost_serialization>

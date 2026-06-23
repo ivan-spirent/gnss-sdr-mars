@@ -166,6 +166,7 @@ private:
 
     std::map<std::string, std::map<int, HAS_obs_corrections>> d_has_obs_corr_map;  // first key is signal, second key is PRN
     std::map<int, Gps_Ephemeris_Correction> d_gps_ephemeris_corrections;
+    std::map<int, std::vector<Gps_Ephemeris_Correction>> d_gps_ephemeris_true_dynamic_corrections;
 
     std::string d_dump_filename;
     std::ofstream d_dump_file;
