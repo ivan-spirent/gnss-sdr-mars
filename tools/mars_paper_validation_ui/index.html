@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mars GNSS Paper Validation</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <h1>Mars GNSS Paper Validation</h1>
+      <p id="subtitle">Loading validation run...</p>
+    </div>
+    <div class="actions">
+      <button id="copyMarkdown" type="button">Copy table</button>
+      <button id="copyCaption" type="button">Copy caption</button>
+      <button id="copyLatex" type="button">Copy LaTeX</button>
+      <a class="button-link" href="/build/molli_3d_validation_series_first180.csv">CSV</a>
+      <a class="button-link" href="/docs/mars_molli_results_section.tex">TeX</a>
+    </div>
+  </header>
+
+  <main class="paper-page">
+    <section class="metrics" id="metricGrid" aria-label="Validation metrics"></section>
+
+    <section class="panel span-12">
+      <div class="panel-head">
+        <h2>Paper Table</h2>
+        <span id="runSummary"></span>
+      </div>
+      <p class="table-caption"><strong>Table 1.</strong> Navigation performance metrics for the first 180 s of the Mars Molli 32-SV validation run.</p>
+      <div class="table-wrap">
+        <table id="paperTable">
+          <thead>
+            <tr>
+              <th>Metric</th>
+              <th>Result</th>
+              <th>Definition</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel span-12">
+      <div class="panel-head">
+        <h2>Pseudorange Residual RMS</h2>
+        <span id="residualSummary"></span>
+      </div>
+      <canvas id="residualCanvas" class="chart"></canvas>
+      <p class="figure-caption"><strong>Fig. 1.</strong> Per-epoch RMS of the post-fit pseudorange residuals over the first 180 s of simulation.</p>
+    </section>
+
+    <section class="panel span-12">
+      <div class="panel-head">
+        <h2>3D Position Error</h2>
+        <span id="error3dSummary"></span>
+      </div>
+      <canvas id="error3dCanvas" class="chart"></canvas>
+      <p class="figure-caption"><strong>Fig. 2.</strong> 3D position error relative to the Mars truth point at 0 deg latitude, 0 deg longitude, and 0 m height.</p>
+    </section>
+
+    <section class="panel span-12">
+      <div class="panel-head">
+        <h2>Vertical Error</h2>
+        <span id="verticalSummary"></span>
+      </div>
+      <canvas id="verticalCanvas" class="chart"></canvas>
+      <p class="figure-caption"><strong>Fig. 3.</strong> Absolute vertical error relative to the Mars ellipsoid truth height.</p>
+    </section>
+
+    <section class="panel span-12">
+      <div class="panel-head">
+        <h2>Receiver Clock Bias</h2>
+        <span id="clockSummary"></span>
+      </div>
+      <canvas id="clockCanvas" class="chart"></canvas>
+      <p class="figure-caption"><strong>Fig. 4.</strong> Receiver clock-bias variation after subtracting the first valid PVT epoch.</p>
+    </section>
+
+    <section class="panel span-12">
+      <div class="panel-head">
+        <h2>Fix Availability</h2>
+        <span id="fixSummary"></span>
+      </div>
+      <canvas id="fixCanvas" class="chart short"></canvas>
+      <p class="figure-caption"><strong>Fig. 5.</strong> Number of satellites used by the 3D PVT solution during the first 180 s of simulation.</p>
+    </section>
+
+    <section class="panel span-12">
+      <div class="panel-head">
+        <h2>Figure Caption</h2>
+      </div>
+      <p id="captionText" class="caption"></p>
+    </section>
+
+    <section class="panel span-12">
+      <div class="panel-head">
+        <h2>LaTeX Results Section</h2>
+        <span>copy-ready manuscript text</span>
+      </div>
+      <pre id="latexText" class="latex-block">Loading LaTeX section...</pre>
+    </section>
+  </main>
+
+  <script src="./app.js"></script>
+</body>
+</html>

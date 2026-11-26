@@ -1,0 +1,1739 @@
+Initializing GNSS-SDR v0.0.20 ... Please wait.
+Logging will be written at "/tmp"
+Use gnss-sdr --log_dir=/path/to/log to change that.
+RF Channels: 1
+GeoJSON files will be stored at ./build/molli_external_truth_satpos_3d_validation_geojson
+Processing file ./Mars Molli 32 5 min/Mars_IQ_5_minutes_32_SV/2026_06_23_11_20_48_UTC_plus_00_00_capture_L1_30.00Msps_5_10_0.0dB_V1_A1_1.int8, which contains 18001952768 samples (18001952768 bytes)
+GNSS signal recorded time to be processed: 299.983 [s]
+Trying to read GNSS ephemeris from XML file(s)...
+From XML file: Read NAV ephemeris for satellite GPS PRN 01 (Block IIF)
+From XML file: Read NAV ephemeris for satellite GPS PRN 06 (Block IIF)
+From XML file: Read NAV ephemeris for satellite GPS PRN 12 (Block IIR-M)
+From XML file: Read NAV ephemeris for satellite GPS PRN 16 (Block IIR)
+From XML file: Read NAV ephemeris for satellite GPS PRN 17 (Block IIR-M)
+From XML file: Read NAV ephemeris for satellite GPS PRN 21 (Block IIR)
+From XML file: Read NAV ephemeris for satellite GPS PRN 22 (Block IIR)
+From XML file: Read NAV ephemeris for satellite GPS PRN 26 (Block IIF)
+From XML file: Read NAV ephemeris for satellite GPS PRN 27 (Block IIF)
+From XML file: Read NAV ephemeris for satellite GPS PRN 31 (Block IIR-M)
+From XML file: Read GPS UTC model parameters.
+From XML file: Read GPS ionosphere model parameters.
+From XML file: Read GPS almanac for satellite GPS PRN 01 (Block IIF)
+From XML file: Read GPS almanac for satellite GPS PRN 02 (Block IIR)
+From XML file: Read GPS almanac for satellite GPS PRN 03 (Block IIF)
+From XML file: Read GPS almanac for satellite GPS PRN 04 (Block III)
+From XML file: Read GPS almanac for satellite GPS PRN 05 (Block IIR-M)
+From XML file: Read GPS almanac for satellite GPS PRN 06 (Block IIF)
+From XML file: Read GPS almanac for satellite GPS PRN 07 (Block IIR-M)
+From XML file: Read GPS almanac for satellite GPS PRN 24 (Block IIF)
+From XML file: Read GPS almanac for satellite GPS PRN 25 (Block IIF)
+From XML file: Read GPS almanac for satellite GPS PRN 26 (Block IIF)
+From XML file: Read GPS almanac for satellite GPS PRN 27 (Block IIF)
+From XML file: Read GPS almanac for satellite GPS PRN 28 (Block III)
+From XML file: Read GPS almanac for satellite GPS PRN 29 (Block IIR-M)
+From XML file: Read GPS almanac for satellite GPS PRN 30 (Block IIF)
+GNSS assistance data loaded from local XML file(s).
+Current receiver time: 1 s
+Tracking of GPS L1 C/A signal started on channel 4 for satellite GPS PRN 17 (Block IIR-M)
+Tracking of GPS L1 C/A signal started on channel 2 for satellite GPS PRN 12 (Block IIR-M)
+Tracking of GPS L1 C/A signal started on channel 0 for satellite GPS PRN 01 (Block IIF)
+Tracking of GPS L1 C/A signal started on channel 8 for satellite GPS PRN 27 (Block IIF)
+Tracking of GPS L1 C/A signal started on channel 6 for satellite GPS PRN 22 (Block IIR)
+Tracking of GPS L1 C/A signal started on channel 1 for satellite GPS PRN 06 (Block IIF)
+Tracking of GPS L1 C/A signal started on channel 5 for satellite GPS PRN 21 (Block IIR)
+Tracking of GPS L1 C/A signal started on channel 7 for satellite GPS PRN 26 (Block IIF)
+Tracking of GPS L1 C/A signal started on channel 3 for satellite Tracking of GPS L1 C/A signal started on channel 9 for satellite GPS PRN 16 (Block IIR)
+GPS PRN 31 (Block IIR-M)
+Current receiver time: 2 s
+Current receiver time: 3 s
+Current receiver time: 4 s
+Current receiver time: 5 s
+Current receiver time: 6 s
+Current receiver time: 7 s
+Current receiver time: 8 s
+Current receiver time: 9 s
+Current receiver time: 10 s
+Current receiver time: 11 s
+Current receiver time: 12 s
+Current receiver time: 13 s
+GPS L1 C/A tracking bit synchronization locked in channel 2 for satellite GPS PRN 12 (Block IIR-M)
+Enabled 20 ms extended correlator in channel 2 for satellite GPS PRN 12 (Block IIR-M)
+GPS L1 C/A tracking bit synchronization locked in channel 3 for satellite GPS PRN 16 (Block IIR)
+Enabled 20 ms extended correlator in channel 3 for satellite GPS PRN 16 (Block IIR)
+GPS L1 C/A tracking bit synchronization locked in channel 0 for satellite GPS PRN 01 (Block IIF)
+Enabled 20 ms extended correlator in channel 0 for satellite GPS PRN 01 (Block IIF)
+GPS L1 C/A tracking bit synchronization locked in channel 1 for satellite GPS PRN 06 (Block IIF)
+Enabled 20 ms extended correlator in channel 1 for satellite GPS PRN 06 (Block IIF)
+GPS L1 C/A tracking bit synchronization locked in channel 9 for satellite GPS PRN 31 (Block IIR-M)
+Enabled 20 ms extended correlator in channel 9 for satellite GPS PRN 31 (Block IIR-M)
+GPS L1 C/A tracking bit synchronization locked in channel 8 for satellite GPS PRN 27 (Block IIF)
+Enabled 20 ms extended correlator in channel 8 for satellite GPS PRN 27 (Block IIF)
+GPS L1 C/A tracking bit synchronization locked in channel 7 for satellite GPS PRN 26 (Block IIF)
+Enabled 20 ms extended correlator in channel 7 for satellite GPS PRN 26 (Block IIF)
+GPS L1 C/A tracking bit synchronization locked in channel 5 for satellite GPS PRN 21 (Block IIR)
+Enabled 20 ms extended correlator in channel 5 for satellite GPS PRN 21 (Block IIR)
+GPS L1 C/A tracking bit synchronization locked in channel 6 for satellite GPS PRN 22 (Block IIR)
+Enabled 20 ms extended correlator in channel 6 for satellite GPS PRN 22 (Block IIR)
+GPS L1 C/A tracking bit synchronization locked in channel 4 for satellite GPS PRN 17 (Block IIR-M)
+Enabled 20 ms extended correlator in channel 4 for satellite GPS PRN 17 (Block IIR-M)
+Current receiver time: 14 s
+Current receiver time: 15 s
+Current receiver time: 16 s
+Current receiver time: 17 s
+Current receiver time: 18 s
+Current receiver time: 19 s
+New GPS NAV message received in channel 2: subframe 3 from satellite GPS PRN 12 (Block IIR-M) with CN0=39 dB-Hz
+New GPS NAV message received in channel 3: subframe 3 from satellite GPS PRN 16 (Block IIR) with CN0=41 dB-Hz
+New GPS NAV message received in channel 1: subframe 3 from satellite GPS PRN 06 (Block IIF) with CN0=40 dB-Hz
+New GPS NAV message received in channel 4: subframe 3 from satellite GPS PRN 17 (Block IIR-M) with CN0=42 dB-Hz
+New GPS NAV message received in channel 5: subframe 3 from satellite GPS PRN 21 (Block IIR) with CN0=41 dB-Hz
+New GPS NAV message received in channel 8: subframe 3 from satellite GPS PRN 27 (Block IIF) with CN0=39 dB-Hz
+Loaded external satellite truth: 2813 satellite samples and 301 receiver samples
+First position fix at 2026-Mar-02 00:34:00.040000 UTC is Lat = 1.34109e-05 [deg], Long = -0.000130778 [deg], Height= -0.430599 [m]
+[1m[32mPosition at 2026-Mar-02 00:34:00.500000 UTC using 6 observations is Lat = 0.000022 [deg], Long = -0.000136 [deg], Height = 0.85 [m][0m
+[1m[32mVelocity: East: -22.95 [m/s], North: -0.50 [m/s], Up = -7.26 [m/s][0m
+Current receiver time: 20 s
+[1m[32mPosition at 2026-Mar-02 00:34:01.000000 UTC using 6 observations is Lat = -0.000039 [deg], Long = -0.000091 [deg], Height = -3.41 [m][0m
+[1m[32mVelocity: East: -22.86 [m/s], North: -0.47 [m/s], Up = -7.29 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:34:01.500000 UTC using 6 observations is Lat = -0.000008 [deg], Long = -0.000119 [deg], Height = -1.56 [m][0m
+[1m[32mVelocity: East: -22.86 [m/s], North: -0.40 [m/s], Up = -7.17 [m/s][0m
+Current receiver time: 21 s
+[1m[32mPosition at 2026-Mar-02 00:34:02.000000 UTC using 6 observations is Lat = -0.000016 [deg], Long = -0.000110 [deg], Height = -3.02 [m][0m
+[1m[32mVelocity: East: -22.82 [m/s], North: -0.36 [m/s], Up = -7.21 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:34:02.500000 UTC using 6 observations is Lat = 0.000008 [deg], Long = -0.000132 [deg], Height = 1.47 [m][0m
+[1m[32mVelocity: East: -22.81 [m/s], North: -0.45 [m/s], Up = -7.24 [m/s][0m
+Current receiver time: 22 s
+[1m[32mPosition at 2026-Mar-02 00:34:03.000000 UTC using 6 observations is Lat = -0.000002 [deg], Long = -0.000120 [deg], Height = 0.49 [m][0m
+[1m[32mVelocity: East: -22.98 [m/s], North: -0.34 [m/s], Up = -6.93 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:34:03.500000 UTC using 6 observations is Lat = -0.000037 [deg], Long = -0.000101 [deg], Height = -4.77 [m][0m
+[1m[32mVelocity: East: -22.95 [m/s], North: -0.35 [m/s], Up = -6.88 [m/s][0m
+Current receiver time: 23 s
+[1m[32mPosition at 2026-Mar-02 00:34:04.000000 UTC using 6 observations is Lat = -0.000018 [deg], Long = -0.000123 [deg], Height = -0.30 [m][0m
+[1m[32mVelocity: East: -22.81 [m/s], North: -0.41 [m/s], Up = -7.10 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:34:04.500000 UTC using 6 observations is Lat = 0.000018 [deg], Long = -0.000161 [deg], Height = 3.08 [m][0m
+[1m[32mVelocity: East: -22.95 [m/s], North: -0.31 [m/s], Up = -6.87 [m/s][0m
+Current receiver time: 24 s
+[1m[32mPosition at 2026-Mar-02 00:34:05.000000 UTC using 6 observations is Lat = 0.000023 [deg], Long = -0.000147 [deg], Height = 1.59 [m][0m
+[1m[32mVelocity: East: -22.99 [m/s], North: -0.27 [m/s], Up = -6.73 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:34:05.500000 UTC using 6 observations is Lat = -0.000013 [deg], Long = -0.000103 [deg], Height = -3.50 [m][0m
+[1m[32mVelocity: East: -22.94 [m/s], North: -0.30 [m/s], Up = -6.85 [m/s][0m
+Current receiver time: 25 s
+New GPS NAV message received in channel 1: subframe 4 from satellite GPS PRN 06 (Block IIF) with CN0=36.45 dB-Hz
+New GPS NAV message received in channel 2: subframe 4 from satellite GPS PRN 12 (Block IIR-M) with CN0=36.01 dB-Hz
+New GPS NAV message received in channel 4: subframe 4 from satellite GPS PRN 17 (Block IIR-M) with CN0=37.10 dB-Hz
+New GPS NAV message received in channel 5: subframe 4 from satellite GPS PRN 21 (Block IIR) with CN0=37.03 dB-Hz
+New GPS NAV message received in channel 9: subframe 4 from satellite GPS PRN 31 (Block IIR-M) with CN0=36.75 dB-Hz
+New GPS NAV message received in channel 7: subframe 4 from satellite GPS PRN 26 (Block IIF) with CN0=37.22 dB-Hz
+New GPS NAV message received in channel 8: subframe 4 from satellite GPS PRN 27 (Block IIF) with CN0=35.68 dB-Hz
+New GPS NAV message received in channel 3: subframe 4 from satellite GPS PRN 16 (Block IIR) with CN0=36.69 dB-Hz
+[1m[32mPosition at 2026-Mar-02 00:34:06.000000 UTC using 6 observations is Lat = -0.000010 [deg], Long = -0.000107 [deg], Height = -1.52 [m][0m
+[1m[32mVelocity: East: -22.96 [m/s], North: -0.32 [m/s], Up = -6.81 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:34:06.500000 UTC using 8 observations is Lat = 0.000001 [deg], Long = -0.000138 [deg], Height = -0.18 [m][0m
+[1m[32mVelocity: East: -23.25 [m/s], North: -0.14 [m/s], Up = -6.36 [m/s][0m
+Current receiver time: 26 s
+[1m[32mPosition at 2026-Mar-02 00:34:07.000000 UTC using 8 observations is Lat = -0.000017 [deg], Long = -0.000113 [deg], Height = -2.33 [m][0m
+[1m[32mVelocity: East: -23.12 [m/s], North: -0.25 [m/s], Up = -6.51 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:34:07.500000 UTC using 8 observations is Lat = -0.000017 [deg], Long = -0.000115 [deg], Height = -2.23 [m][0m
+[1m[32mVelocity: East: -23.13 [m/s], North: -0.23 [m/s], Up = -6.40 [m/s][0m
+Current receiver time: 27 s
+[1m[32mPosition at 2026-Mar-02 00:34:08.000000 UTC using 8 observations is Lat = -0.000016 [deg], Long = -0.000109 [deg], Height = -1.97 [m][0m
+[1m[32mVelocity: East: -23.07 [m/s], North: -0.17 [m/s], Up = -6.44 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:34:08.500000 UTC using 8 observations is Lat = -0.000009 [deg], Long = -0.000116 [deg], Height = -1.21 [m][0m
+[1m[32mVelocity: East: -23.17 [m/s], North: -0.22 [m/s], Up = -6.39 [m/s][0m
+Current receiver time: 28 s
+[1m[32mPosition at 2026-Mar-02 00:34:09.000000 UTC using 8 observations is Lat = -0.000003 [deg], Long = -0.000124 [deg], Height = -0.20 [m][0m
+[1m[32mVelocity: East: -23.10 [m/s], North: -0.24 [m/s], Up = -6.45 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:34:09.500000 UTC using 8 observations is Lat = -0.000005 [deg], Long = -0.000122 [deg], Height = -0.68 [m][0m
+[1m[32mVelocity: East: -23.01 [m/s], North: -0.22 [m/s], Up = -6.46 [m/s][0m
+Current receiver time: 29 s
+[1m[32mPosition at 2026-Mar-02 00:34:10.000000 UTC using 8 observations is Lat = 0.000004 [deg], Long = -0.000124 [deg], Height = -0.99 [m][0m
+[1m[32mVelocity: East: -23.13 [m/s], North: -0.24 [m/s], Up = -6.46 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:34:10.500000 UTC using 8 observations is Lat = 0.000003 [deg], Long = -0.000120 [deg], Height = -0.55 [m][0m
+[1m[32mVelocity: East: -23.07 [m/s], North: -0.28 [m/s], Up = -6.50 [m/s][0m
+Current receiver time: 30 s
+[1m[32mPosition at 2026-Mar-02 00:34:11.000000 UTC using 8 observations is Lat = 0.000013 [deg], Long = -0.000125 [deg], Height = -0.52 [m][0m
+[1m[32mVelocity: East: -22.98 [m/s], North: -0.25 [m/s], Up = -6.56 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:34:11.500000 UTC using 8 observations is Lat = -0.000002 [deg], Long = -0.000122 [deg], Height = -0.95 [m][0m
+[1m[32mVelocity: East: -23.02 [m/s], North: -0.29 [m/s], Up = -6.52 [m/s][0m
+Current receiver time: 31 s
+New GPS NAV message received in channel 2: subframe 5 from satellite GPS PRN 12 (Block IIR-M) with CN0=33.59 dB-Hz
+New GPS NAV message received in channel 5: subframe 5 from satellite GPS PRN 21 (Block IIR) with CN0=34.03 dB-Hz
+New GPS NAV message received in channel 9: subframe 5 from satellite GPS PRN 31 (Block IIR-M) with CN0=34.09 dB-Hz
+New GPS NAV message received in channel 4: subframe 5 from satellite GPS PRN 17 (Block IIR-M) with CN0=34.12 dB-Hz
+New GPS NAV message received in channel 1: subframe 5 from satellite GPS PRN 06 (Block IIF) with CN0=33.91 dB-Hz
+New GPS NAV message received in channel 7: subframe 5 from satellite GPS PRN 26 (Block IIF) with CN0=34.30 dB-Hz
+New GPS NAV message received in channel 3: subframe 5 from satellite GPS PRN 16 (Block IIR) with CN0=33.97 dB-Hz
+New GPS NAV message received in channel 8: subframe 5 from satellite GPS PRN 27 (Block IIF) with CN0=33.37 dB-Hz
+[1m[32mPosition at 2026-Mar-02 00:34:12.000000 UTC using 8 observations is Lat = 0.000003 [deg], Long = -0.000125 [deg], Height = -0.41 [m][0m
+[1m[32mVelocity: East: -23.02 [m/s], North: -0.19 [m/s], Up = -6.41 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:34:12.500000 UTC using 8 observations is Lat = 0.000003 [deg], Long = -0.000126 [deg], Height = 0.24 [m][0m
+[1m[32mVelocity: East: -23.01 [m/s], North: -0.30 [m/s], Up = -6.45 [m/s][0m
+Current receiver time: 32 s
+[1m[32mPosition at 2026-Mar-02 00:34:13.000000 UTC using 8 observations is Lat = 0.000008 [deg], Long = -0.000137 [deg], Height = 0.67 [m][0m
+[1m[32mVelocity: East: -23.10 [m/s], North: -0.20 [m/s], Up = -6.34 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:34:13.500000 UTC using 8 observations is Lat = 0.000013 [deg], Long = -0.000128 [deg], Height = 1.07 [m][0m
+[1m[32mVelocity: East: -23.01 [m/s], North: -0.27 [m/s], Up = -6.48 [m/s][0m
+Current receiver time: 33 s
+[1m[32mPosition at 2026-Mar-02 00:34:14.000000 UTC using 8 observations is Lat = 0.000012 [deg], Long = -0.000126 [deg], Height = 1.26 [m][0m
+[1m[32mVelocity: East: -23.04 [m/s], North: -0.16 [m/s], Up = -6.36 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:34:14.500000 UTC using 8 observations is Lat = 0.000001 [deg], Long = -0.000116 [deg], Height = 0.32 [m][0m
+[1m[32mVelocity: East: -22.91 [m/s], North: -0.29 [m/s], Up = -6.63 [m/s][0m
+Current receiver time: 34 s
+[1m[32mPosition at 2026-Mar-02 00:34:15.000000 UTC using 8 observations is Lat = -0.000009 [deg], Long = -0.000118 [deg], Height = -1.13 [m][0m
+[1m[32mVelocity: East: -22.95 [m/s], North: -0.25 [m/s], Up = -6.60 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:34:15.500000 UTC using 8 observations is Lat = -0.000020 [deg], Long = -0.000114 [deg], Height = -2.65 [m][0m
+[1m[32mVelocity: East: -22.97 [m/s], North: -0.22 [m/s], Up = -6.46 [m/s][0m
+Current receiver time: 35 s
+[1m[32mPosition at 2026-Mar-02 00:34:16.000000 UTC using 8 observations is Lat = -0.000039 [deg], Long = -0.000104 [deg], Height = -4.06 [m][0m
+[1m[32mVelocity: East: -22.97 [m/s], North: -0.32 [m/s], Up = -6.57 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:34:16.500000 UTC using 8 observations is Lat = -0.000053 [deg], Long = -0.000088 [deg], Height = -4.73 [m][0m
+[1m[32mVelocity: East: -22.93 [m/s], North: -0.26 [m/s], Up = -6.59 [m/s][0m
+Current receiver time: 36 s
+[1m[32mPosition at 2026-Mar-02 00:34:17.000000 UTC using 8 observations is Lat = -0.000029 [deg], Long = -0.000103 [deg], Height = -2.61 [m][0m
+[1m[32mVelocity: East: -22.88 [m/s], North: -0.36 [m/s], Up = -6.63 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:34:17.500000 UTC using 8 observations is Lat = -0.000010 [deg], Long = -0.000122 [deg], Height = -0.91 [m][0m
+[1m[32mVelocity: East: -22.96 [m/s], North: -0.26 [m/s], Up = -6.45 [m/s][0m
+Current receiver time: 37 s
+New GPS NAV message received in channel 2: subframe 1 from satellite GPS PRN 12 (Block IIR-M) with CN0=32.30 dB-Hz
+New GPS NAV message received in channel 9: subframe 1 from satellite GPS PRN 31 (Block IIR-M) with CN0=32.60 dB-Hz
+New GPS NAV message received in channel 7: subframe 1 from satellite GPS PRN 26 (Block IIF) with CN0=32.73 dB-Hz
+New GPS NAV message received in channel 1: subframe 1 from satellite GPS PRN 06 (Block IIF) with CN0=32.54 dB-Hz
+New GPS NAV message received in channel 4: subframe 1 from satellite GPS PRN 17 (Block IIR-M) with CN0=32.54 dB-Hz
+New GPS NAV message received in channel 8: subframe 1 from satellite GPS PRN 27 (Block IIF) with CN0=32.10 dB-Hz
+New GPS NAV message received in channel 3: subframe 1 from satellite GPS PRN 16 (Block IIR) with CN0=32.55 dB-Hz
+[1m[32mPosition at 2026-Mar-02 00:34:18.000000 UTC using 8 observations is Lat = 0.000007 [deg], Long = -0.000134 [deg], Height = 0.03 [m][0m
+[1m[32mVelocity: East: -22.97 [m/s], North: -0.27 [m/s], Up = -6.50 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:34:18.500000 UTC using 8 observations is Lat = -0.000002 [deg], Long = -0.000140 [deg], Height = -0.83 [m][0m
+[1m[32mVelocity: East: -22.92 [m/s], North: -0.28 [m/s], Up = -6.55 [m/s][0m
+Current receiver time: 38 s
+[1m[32mPosition at 2026-Mar-02 00:34:19.000000 UTC using 8 observations is Lat = -0.000007 [deg], Long = -0.000141 [deg], Height = -0.13 [m][0m
+[1m[32mVelocity: East: -22.89 [m/s], North: -0.31 [m/s], Up = -6.60 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:34:19.500000 UTC using 8 observations is Lat = -0.000011 [deg], Long = -0.000125 [deg], Height = -0.64 [m][0m
+[1m[32mVelocity: East: -22.95 [m/s], North: -0.26 [m/s], Up = -6.49 [m/s][0m
+Current receiver time: 39 s
+[1m[32mPosition at 2026-Mar-02 00:34:20.000000 UTC using 8 observations is Lat = -0.000020 [deg], Long = -0.000115 [deg], Height = -2.02 [m][0m
+[1m[32mVelocity: East: -22.89 [m/s], North: -0.32 [m/s], Up = -6.56 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:34:20.500000 UTC using 8 observations is Lat = -0.000021 [deg], Long = -0.000116 [deg], Height = -2.26 [m][0m
+[1m[32mVelocity: East: -23.21 [m/s], North: 0.48 [m/s], Up = -6.53 [m/s][0m
+Current receiver time: 40 s
+[1m[32mPosition at 2026-Mar-02 00:34:21.000000 UTC using 8 observations is Lat = 0.000013 [deg], Long = -0.000130 [deg], Height = 0.24 [m][0m
+[1m[32mVelocity: East: -22.80 [m/s], North: -0.31 [m/s], Up = -6.65 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:34:21.500000 UTC using 8 observations is Lat = -0.000026 [deg], Long = -0.000110 [deg], Height = -2.34 [m][0m
+[1m[32mVelocity: East: -22.87 [m/s], North: -0.32 [m/s], Up = -6.57 [m/s][0m
+Current receiver time: 41 s
+[1m[32mPosition at 2026-Mar-02 00:34:22.000000 UTC using 8 observations is Lat = -0.000012 [deg], Long = -0.000126 [deg], Height = -1.63 [m][0m
+[1m[32mVelocity: East: -23.14 [m/s], North: 0.45 [m/s], Up = -6.66 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:34:22.500000 UTC using 8 observations is Lat = -0.000016 [deg], Long = -0.000111 [deg], Height = -1.30 [m][0m
+[1m[32mVelocity: East: -22.84 [m/s], North: -0.31 [m/s], Up = -6.54 [m/s][0m
+Current receiver time: 42 s
+[1m[32mPosition at 2026-Mar-02 00:34:23.000000 UTC using 8 observations is Lat = 0.000011 [deg], Long = -0.000128 [deg], Height = 1.16 [m][0m
+[1m[32mVelocity: East: -23.15 [m/s], North: 0.47 [m/s], Up = -6.62 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:34:23.500000 UTC using 8 observations is Lat = 0.000004 [deg], Long = -0.000122 [deg], Height = 0.31 [m][0m
+[1m[32mVelocity: East: -23.10 [m/s], North: 0.43 [m/s], Up = -6.64 [m/s][0m
+Current receiver time: 43 s
+New GPS NAV message received in channel 6: subframe 2 from satellite GPS PRN 22 (Block IIR) with CN0=31.92 dB-Hz
+New GPS NAV message received in channel 2: subframe 2 from satellite GPS PRN 12 (Block IIR-M) with CN0=31.91 dB-Hz
+New GPS NAV message received in channel 1: subframe 2 from satellite GPS PRN 06 (Block IIF) with CN0=31.82 dB-Hz
+New GPS NAV message received in channel 3: subframe 2 from satellite GPS PRN 16 (Block IIR) with CN0=31.86 dB-Hz
+New GPS NAV message received in channel 9: subframe 2 from satellite GPS PRN 31 (Block IIR-M) with CN0=31.91 dB-Hz
+New GPS NAV message received in channel 8: subframe 2 from satellite GPS PRN 27 (Block IIF) with CN0=31.57 dB-Hz
+New GPS NAV message received in channel 7: subframe 2 from satellite GPS PRN 26 (Block IIF) with CN0=31.87 dB-Hz
+[1m[32mPosition at 2026-Mar-02 00:34:24.000000 UTC using 8 observations is Lat = -0.000011 [deg], Long = -0.000113 [deg], Height = -0.67 [m][0m
+[1m[32mVelocity: East: -23.02 [m/s], North: 0.29 [m/s], Up = -6.61 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:34:24.500000 UTC using 9 observations is Lat = -0.000009 [deg], Long = -0.000110 [deg], Height = -1.33 [m][0m
+[1m[32mVelocity: East: -22.82 [m/s], North: -0.12 [m/s], Up = -7.46 [m/s][0m
+Current receiver time: 44 s
+[1m[32mPosition at 2026-Mar-02 00:34:25.000000 UTC using 9 observations is Lat = 0.000002 [deg], Long = -0.000131 [deg], Height = -0.40 [m][0m
+[1m[32mVelocity: East: -22.86 [m/s], North: -0.12 [m/s], Up = -7.47 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:34:25.500000 UTC using 9 observations is Lat = -0.000006 [deg], Long = -0.000122 [deg], Height = -0.60 [m][0m
+[1m[32mVelocity: East: -22.83 [m/s], North: -0.13 [m/s], Up = -7.48 [m/s][0m
+Current receiver time: 45 s
+[1m[32mPosition at 2026-Mar-02 00:34:26.000000 UTC using 9 observations is Lat = -0.000001 [deg], Long = -0.000148 [deg], Height = 0.16 [m][0m
+[1m[32mVelocity: East: -22.78 [m/s], North: -0.10 [m/s], Up = -7.41 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:34:26.500000 UTC using 9 observations is Lat = -0.000007 [deg], Long = -0.000131 [deg], Height = -1.01 [m][0m
+[1m[32mVelocity: East: -22.79 [m/s], North: -0.18 [m/s], Up = -7.53 [m/s][0m
+Current receiver time: 46 s
+[1m[32mPosition at 2026-Mar-02 00:34:27.000000 UTC using 9 observations is Lat = -0.000011 [deg], Long = -0.000125 [deg], Height = -1.62 [m][0m
+[1m[32mVelocity: East: -22.84 [m/s], North: -0.10 [m/s], Up = -7.35 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:34:27.500000 UTC using 9 observations is Lat = -0.000008 [deg], Long = -0.000124 [deg], Height = -0.96 [m][0m
+[1m[32mVelocity: East: -22.72 [m/s], North: -0.17 [m/s], Up = -7.51 [m/s][0m
+Current receiver time: 47 s
+[1m[32mPosition at 2026-Mar-02 00:34:28.000000 UTC using 9 observations is Lat = -0.000007 [deg], Long = -0.000123 [deg], Height = -0.34 [m][0m
+[1m[32mVelocity: East: -22.75 [m/s], North: -0.21 [m/s], Up = -7.58 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:34:28.500000 UTC using 9 observations is Lat = -0.000017 [deg], Long = -0.000111 [deg], Height = -1.20 [m][0m
+[1m[32mVelocity: East: -22.75 [m/s], North: -0.20 [m/s], Up = -7.59 [m/s][0m
+Current receiver time: 48 s
+[1m[32mPosition at 2026-Mar-02 00:34:29.000000 UTC using 9 observations is Lat = -0.000017 [deg], Long = -0.000108 [deg], Height = -1.16 [m][0m
+[1m[32mVelocity: East: -22.73 [m/s], North: -0.21 [m/s], Up = -7.57 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:34:29.500000 UTC using 9 observations is Lat = 0.000005 [deg], Long = -0.000120 [deg], Height = 0.17 [m][0m
+[1m[32mVelocity: East: -22.70 [m/s], North: -0.20 [m/s], Up = -7.61 [m/s][0m
+Current receiver time: 49 s
+New GPS NAV message received in channel 6: subframe 3 from satellite GPS PRN 22 (Block IIR) with CN0=31.86 dB-Hz
+New GPS NAV message received in channel 7: subframe 3 from satellite GPS PRN 26 (Block IIF) with CN0=31.77 dB-Hz
+New GPS NAV message received in channel 2: subframe 3 from satellite GPS PRN 12 (Block IIR-M) with CN0=31.54 dB-Hz
+New GPS NAV message received in channel 1: subframe 3 from satellite GPS PRN 06 (Block IIF) with CN0=31.51 dB-Hz
+New GPS NAV message received in channel 8: subframe 3 from satellite GPS PRN 27 (Block IIF) with CN0=31.53 dB-Hz
+New GPS NAV message received in channel 3: subframe 3 from satellite GPS PRN 16 (Block IIR) with CN0=31.78 dB-Hz
+[1m[32mPosition at 2026-Mar-02 00:34:30.000000 UTC using 8 observations is Lat = 0.000007 [deg], Long = -0.000124 [deg], Height = -0.58 [m][0m
+[1m[32mVelocity: East: -23.01 [m/s], North: 0.26 [m/s], Up = -7.08 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:34:30.500000 UTC using 8 observations is Lat = 0.000011 [deg], Long = -0.000125 [deg], Height = 0.30 [m][0m
+[1m[32mVelocity: East: -22.84 [m/s], North: 0.12 [m/s], Up = -7.25 [m/s][0m
+Current receiver time: 50 s
+[1m[32mPosition at 2026-Mar-02 00:34:31.000000 UTC using 8 observations is Lat = 0.000010 [deg], Long = -0.000131 [deg], Height = 0.35 [m][0m
+[1m[32mVelocity: East: -22.88 [m/s], North: 0.14 [m/s], Up = -7.26 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:34:31.500000 UTC using 8 observations is Lat = 0.000007 [deg], Long = -0.000129 [deg], Height = -0.22 [m][0m
+[1m[32mVelocity: East: -22.95 [m/s], North: 0.15 [m/s], Up = -7.25 [m/s][0m
+Current receiver time: 51 s
+[1m[32mPosition at 2026-Mar-02 00:34:32.000000 UTC using 8 observations is Lat = -0.000003 [deg], Long = -0.000122 [deg], Height = -1.46 [m][0m
+[1m[32mVelocity: East: -22.89 [m/s], North: 0.08 [m/s], Up = -6.96 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:34:32.500000 UTC using 8 observations is Lat = -0.000006 [deg], Long = -0.000115 [deg], Height = -1.54 [m][0m
+[1m[32mVelocity: East: -22.83 [m/s], North: 0.11 [m/s], Up = -7.13 [m/s][0m
+Current receiver time: 52 s
+[1m[32mPosition at 2026-Mar-02 00:34:33.000000 UTC using 8 observations is Lat = -0.000004 [deg], Long = -0.000127 [deg], Height = -0.52 [m][0m
+[1m[32mVelocity: East: -22.92 [m/s], North: 0.15 [m/s], Up = -7.79 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:34:33.500000 UTC using 8 observations is Lat = 0.000021 [deg], Long = -0.000150 [deg], Height = 1.16 [m][0m
+[1m[32mVelocity: East: -23.08 [m/s], North: 0.29 [m/s], Up = -7.86 [m/s][0m
+Current receiver time: 53 s
+[1m[32mPosition at 2026-Mar-02 00:34:34.000000 UTC using 8 observations is Lat = 0.000034 [deg], Long = -0.000154 [deg], Height = 1.30 [m][0m
+[1m[32mVelocity: East: -23.09 [m/s], North: 0.28 [m/s], Up = -7.85 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:34:34.500000 UTC using 8 observations is Lat = 0.000001 [deg], Long = -0.000125 [deg], Height = -0.70 [m][0m
+[1m[32mVelocity: East: -21.94 [m/s], North: -1.64 [m/s], Up = -7.93 [m/s][0m
+Current receiver time: 54 s
+[1m[32mPosition at 2026-Mar-02 00:34:35.000000 UTC using 8 observations is Lat = -0.000016 [deg], Long = -0.000119 [deg], Height = -1.45 [m][0m
+[1m[32mVelocity: East: -22.24 [m/s], North: -1.17 [m/s], Up = -8.55 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:34:35.500000 UTC using 8 observations is Lat = -0.000010 [deg], Long = -0.000121 [deg], Height = -0.25 [m][0m
+[1m[32mVelocity: East: -22.29 [m/s], North: -1.14 [m/s], Up = -8.54 [m/s][0m
+Current receiver time: 55 s
+New GPS NAV message received in channel 1: subframe 4 from satellite GPS PRN 06 (Block IIF) with CN0=30.94 dB-Hz
+New GPS NAV message received in channel 6: subframe 4 from satellite GPS PRN 22 (Block IIR) with CN0=31.15 dB-Hz
+New GPS NAV message received in channel 7: subframe 4 from satellite GPS PRN 26 (Block IIF) with CN0=31.01 dB-Hz
+New GPS NAV message received in channel 3: subframe 4 from satellite GPS PRN 16 (Block IIR) with CN0=31.15 dB-Hz
+New GPS NAV message received in channel 4: subframe 4 from satellite GPS PRN 17 (Block IIR-M) with CN0=31.08 dB-Hz
+New GPS NAV message received in channel 8: subframe 4 from satellite GPS PRN 27 (Block IIF) with CN0=30.86 dB-Hz
+[1m[32mPosition at 2026-Mar-02 00:34:36.000000 UTC using 8 observations is Lat = -0.000035 [deg], Long = -0.000096 [deg], Height = -2.14 [m][0m
+[1m[32mVelocity: East: -22.33 [m/s], North: -1.10 [m/s], Up = -8.50 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:34:36.500000 UTC using 8 observations is Lat = -0.000034 [deg], Long = -0.000104 [deg], Height = -2.25 [m][0m
+[1m[32mVelocity: East: -22.31 [m/s], North: -1.13 [m/s], Up = -8.52 [m/s][0m
+Current receiver time: 56 s
+[1m[32mPosition at 2026-Mar-02 00:34:37.000000 UTC using 8 observations is Lat = -0.000028 [deg], Long = -0.000100 [deg], Height = -2.97 [m][0m
+[1m[32mVelocity: East: -22.18 [m/s], North: -1.23 [m/s], Up = -8.65 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:34:37.500000 UTC using 8 observations is Lat = -0.000004 [deg], Long = -0.000119 [deg], Height = -0.57 [m][0m
+[1m[32mVelocity: East: -22.24 [m/s], North: -1.15 [m/s], Up = -8.56 [m/s][0m
+Current receiver time: 57 s
+[1m[32mPosition at 2026-Mar-02 00:34:38.000000 UTC using 8 observations is Lat = -0.000015 [deg], Long = -0.000110 [deg], Height = -1.85 [m][0m
+[1m[32mVelocity: East: -22.30 [m/s], North: -1.11 [m/s], Up = -8.56 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:34:38.500000 UTC using 8 observations is Lat = -0.000013 [deg], Long = -0.000083 [deg], Height = -2.66 [m][0m
+[1m[32mVelocity: East: -22.34 [m/s], North: -1.05 [m/s], Up = -8.49 [m/s][0m
+Current receiver time: 58 s
+[1m[32mPosition at 2026-Mar-02 00:34:39.000000 UTC using 8 observations is Lat = -0.000016 [deg], Long = -0.000087 [deg], Height = -3.23 [m][0m
+[1m[32mVelocity: East: -22.26 [m/s], North: -1.12 [m/s], Up = -8.57 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:34:39.500000 UTC using 8 observations is Lat = -0.000012 [deg], Long = -0.000105 [deg], Height = -1.54 [m][0m
+[1m[32mVelocity: East: -22.29 [m/s], North: -1.08 [m/s], Up = -8.51 [m/s][0m
+Current receiver time: 59 s
+[1m[32mPosition at 2026-Mar-02 00:34:40.000000 UTC using 8 observations is Lat = -0.000008 [deg], Long = -0.000124 [deg], Height = 0.09 [m][0m
+[1m[32mVelocity: East: -22.32 [m/s], North: -1.07 [m/s], Up = -8.50 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:34:40.500000 UTC using 8 observations is Lat = 0.000011 [deg], Long = -0.000137 [deg], Height = 0.94 [m][0m
+[1m[32mVelocity: East: -22.32 [m/s], North: -1.05 [m/s], Up = -8.50 [m/s][0m
+Current receiver time: 1 min 0 s
+[1m[32mPosition at 2026-Mar-02 00:34:41.000000 UTC using 8 observations is Lat = 0.000008 [deg], Long = -0.000120 [deg], Height = 0.03 [m][0m
+[1m[32mVelocity: East: -22.35 [m/s], North: -1.01 [m/s], Up = -8.44 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:34:41.500000 UTC using 8 observations is Lat = -0.000027 [deg], Long = -0.000109 [deg], Height = -2.54 [m][0m
+[1m[32mVelocity: East: -22.31 [m/s], North: -0.92 [m/s], Up = -8.32 [m/s][0m
+Current receiver time: 1 min 1 s
+New GPS NAV message received in channel 6: subframe 5 from satellite GPS PRN 22 (Block IIR) with CN0=31.65 dB-Hz
+New GPS NAV message received in channel 1: subframe 5 from satellite GPS PRN 06 (Block IIF) with CN0=31.35 dB-Hz
+New GPS NAV message received in channel 4: subframe 5 from satellite GPS PRN 17 (Block IIR-M) with CN0=31.58 dB-Hz
+New GPS NAV message received in channel 0: subframe 5 from satellite GPS PRN 01 (Block IIF) with CN0=32.07 dB-Hz
+New GPS NAV message received in channel 7: subframe 5 from satellite GPS PRN 26 (Block IIF) with CN0=31.45 dB-Hz
+New GPS NAV message received in channel 8: subframe 5 from satellite GPS PRN 27 (Block IIF) with CN0=31.24 dB-Hz
+[1m[32mPosition at 2026-Mar-02 00:34:42.000000 UTC using 7 observations is Lat = -0.000015 [deg], Long = -0.000120 [deg], Height = -1.44 [m][0m
+[1m[32mVelocity: East: -22.92 [m/s], North: 0.08 [m/s], Up = -7.85 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:34:42.500000 UTC using 8 observations is Lat = 0.000011 [deg], Long = -0.000123 [deg], Height = 0.33 [m][0m
+[1m[32mVelocity: East: -22.81 [m/s], North: 0.03 [m/s], Up = -8.05 [m/s][0m
+Current receiver time: 1 min 2 s
+[1m[32mPosition at 2026-Mar-02 00:34:43.000000 UTC using 8 observations is Lat = 0.000002 [deg], Long = -0.000112 [deg], Height = -0.43 [m][0m
+[1m[32mVelocity: East: -22.89 [m/s], North: 0.05 [m/s], Up = -8.01 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:34:43.500000 UTC using 8 observations is Lat = 0.000005 [deg], Long = -0.000122 [deg], Height = -0.33 [m][0m
+[1m[32mVelocity: East: -22.78 [m/s], North: 0.07 [m/s], Up = -8.10 [m/s][0m
+Current receiver time: 1 min 3 s
+[1m[32mPosition at 2026-Mar-02 00:34:44.000000 UTC using 8 observations is Lat = -0.000005 [deg], Long = -0.000104 [deg], Height = -1.04 [m][0m
+[1m[32mVelocity: East: -22.77 [m/s], North: 0.02 [m/s], Up = -7.88 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:34:44.500000 UTC using 8 observations is Lat = -0.000016 [deg], Long = -0.000112 [deg], Height = -1.30 [m][0m
+[1m[32mVelocity: East: -22.83 [m/s], North: 0.07 [m/s], Up = -7.78 [m/s][0m
+Current receiver time: 1 min 4 s
+[1m[32mPosition at 2026-Mar-02 00:34:45.000000 UTC using 8 observations is Lat = 0.000002 [deg], Long = -0.000122 [deg], Height = -0.19 [m][0m
+[1m[32mVelocity: East: -22.85 [m/s], North: 0.08 [m/s], Up = -7.71 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:34:45.500000 UTC using 8 observations is Lat = -0.000001 [deg], Long = -0.000128 [deg], Height = 0.36 [m][0m
+[1m[32mVelocity: East: -22.75 [m/s], North: -0.02 [m/s], Up = -7.85 [m/s][0m
+Current receiver time: 1 min 5 s
+[1m[32mPosition at 2026-Mar-02 00:34:46.000000 UTC using 8 observations is Lat = 0.000009 [deg], Long = -0.000148 [deg], Height = 0.54 [m][0m
+[1m[32mVelocity: East: -22.86 [m/s], North: 0.14 [m/s], Up = -7.98 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:34:46.500000 UTC using 8 observations is Lat = 0.000011 [deg], Long = -0.000123 [deg], Height = -1.08 [m][0m
+[1m[32mVelocity: East: -22.72 [m/s], North: -0.00 [m/s], Up = -7.88 [m/s][0m
+Current receiver time: 1 min 6 s
+[1m[32mPosition at 2026-Mar-02 00:34:47.000000 UTC using 8 observations is Lat = -0.000010 [deg], Long = -0.000122 [deg], Height = -0.56 [m][0m
+[1m[32mVelocity: East: -22.82 [m/s], North: 0.11 [m/s], Up = -7.99 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:34:47.500000 UTC using 8 observations is Lat = -0.000006 [deg], Long = -0.000119 [deg], Height = -0.51 [m][0m
+[1m[32mVelocity: East: -22.85 [m/s], North: 0.12 [m/s], Up = -7.94 [m/s][0m
+New GPS NAV message received in channel 0: subframe 1 from satellite GPS PRN 01 (Block IIF) with CN0=31.90 dB-Hz
+Current receiver time: 1 min 7 s
+New GPS NAV message received in channel 6: subframe 1 from satellite GPS PRN 22 (Block IIR) with CN0=31.34 dB-Hz
+New GPS NAV message received in channel 7: subframe 1 from satellite GPS PRN 26 (Block IIF) with CN0=31.22 dB-Hz
+New GPS NAV message received in channel 1: subframe 1 from satellite GPS PRN 06 (Block IIF) with CN0=31.15 dB-Hz
+New GPS NAV message received in channel 4: subframe 1 from satellite GPS PRN 17 (Block IIR-M) with CN0=31.34 dB-Hz
+New GPS NAV message received in channel 9: subframe 1 from satellite GPS PRN 31 (Block IIR-M) with CN0=31.25 dB-Hz
+New GPS NAV message received in channel 8: subframe 1 from satellite GPS PRN 27 (Block IIF) with CN0=30.98 dB-Hz
+[1m[32mPosition at 2026-Mar-02 00:34:48.000000 UTC using 8 observations is Lat = -0.000006 [deg], Long = -0.000123 [deg], Height = -0.73 [m][0m
+[1m[32mVelocity: East: -22.67 [m/s], North: -0.20 [m/s], Up = -7.70 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:34:48.500000 UTC using 8 observations is Lat = -0.000010 [deg], Long = -0.000121 [deg], Height = -1.35 [m][0m
+[1m[32mVelocity: East: -22.59 [m/s], North: -0.28 [m/s], Up = -7.61 [m/s][0m
+Current receiver time: 1 min 8 s
+[1m[32mPosition at 2026-Mar-02 00:34:49.000000 UTC using 8 observations is Lat = -0.000013 [deg], Long = -0.000113 [deg], Height = -1.05 [m][0m
+[1m[32mVelocity: East: -22.65 [m/s], North: -0.31 [m/s], Up = -7.62 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:34:49.500000 UTC using 8 observations is Lat = -0.000012 [deg], Long = -0.000112 [deg], Height = -1.40 [m][0m
+[1m[32mVelocity: East: -22.88 [m/s], North: -0.32 [m/s], Up = -7.72 [m/s][0m
+Current receiver time: 1 min 9 s
+[1m[32mPosition at 2026-Mar-02 00:34:50.000000 UTC using 8 observations is Lat = -0.000003 [deg], Long = -0.000111 [deg], Height = -0.93 [m][0m
+[1m[32mVelocity: East: -22.76 [m/s], North: -0.27 [m/s], Up = -7.96 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:34:50.500000 UTC using 8 observations is Lat = -0.000007 [deg], Long = -0.000124 [deg], Height = -0.70 [m][0m
+[1m[32mVelocity: East: -22.91 [m/s], North: -0.30 [m/s], Up = -7.74 [m/s][0m
+Current receiver time: 1 min 10 s
+[1m[32mPosition at 2026-Mar-02 00:34:51.000000 UTC using 8 observations is Lat = 0.000005 [deg], Long = -0.000125 [deg], Height = 0.63 [m][0m
+[1m[32mVelocity: East: -21.85 [m/s], North: -0.32 [m/s], Up = -7.47 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:34:51.500000 UTC using 8 observations is Lat = 0.000011 [deg], Long = -0.000125 [deg], Height = 0.04 [m][0m
+[1m[32mVelocity: East: -22.72 [m/s], North: -0.31 [m/s], Up = -8.01 [m/s][0m
+Current receiver time: 1 min 11 s
+[1m[32mPosition at 2026-Mar-02 00:34:52.000000 UTC using 8 observations is Lat = 0.000008 [deg], Long = -0.000122 [deg], Height = -0.52 [m][0m
+[1m[32mVelocity: East: -23.38 [m/s], North: -0.29 [m/s], Up = -6.67 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:34:52.500000 UTC using 8 observations is Lat = 0.000011 [deg], Long = -0.000130 [deg], Height = 0.02 [m][0m
+[1m[32mVelocity: East: -21.68 [m/s], North: -0.20 [m/s], Up = -7.69 [m/s][0m
+Current receiver time: 1 min 12 s
+[1m[32mPosition at 2026-Mar-02 00:34:53.000000 UTC using 8 observations is Lat = 0.000012 [deg], Long = -0.000131 [deg], Height = 0.69 [m][0m
+[1m[32mVelocity: East: -21.82 [m/s], North: -0.13 [m/s], Up = -7.57 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:34:53.500000 UTC using 8 observations is Lat = -0.000025 [deg], Long = -0.000115 [deg], Height = -1.39 [m][0m
+[1m[32mVelocity: East: -23.05 [m/s], North: -0.26 [m/s], Up = -6.67 [m/s][0m
+New GPS NAV message received in channel 0: subframe 2 from satellite GPS PRN 01 (Block IIF) with CN0=31.66 dB-Hz
+Current receiver time: 1 min 13 s
+New GPS NAV message received in channel 6: subframe 2 from satellite GPS PRN 22 (Block IIR) with CN0=31.24 dB-Hz
+New GPS NAV message received in channel 9: subframe 2 from satellite GPS PRN 31 (Block IIR-M) with CN0=31.19 dB-Hz
+New GPS NAV message received in channel 4: subframe 2 from satellite GPS PRN 17 (Block IIR-M) with CN0=31.40 dB-Hz
+New GPS NAV message received in channel 1: subframe 2 from satellite GPS PRN 06 (Block IIF) with CN0=New GPS NAV message received in channel 2: subframe 2 from satellite 30.99 dB-Hz
+GPS PRN 12 (Block IIR-M) with CN0=31.29 dB-Hz
+New GPS NAV message received in channel 8: subframe 2 from satellite GPS PRN 27 (Block IIF) with CN0=31.01 dB-Hz
+[1m[32mPosition at 2026-Mar-02 00:34:54.000000 UTC using 8 observations is Lat = -0.000039 [deg], Long = -0.000124 [deg], Height = -2.91 [m][0m
+[1m[32mVelocity: East: -22.20 [m/s], North: -0.18 [m/s], Up = -7.72 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:34:54.500000 UTC using 8 observations is Lat = -0.000009 [deg], Long = -0.000142 [deg], Height = -1.70 [m][0m
+[1m[32mVelocity: East: -22.11 [m/s], North: -0.20 [m/s], Up = -7.87 [m/s][0m
+Current receiver time: 1 min 14 s
+[1m[32mPosition at 2026-Mar-02 00:34:55.000000 UTC using 8 observations is Lat = 0.000005 [deg], Long = -0.000125 [deg], Height = -0.11 [m][0m
+[1m[32mVelocity: East: -22.52 [m/s], North: -0.23 [m/s], Up = -6.65 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:34:55.500000 UTC using 8 observations is Lat = -0.000003 [deg], Long = -0.000111 [deg], Height = -0.36 [m][0m
+[1m[32mVelocity: East: -22.71 [m/s], North: -0.19 [m/s], Up = -6.50 [m/s][0m
+Current receiver time: 1 min 15 s
+[1m[32mPosition at 2026-Mar-02 00:34:56.000000 UTC using 8 observations is Lat = -0.000005 [deg], Long = -0.000114 [deg], Height = -0.28 [m][0m
+[1m[32mVelocity: East: -22.12 [m/s], North: -0.14 [m/s], Up = -7.78 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:34:56.500000 UTC using 8 observations is Lat = -0.000010 [deg], Long = -0.000122 [deg], Height = -0.84 [m][0m
+[1m[32mVelocity: East: -22.66 [m/s], North: -0.16 [m/s], Up = -6.51 [m/s][0m
+Current receiver time: 1 min 16 s
+[1m[32mPosition at 2026-Mar-02 00:34:57.000000 UTC using 8 observations is Lat = -0.000008 [deg], Long = -0.000118 [deg], Height = -0.95 [m][0m
+[1m[32mVelocity: East: -22.13 [m/s], North: -0.16 [m/s], Up = -7.80 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:34:57.500000 UTC using 8 observations is Lat = -0.000002 [deg], Long = -0.000118 [deg], Height = -0.36 [m][0m
+[1m[32mVelocity: East: -22.07 [m/s], North: -0.17 [m/s], Up = -7.82 [m/s][0m
+Current receiver time: 1 min 17 s
+[1m[32mPosition at 2026-Mar-02 00:34:58.000000 UTC using 8 observations is Lat = -0.000001 [deg], Long = -0.000136 [deg], Height = -0.28 [m][0m
+[1m[32mVelocity: East: -22.66 [m/s], North: -0.15 [m/s], Up = -6.56 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:34:58.500000 UTC using 8 observations is Lat = -0.000001 [deg], Long = -0.000124 [deg], Height = -0.11 [m][0m
+[1m[32mVelocity: East: -22.67 [m/s], North: -0.15 [m/s], Up = -6.56 [m/s][0m
+Current receiver time: 1 min 18 s
+[1m[32mPosition at 2026-Mar-02 00:34:59.000000 UTC using 8 observations is Lat = 0.000008 [deg], Long = -0.000123 [deg], Height = 0.32 [m][0m
+[1m[32mVelocity: East: -22.69 [m/s], North: -0.16 [m/s], Up = -6.53 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:34:59.500000 UTC using 8 observations is Lat = 0.000010 [deg], Long = -0.000123 [deg], Height = 0.60 [m][0m
+[1m[32mVelocity: East: -22.65 [m/s], North: -0.08 [m/s], Up = -6.52 [m/s][0m
+New GPS NAV message received in channel 0: subframe 3 from satellite GPS PRN 01 (Block IIF) with CN0=31.62 dB-Hz
+Current receiver time: 1 min 19 s
+New GPS NAV message received in channel 4: subframe 3 from satellite GPS PRN 17 (Block IIR-M) with CN0=31.66 dB-Hz
+New GPS NAV message received in channel 1: subframe 3 from satellite GPS PRN 06 (Block IIF) with CN0=31.01 dB-Hz
+New GPS NAV message received in channel 6: subframe 3 from satellite GPS PRN 22 (Block IIR) with CN0=31.57 dB-Hz
+New GPS NAV message received in channel 8: subframe 3 from satellite GPS PRN 27 (Block IIF) with CN0=31.20 dB-Hz
+New GPS NAV message received in channel 2: subframe 3 from satellite GPS PRN 12 (Block IIR-M) with CN0=31.16 dB-Hz
+New GPS NAV message received in channel 9: subframe 3 from satellite GPS PRN 31 (Block IIR-M) with CN0=31.18 dB-Hz
+[1m[32mPosition at 2026-Mar-02 00:35:00.000000 UTC using 8 observations is Lat = 0.000000 [deg], Long = -0.000128 [deg], Height = -0.64 [m][0m
+[1m[32mVelocity: East: -22.65 [m/s], North: -0.11 [m/s], Up = -6.47 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:35:00.500000 UTC using 8 observations is Lat = 0.000002 [deg], Long = -0.000130 [deg], Height = -1.58 [m][0m
+[1m[32mVelocity: East: -22.56 [m/s], North: -0.15 [m/s], Up = -6.51 [m/s][0m
+Current receiver time: 1 min 20 s
+[1m[32mPosition at 2026-Mar-02 00:35:01.000000 UTC using 8 observations is Lat = -0.000003 [deg], Long = -0.000116 [deg], Height = -1.79 [m][0m
+[1m[32mVelocity: East: -22.56 [m/s], North: -0.19 [m/s], Up = -6.58 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:35:01.500000 UTC using 8 observations is Lat = 0.000002 [deg], Long = -0.000127 [deg], Height = -0.97 [m][0m
+[1m[32mVelocity: East: -22.57 [m/s], North: -0.07 [m/s], Up = -6.53 [m/s][0m
+Current receiver time: 1 min 21 s
+[1m[32mPosition at 2026-Mar-02 00:35:02.000000 UTC using 8 observations is Lat = -0.000005 [deg], Long = -0.000116 [deg], Height = -0.66 [m][0m
+[1m[32mVelocity: East: -22.63 [m/s], North: -0.13 [m/s], Up = -6.57 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:35:02.500000 UTC using 8 observations is Lat = -0.000013 [deg], Long = -0.000117 [deg], Height = -1.22 [m][0m
+[1m[32mVelocity: East: -22.62 [m/s], North: -0.07 [m/s], Up = -6.55 [m/s][0m
+Current receiver time: 1 min 22 s
+[1m[32mPosition at 2026-Mar-02 00:35:03.000000 UTC using 8 observations is Lat = -0.000020 [deg], Long = -0.000128 [deg], Height = -2.06 [m][0m
+[1m[32mVelocity: East: -22.51 [m/s], North: -0.15 [m/s], Up = -6.59 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:35:03.500000 UTC using 8 observations is Lat = -0.000006 [deg], Long = -0.000142 [deg], Height = -1.73 [m][0m
+[1m[32mVelocity: East: -22.61 [m/s], North: -0.16 [m/s], Up = -6.63 [m/s][0m
+Current receiver time: 1 min 23 s
+[1m[32mPosition at 2026-Mar-02 00:35:04.000000 UTC using 8 observations is Lat = -0.000013 [deg], Long = -0.000143 [deg], Height = -1.51 [m][0m
+[1m[32mVelocity: East: -22.57 [m/s], North: -0.10 [m/s], Up = -6.54 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:35:04.500000 UTC using 8 observations is Lat = -0.000005 [deg], Long = -0.000150 [deg], Height = -0.79 [m][0m
+[1m[32mVelocity: East: -22.62 [m/s], North: -0.04 [m/s], Up = -6.54 [m/s][0m
+Current receiver time: 1 min 24 s
+[1m[32mPosition at 2026-Mar-02 00:35:05.000000 UTC using 8 observations is Lat = -0.000004 [deg], Long = -0.000142 [deg], Height = -0.23 [m][0m
+[1m[32mVelocity: East: -22.58 [m/s], North: -0.06 [m/s], Up = -6.62 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:35:05.500000 UTC using 8 observations is Lat = -0.000002 [deg], Long = -0.000139 [deg], Height = 0.19 [m][0m
+[1m[32mVelocity: East: -22.58 [m/s], North: -0.08 [m/s], Up = -6.57 [m/s][0m
+New GPS NAV message received in channel 0: subframe 4 from satellite GPS PRN 01 (Block IIF) with CN0=32.29 dB-Hz
+Current receiver time: 1 min 25 s
+New GPS NAV message received in channel 6: subframe 4 from satellite GPS PRN 22 (Block IIR) with CN0=31.63 dB-Hz
+New GPS NAV message received in channel 1: subframe 4 from satellite GPS PRN 06 (Block IIF) with CN0=31.28 dB-Hz
+New GPS NAV message received in channel 7: subframe 4 from satellite GPS PRN 26 (Block IIF) with CN0=31.44 dB-Hz
+New GPS NAV message received in channel 9: subframe 4 from satellite GPS PRN 31 (Block IIR-M) with CN0=31.59 dB-Hz
+New GPS NAV message received in channel 8: subframe 4 from satellite GPS PRN 27 (Block IIF) with CN0=31.50 dB-Hz
+New GPS NAV message received in channel 4: subframe 4 from satellite GPS PRN 17 (Block IIR-M) with CN0=32.10 dB-Hz
+New GPS NAV message received in channel 2: subframe 4 from satellite GPS PRN 12 (Block IIR-M) with CN0=31.48 dB-Hz
+[1m[32mPosition at 2026-Mar-02 00:35:06.000000 UTC using 8 observations is Lat = -0.000015 [deg], Long = -0.000127 [deg], Height = -0.80 [m][0m
+[1m[32mVelocity: East: -22.62 [m/s], North: 0.01 [m/s], Up = -6.48 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:35:06.500000 UTC using 8 observations is Lat = -0.000007 [deg], Long = -0.000125 [deg], Height = -0.54 [m][0m
+[1m[32mVelocity: East: -22.59 [m/s], North: -0.05 [m/s], Up = -6.53 [m/s][0m
+Current receiver time: 1 min 26 s
+[1m[32mPosition at 2026-Mar-02 00:35:07.000000 UTC using 8 observations is Lat = -0.000006 [deg], Long = -0.000106 [deg], Height = -0.64 [m][0m
+[1m[32mVelocity: East: -22.62 [m/s], North: -0.06 [m/s], Up = -6.58 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:35:07.500000 UTC using 8 observations is Lat = -0.000014 [deg], Long = -0.000117 [deg], Height = -0.64 [m][0m
+[1m[32mVelocity: East: -22.67 [m/s], North: -0.12 [m/s], Up = -6.64 [m/s][0m
+Current receiver time: 1 min 27 s
+[1m[32mPosition at 2026-Mar-02 00:35:08.000000 UTC using 8 observations is Lat = -0.000004 [deg], Long = -0.000110 [deg], Height = -1.25 [m][0m
+[1m[32mVelocity: East: -22.57 [m/s], North: -0.02 [m/s], Up = -6.54 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:35:08.500000 UTC using 8 observations is Lat = 0.000004 [deg], Long = -0.000127 [deg], Height = -0.85 [m][0m
+[1m[32mVelocity: East: -22.61 [m/s], North: -0.02 [m/s], Up = -6.50 [m/s][0m
+Current receiver time: 1 min 28 s
+[1m[32mPosition at 2026-Mar-02 00:35:09.000000 UTC using 8 observations is Lat = -0.000002 [deg], Long = -0.000135 [deg], Height = -0.42 [m][0m
+[1m[32mVelocity: East: -22.56 [m/s], North: -0.00 [m/s], Up = -6.54 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:35:09.500000 UTC using 8 observations is Lat = 0.000008 [deg], Long = -0.000104 [deg], Height = 0.05 [m][0m
+[1m[32mVelocity: East: -22.47 [m/s], North: -0.01 [m/s], Up = -6.59 [m/s][0m
+Current receiver time: 1 min 29 s
+[1m[32mPosition at 2026-Mar-02 00:35:10.000000 UTC using 8 observations is Lat = -0.000003 [deg], Long = -0.000109 [deg], Height = -0.41 [m][0m
+[1m[32mVelocity: East: -22.50 [m/s], North: -0.05 [m/s], Up = -6.58 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:35:10.500000 UTC using 8 observations is Lat = -0.000003 [deg], Long = -0.000117 [deg], Height = -0.52 [m][0m
+[1m[32mVelocity: East: -22.61 [m/s], North: -0.01 [m/s], Up = -6.52 [m/s][0m
+Current receiver time: 1 min 30 s
+[1m[32mPosition at 2026-Mar-02 00:35:11.000000 UTC using 8 observations is Lat = -0.000015 [deg], Long = -0.000118 [deg], Height = -0.86 [m][0m
+[1m[32mVelocity: East: -22.56 [m/s], North: -0.05 [m/s], Up = -6.56 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:35:11.500000 UTC using 8 observations is Lat = -0.000026 [deg], Long = -0.000120 [deg], Height = -1.77 [m][0m
+[1m[32mVelocity: East: -22.58 [m/s], North: -0.03 [m/s], Up = -6.57 [m/s][0m
+Current receiver time: 1 min 31 s
+New GPS NAV message received in channel 3: subframe 5 from satellite GPS PRN 16 (Block IIR) with CN0=31.06 dB-Hz
+New GPS NAV message received in channel 0: subframe 5 from satellite GPS PRN 01 (Block IIF) with CN0=31.72 dB-Hz
+New GPS NAV message received in channel 6: subframe 5 from satellite GPS PRN 22 (Block IIR) with CN0=31.28 dB-Hz
+New GPS NAV message received in channel 1: subframe 5 from satellite GPS PRN 06 (Block IIF) with CN0=30.84 dB-Hz
+New GPS NAV message received in channel 8: subframe 5 from satellite GPS PRN 27 (Block IIF) with CN0=31.10 dB-Hz
+New GPS NAV message received in channel 4: subframe 5 from satellite GPS PRN 17 (Block IIR-M) with CN0=31.57 dB-Hz
+New GPS NAV message received in channel 7: subframe 5 from satellite GPS PRN 26 (Block IIF) with CN0=31.05 dB-Hz
+New GPS NAV message received in channel 9: subframe 5 from satellite GPS PRN 31 (Block IIR-M) with CN0=31.16 dB-Hz
+New GPS NAV message received in channel 2: subframe 5 from satellite GPS PRN 12 (Block IIR-M) with CN0=31.06 dB-Hz
+[1m[32mPosition at 2026-Mar-02 00:35:12.000000 UTC using 9 observations is Lat = -0.000008 [deg], Long = -0.000115 [deg], Height = -0.70 [m][0m
+[1m[32mVelocity: East: -22.52 [m/s], North: 0.05 [m/s], Up = -6.47 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:35:12.500000 UTC using 9 observations is Lat = -0.000016 [deg], Long = -0.000125 [deg], Height = -0.90 [m][0m
+[1m[32mVelocity: East: -22.19 [m/s], North: -0.01 [m/s], Up = -6.47 [m/s][0m
+Current receiver time: 1 min 32 s
+[1m[32mPosition at 2026-Mar-02 00:35:13.000000 UTC using 9 observations is Lat = -0.000015 [deg], Long = -0.000121 [deg], Height = -0.59 [m][0m
+[1m[32mVelocity: East: -22.26 [m/s], North: 0.02 [m/s], Up = -6.46 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:35:13.500000 UTC using 9 observations is Lat = -0.000009 [deg], Long = -0.000118 [deg], Height = -0.87 [m][0m
+[1m[32mVelocity: East: -22.20 [m/s], North: 0.03 [m/s], Up = -6.46 [m/s][0m
+Current receiver time: 1 min 33 s
+[1m[32mPosition at 2026-Mar-02 00:35:14.000000 UTC using 9 observations is Lat = 0.000007 [deg], Long = -0.000126 [deg], Height = -0.66 [m][0m
+[1m[32mVelocity: East: -23.68 [m/s], North: 0.46 [m/s], Up = -5.94 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:35:14.500000 UTC using 9 observations is Lat = 0.000003 [deg], Long = -0.000132 [deg], Height = 0.28 [m][0m
+[1m[32mVelocity: East: -23.68 [m/s], North: 0.51 [m/s], Up = -5.98 [m/s][0m
+Current receiver time: 1 min 34 s
+[1m[32mPosition at 2026-Mar-02 00:35:15.000000 UTC using 9 observations is Lat = 0.000005 [deg], Long = -0.000126 [deg], Height = -0.36 [m][0m
+[1m[32mVelocity: East: -22.32 [m/s], North: 0.10 [m/s], Up = -6.43 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:35:15.500000 UTC using 9 observations is Lat = -0.000009 [deg], Long = -0.000113 [deg], Height = -1.61 [m][0m
+[1m[32mVelocity: East: -23.68 [m/s], North: 0.46 [m/s], Up = -5.95 [m/s][0m
+Current receiver time: 1 min 35 s
+[1m[32mPosition at 2026-Mar-02 00:35:16.000000 UTC using 9 observations is Lat = 0.000009 [deg], Long = -0.000115 [deg], Height = -0.06 [m][0m
+[1m[32mVelocity: East: -22.20 [m/s], North: 0.01 [m/s], Up = -6.51 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:35:16.500000 UTC using 9 observations is Lat = 0.000006 [deg], Long = -0.000126 [deg], Height = -0.47 [m][0m
+[1m[32mVelocity: East: -23.72 [m/s], North: 0.45 [m/s], Up = -5.97 [m/s][0m
+Current receiver time: 1 min 36 s
+[1m[32mPosition at 2026-Mar-02 00:35:17.000000 UTC using 9 observations is Lat = -0.000001 [deg], Long = -0.000122 [deg], Height = -0.43 [m][0m
+[1m[32mVelocity: East: -22.18 [m/s], North: 0.06 [m/s], Up = -6.48 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:35:17.500000 UTC using 9 observations is Lat = -0.000015 [deg], Long = -0.000118 [deg], Height = -0.94 [m][0m
+[1m[32mVelocity: East: -22.22 [m/s], North: 0.02 [m/s], Up = -6.50 [m/s][0m
+New GPS NAV message received in channel 6: subframe 1 from satellite GPS PRN 22 (Block IIR) with CN0=31.18 dB-Hz
+New GPS NAV message received in channel 0: subframe 1 from satellite GPS PRN 01 (Block IIF) with CN0=31.55 dB-Hz
+New GPS NAV message received in channel 3: subframe 1 from satellite GPS PRN 16 (Block IIR) with CN0=30.92 dB-Hz
+Current receiver time: 1 min 37 s
+New GPS NAV message received in channel 1: subframe 1 from satellite GPS PRN 06 (Block IIF) with CN0=30.81 dB-Hz
+New GPS NAV message received in channel 9: subframe 1 from satellite GPS PRN 31 (Block IIR-M) with CN0=31.10 dB-Hz
+New GPS NAV message received in channel 4: subframe 1 from satellite GPS PRN 17 (Block IIR-M) with CN0=31.44 dB-Hz
+New GPS NAV message received in channel 7: subframe 1 from satellite GPS PRN 26 (Block IIF) with CN0=30.90 dB-Hz
+New GPS NAV message received in channel 2: subframe 1 from satellite GPS PRN 12 (Block IIR-M) with CN0=30.99 dB-Hz
+[1m[32mPosition at 2026-Mar-02 00:35:18.000000 UTC using 9 observations is Lat = -0.000016 [deg], Long = -0.000115 [deg], Height = -1.41 [m][0m
+[1m[32mVelocity: East: -22.18 [m/s], North: 0.07 [m/s], Up = -6.48 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:35:18.500000 UTC using 9 observations is Lat = 0.000005 [deg], Long = -0.000112 [deg], Height = -0.41 [m][0m
+[1m[32mVelocity: East: -23.73 [m/s], North: 0.45 [m/s], Up = -5.97 [m/s][0m
+Current receiver time: 1 min 38 s
+[1m[32mPosition at 2026-Mar-02 00:35:19.000000 UTC using 9 observations is Lat = 0.000004 [deg], Long = -0.000113 [deg], Height = -1.03 [m][0m
+[1m[32mVelocity: East: -23.69 [m/s], North: 0.57 [m/s], Up = -5.95 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:35:19.500000 UTC using 9 observations is Lat = -0.000000 [deg], Long = -0.000114 [deg], Height = -0.50 [m][0m
+[1m[32mVelocity: East: -22.16 [m/s], North: 0.05 [m/s], Up = -6.51 [m/s][0m
+Current receiver time: 1 min 39 s
+[1m[32mPosition at 2026-Mar-02 00:35:20.000000 UTC using 9 observations is Lat = -0.000001 [deg], Long = -0.000121 [deg], Height = -0.90 [m][0m
+[1m[32mVelocity: East: -22.15 [m/s], North: 0.04 [m/s], Up = -6.53 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:35:20.500000 UTC using 9 observations is Lat = -0.000012 [deg], Long = -0.000108 [deg], Height = -1.13 [m][0m
+[1m[32mVelocity: East: -23.60 [m/s], North: 0.48 [m/s], Up = -6.04 [m/s][0m
+Current receiver time: 1 min 40 s
+[1m[32mPosition at 2026-Mar-02 00:35:21.000000 UTC using 9 observations is Lat = 0.000010 [deg], Long = -0.000121 [deg], Height = 0.07 [m][0m
+[1m[32mVelocity: East: -23.68 [m/s], North: 0.56 [m/s], Up = -5.99 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:35:21.500000 UTC using 9 observations is Lat = 0.000001 [deg], Long = -0.000115 [deg], Height = -0.46 [m][0m
+[1m[32mVelocity: East: -22.15 [m/s], North: 0.06 [m/s], Up = -6.50 [m/s][0m
+Current receiver time: 1 min 41 s
+[1m[32mPosition at 2026-Mar-02 00:35:22.000000 UTC using 9 observations is Lat = 0.000010 [deg], Long = -0.000125 [deg], Height = -0.47 [m][0m
+[1m[32mVelocity: East: -22.19 [m/s], North: 0.12 [m/s], Up = -6.47 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:35:22.500000 UTC using 9 observations is Lat = -0.000002 [deg], Long = -0.000113 [deg], Height = -0.89 [m][0m
+[1m[32mVelocity: East: -21.93 [m/s], North: -0.52 [m/s], Up = -5.98 [m/s][0m
+Current receiver time: 1 min 42 s
+[1m[32mPosition at 2026-Mar-02 00:35:23.000000 UTC using 9 observations is Lat = -0.000007 [deg], Long = -0.000121 [deg], Height = -0.71 [m][0m
+[1m[32mVelocity: East: -22.12 [m/s], North: -0.45 [m/s], Up = -6.01 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:35:23.500000 UTC using 9 observations is Lat = 0.000006 [deg], Long = -0.000117 [deg], Height = -0.42 [m][0m
+[1m[32mVelocity: East: -22.09 [m/s], North: -0.47 [m/s], Up = -6.06 [m/s][0m
+Current receiver time: 1 min 43 s
+New GPS NAV message received in channel 6: subframe 2 from satellite GPS PRN 22 (Block IIR) with CN0=31.16 dB-Hz
+New GPS NAV message received in channel 4: subframe 2 from satellite GPS PRN 17 (Block IIR-M) with CN0=31.47 dB-Hz
+New GPS NAV message received in channel 1: subframe 2 from satellite GPS PRN 06 (Block IIF) with CN0=30.83 dB-Hz
+New GPS NAV message received in channel 7: subframe 2 from satellite GPS PRN 26 (Block IIF) with CN0=30.83 dB-Hz
+New GPS NAV message received in channel 3: subframe 2 from satellite GPS PRN 16 (Block IIR) with CN0=30.90 dB-Hz
+New GPS NAV message received in channel 0: subframe 2 from satellite GPS PRN 01 (Block IIF) with CN0=31.24 dB-Hz
+New GPS NAV message received in channel 2: subframe 2 from satellite GPS PRN 12 (Block IIR-M) with CN0=31.13 dB-Hz
+[1m[32mPosition at 2026-Mar-02 00:35:24.000000 UTC using 9 observations is Lat = 0.000007 [deg], Long = -0.000135 [deg], Height = 0.04 [m][0m
+[1m[32mVelocity: East: -23.50 [m/s], North: 0.02 [m/s], Up = -5.39 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:35:24.500000 UTC using 9 observations is Lat = 0.000017 [deg], Long = -0.000153 [deg], Height = 0.98 [m][0m
+[1m[32mVelocity: East: -23.53 [m/s], North: 0.09 [m/s], Up = -5.56 [m/s][0m
+Current receiver time: 1 min 44 s
+[1m[32mPosition at 2026-Mar-02 00:35:25.000000 UTC using 9 observations is Lat = 0.000011 [deg], Long = -0.000130 [deg], Height = 0.05 [m][0m
+[1m[32mVelocity: East: -23.84 [m/s], North: 0.61 [m/s], Up = -4.94 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:35:25.500000 UTC using 9 observations is Lat = 0.000003 [deg], Long = -0.000126 [deg], Height = -1.05 [m][0m
+[1m[32mVelocity: East: -21.25 [m/s], North: -1.53 [m/s], Up = -7.49 [m/s][0m
+Current receiver time: 1 min 45 s
+[1m[32mPosition at 2026-Mar-02 00:35:26.000000 UTC using 9 observations is Lat = 0.000001 [deg], Long = -0.000124 [deg], Height = -0.57 [m][0m
+[1m[32mVelocity: East: -23.79 [m/s], North: 0.57 [m/s], Up = -5.00 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:35:26.500000 UTC using 9 observations is Lat = -0.000002 [deg], Long = -0.000127 [deg], Height = -0.68 [m][0m
+[1m[32mVelocity: East: -21.26 [m/s], North: -1.54 [m/s], Up = -7.51 [m/s][0m
+Current receiver time: 1 min 46 s
+[1m[32mPosition at 2026-Mar-02 00:35:27.000000 UTC using 9 observations is Lat = -0.000004 [deg], Long = -0.000128 [deg], Height = -0.11 [m][0m
+[1m[32mVelocity: East: -23.85 [m/s], North: 0.78 [m/s], Up = -5.00 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:35:27.500000 UTC using 9 observations is Lat = -0.000010 [deg], Long = -0.000126 [deg], Height = -0.37 [m][0m
+[1m[32mVelocity: East: -22.74 [m/s], North: -1.07 [m/s], Up = -6.98 [m/s][0m
+Current receiver time: 1 min 47 s
+[1m[32mPosition at 2026-Mar-02 00:35:28.000000 UTC using 9 observations is Lat = -0.000008 [deg], Long = -0.000128 [deg], Height = -0.37 [m][0m
+[1m[32mVelocity: East: -22.72 [m/s], North: -1.27 [m/s], Up = -7.00 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:35:28.500000 UTC using 9 observations is Lat = -0.000015 [deg], Long = -0.000123 [deg], Height = -1.26 [m][0m
+[1m[32mVelocity: East: -21.12 [m/s], North: -1.71 [m/s], Up = -7.57 [m/s][0m
+Current receiver time: 1 min 48 s
+[1m[32mPosition at 2026-Mar-02 00:35:29.000000 UTC using 9 observations is Lat = -0.000004 [deg], Long = -0.000120 [deg], Height = -0.76 [m][0m
+[1m[32mVelocity: East: -22.70 [m/s], North: -1.27 [m/s], Up = -7.04 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:35:29.500000 UTC using 9 observations is Lat = 0.000000 [deg], Long = -0.000116 [deg], Height = -0.35 [m][0m
+[1m[32mVelocity: East: -22.59 [m/s], North: -1.31 [m/s], Up = -6.93 [m/s][0m
+Current receiver time: 1 min 49 s
+New GPS NAV message received in channel 3: subframe 3 from satellite GPS PRN 16 (Block IIR) with CN0=31.34 dB-Hz
+New GPS NAV message received in channel 1: subframe 3 from satellite GPS PRN 06 (Block IIF) with CN0=30.91 dB-Hz
+New GPS NAV message received in channel 6: subframe 3 from satellite GPS PRN 22 (Block IIR) with CN0=31.55 dB-Hz
+New GPS NAV message received in channel 7: subframe 3 from satellite GPS PRN 26 (Block IIF) with CN0=31.11 dB-Hz
+[1m[32mPosition at 2026-Mar-02 00:35:30.000000 UTC using 9 observations is Lat = 0.000000 [deg], Long = -0.000116 [deg], Height = -0.45 [m][0m
+[1m[32mVelocity: East: -22.61 [m/s], North: -1.25 [m/s], Up = -6.91 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:35:30.500000 UTC using 8 observations is Lat = 0.000017 [deg], Long = -0.000125 [deg], Height = 0.32 [m][0m
+[1m[32mVelocity: East: -20.78 [m/s], North: -1.89 [m/s], Up = -7.63 [m/s][0m
+Current receiver time: 1 min 50 s
+[1m[32mPosition at 2026-Mar-02 00:35:31.000000 UTC using 8 observations is Lat = 0.000017 [deg], Long = -0.000110 [deg], Height = 0.24 [m][0m
+[1m[32mVelocity: East: -22.92 [m/s], North: 0.12 [m/s], Up = -7.04 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:35:31.500000 UTC using 8 observations is Lat = 0.000010 [deg], Long = -0.000107 [deg], Height = -0.42 [m][0m
+[1m[32mVelocity: East: -22.91 [m/s], North: 0.07 [m/s], Up = -7.09 [m/s][0m
+Current receiver time: 1 min 51 s
+[1m[32mPosition at 2026-Mar-02 00:35:32.000000 UTC using 8 observations is Lat = -0.000010 [deg], Long = -0.000091 [deg], Height = -0.44 [m][0m
+[1m[32mVelocity: East: -22.05 [m/s], North: -1.06 [m/s], Up = -7.55 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:35:32.500000 UTC using 8 observations is Lat = -0.000016 [deg], Long = -0.000084 [deg], Height = -0.31 [m][0m
+[1m[32mVelocity: East: -22.89 [m/s], North: 0.10 [m/s], Up = -7.08 [m/s][0m
+Current receiver time: 1 min 52 s
+[1m[32mPosition at 2026-Mar-02 00:35:33.000000 UTC using 8 observations is Lat = -0.000010 [deg], Long = -0.000105 [deg], Height = -1.21 [m][0m
+[1m[32mVelocity: East: -21.96 [m/s], North: -1.04 [m/s], Up = -7.56 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:35:33.500000 UTC using 8 observations is Lat = -0.000005 [deg], Long = -0.000116 [deg], Height = -1.18 [m][0m
+[1m[32mVelocity: East: -21.96 [m/s], North: -0.99 [m/s], Up = -7.51 [m/s][0m
+Current receiver time: 1 min 53 s
+[1m[32mPosition at 2026-Mar-02 00:35:34.000000 UTC using 8 observations is Lat = -0.000000 [deg], Long = -0.000118 [deg], Height = -0.84 [m][0m
+[1m[32mVelocity: East: -22.88 [m/s], North: 0.15 [m/s], Up = -6.96 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:35:34.500000 UTC using 8 observations is Lat = -0.000000 [deg], Long = -0.000119 [deg], Height = -0.52 [m][0m
+[1m[32mVelocity: East: -22.76 [m/s], North: 0.11 [m/s], Up = -7.13 [m/s][0m
+Current receiver time: 1 min 54 s
+[1m[32mPosition at 2026-Mar-02 00:35:35.000000 UTC using 8 observations is Lat = -0.000004 [deg], Long = -0.000115 [deg], Height = -0.91 [m][0m
+[1m[32mVelocity: East: -22.86 [m/s], North: 0.20 [m/s], Up = -7.01 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:35:35.500000 UTC using 8 observations is Lat = -0.000007 [deg], Long = -0.000111 [deg], Height = -1.07 [m][0m
+[1m[32mVelocity: East: -22.84 [m/s], North: 0.12 [m/s], Up = -7.08 [m/s][0m
+Current receiver time: 1 min 55 s
+New GPS NAV message received in channel 9: subframe 4 from satellite GPS PRN 31 (Block IIR-M) with CN0=30.98 dB-Hz
+New GPS NAV message received in channel 6: subframe 4 from satellite GPS PRN 22 (Block IIR) with CN0=31.26 dB-Hz
+New GPS NAV message received in channel 3: subframe 4 from satellite GPS PRN 16 (Block IIR) with CN0=31.04 dB-Hz
+New GPS NAV message received in channel 1: subframe 4 from satellite GPS PRN 06 (Block IIF) with CN0=30.84 dB-Hz
+New GPS NAV message received in channel 7: subframe 4 from satellite GPS PRN 26 (Block IIF) with CN0=30.94 dB-Hz
+[1m[32mPosition at 2026-Mar-02 00:35:36.000000 UTC using 8 observations is Lat = -0.000015 [deg], Long = -0.000111 [deg], Height = -1.63 [m][0m
+[1m[32mVelocity: East: -22.75 [m/s], North: 0.06 [m/s], Up = -7.17 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:35:36.500000 UTC using 8 observations is Lat = -0.000011 [deg], Long = -0.000116 [deg], Height = -0.88 [m][0m
+[1m[32mVelocity: East: -21.88 [m/s], North: -1.03 [m/s], Up = -7.54 [m/s][0m
+Current receiver time: 1 min 56 s
+[1m[32mPosition at 2026-Mar-02 00:35:37.000000 UTC using 8 observations is Lat = 0.000003 [deg], Long = -0.000130 [deg], Height = -0.06 [m][0m
+[1m[32mVelocity: East: -22.73 [m/s], North: 0.07 [m/s], Up = -7.16 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:35:37.500000 UTC using 8 observations is Lat = 0.000016 [deg], Long = -0.000132 [deg], Height = 0.62 [m][0m
+[1m[32mVelocity: East: -22.77 [m/s], North: 0.10 [m/s], Up = -7.14 [m/s][0m
+Current receiver time: 1 min 57 s
+[1m[32mPosition at 2026-Mar-02 00:35:38.000000 UTC using 8 observations is Lat = 0.000008 [deg], Long = -0.000120 [deg], Height = -0.59 [m][0m
+[1m[32mVelocity: East: -22.85 [m/s], North: 0.16 [m/s], Up = -7.05 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:35:38.500000 UTC using 8 observations is Lat = 0.000006 [deg], Long = -0.000115 [deg], Height = -0.22 [m][0m
+[1m[32mVelocity: East: -22.73 [m/s], North: 0.12 [m/s], Up = -7.17 [m/s][0m
+Current receiver time: 1 min 58 s
+[1m[32mPosition at 2026-Mar-02 00:35:39.000000 UTC using 8 observations is Lat = 0.000001 [deg], Long = -0.000109 [deg], Height = -1.37 [m][0m
+[1m[32mVelocity: East: -22.81 [m/s], North: 0.21 [m/s], Up = -7.06 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:35:39.500000 UTC using 8 observations is Lat = 0.000015 [deg], Long = -0.000124 [deg], Height = 0.57 [m][0m
+[1m[32mVelocity: East: -21.81 [m/s], North: -0.98 [m/s], Up = -7.66 [m/s][0m
+Current receiver time: 1 min 59 s
+[1m[32mPosition at 2026-Mar-02 00:35:40.000000 UTC using 8 observations is Lat = -0.000006 [deg], Long = -0.000114 [deg], Height = -0.42 [m][0m
+[1m[32mVelocity: East: -22.73 [m/s], North: 0.11 [m/s], Up = -7.16 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:35:40.500000 UTC using 8 observations is Lat = -0.000010 [deg], Long = -0.000112 [deg], Height = -0.86 [m][0m
+[1m[32mVelocity: East: -22.66 [m/s], North: 0.14 [m/s], Up = -7.16 [m/s][0m
+Current receiver time: 2 min 0 s
+[1m[32mPosition at 2026-Mar-02 00:35:41.000000 UTC using 8 observations is Lat = -0.000006 [deg], Long = -0.000113 [deg], Height = -0.73 [m][0m
+[1m[32mVelocity: East: -22.75 [m/s], North: 0.18 [m/s], Up = -7.07 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:35:41.500000 UTC using 8 observations is Lat = -0.000002 [deg], Long = -0.000115 [deg], Height = -0.82 [m][0m
+[1m[32mVelocity: East: -22.64 [m/s], North: 0.11 [m/s], Up = -7.17 [m/s][0m
+Current receiver time: 2 min 1 s
+New GPS NAV message received in channel 3: subframe 5 from satellite GPS PRN 16 (Block IIR) with CN0=30.85 dB-Hz
+New GPS NAV message received in channel 1: subframe 5 from satellite GPS PRN 06 (Block IIF) with CN0=30.73 dB-Hz
+New GPS NAV message received in channel 6: subframe 5 from satellite GPS PRN 22 (Block IIR) with CN0=31.06 dB-Hz
+New GPS NAV message received in channel 9: subframe 5 from satellite GPS PRN 31 (Block IIR-M) with CN0=30.84 dB-Hz
+New GPS NAV message received in channel 7: subframe 5 from satellite GPS PRN 26 (Block IIF) with CN0=30.79 dB-Hz
+[1m[32mPosition at 2026-Mar-02 00:35:42.000000 UTC using 7 observations is Lat = -0.000013 [deg], Long = -0.000111 [deg], Height = -2.08 [m][0m
+[1m[32mVelocity: East: -22.75 [m/s], North: 0.28 [m/s], Up = -6.95 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:35:42.500000 UTC using 6 observations is Lat = 0.000015 [deg], Long = -0.000132 [deg], Height = 0.68 [m][0m
+[1m[32mVelocity: East: -22.22 [m/s], North: -0.47 [m/s], Up = -7.63 [m/s][0m
+Current receiver time: 2 min 2 s
+[1m[32mPosition at 2026-Mar-02 00:35:43.000000 UTC using 6 observations is Lat = -0.000033 [deg], Long = -0.000105 [deg], Height = -2.43 [m][0m
+[1m[32mVelocity: East: -22.10 [m/s], North: -0.51 [m/s], Up = -7.68 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:35:43.500000 UTC using 6 observations is Lat = -0.000016 [deg], Long = -0.000110 [deg], Height = -0.91 [m][0m
+[1m[32mVelocity: East: -22.09 [m/s], North: -0.56 [m/s], Up = -7.78 [m/s][0m
+Current receiver time: 2 min 3 s
+[1m[32mPosition at 2026-Mar-02 00:35:44.000000 UTC using 6 observations is Lat = -0.000029 [deg], Long = -0.000088 [deg], Height = -2.17 [m][0m
+[1m[32mVelocity: East: -22.41 [m/s], North: -0.18 [m/s], Up = -7.32 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:35:44.500000 UTC using 6 observations is Lat = 0.000002 [deg], Long = -0.000111 [deg], Height = -0.42 [m][0m
+[1m[32mVelocity: East: -22.17 [m/s], North: -0.39 [m/s], Up = -7.59 [m/s][0m
+Current receiver time: 2 min 4 s
+[1m[32mPosition at 2026-Mar-02 00:35:45.000000 UTC using 6 observations is Lat = 0.000024 [deg], Long = -0.000116 [deg], Height = 0.72 [m][0m
+[1m[32mVelocity: East: -22.15 [m/s], North: -0.33 [m/s], Up = -7.51 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:35:45.500000 UTC using 6 observations is Lat = -0.000030 [deg], Long = -0.000101 [deg], Height = -2.04 [m][0m
+[1m[32mVelocity: East: -22.21 [m/s], North: -0.36 [m/s], Up = -7.52 [m/s][0m
+Current receiver time: 2 min 5 s
+[1m[32mPosition at 2026-Mar-02 00:35:46.000000 UTC using 6 observations is Lat = 0.000005 [deg], Long = -0.000128 [deg], Height = -0.05 [m][0m
+[1m[32mVelocity: East: -22.03 [m/s], North: -0.51 [m/s], Up = -7.79 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:35:46.500000 UTC using 6 observations is Lat = -0.000010 [deg], Long = -0.000120 [deg], Height = -1.22 [m][0m
+[1m[32mVelocity: East: -22.27 [m/s], North: -0.19 [m/s], Up = -7.42 [m/s][0m
+Current receiver time: 2 min 6 s
+[1m[32mPosition at 2026-Mar-02 00:35:47.000000 UTC using 6 observations is Lat = 0.000025 [deg], Long = -0.000147 [deg], Height = 0.68 [m][0m
+[1m[32mVelocity: East: -22.10 [m/s], North: -0.40 [m/s], Up = -7.66 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:35:47.500000 UTC using 6 observations is Lat = 0.000003 [deg], Long = -0.000131 [deg], Height = -0.04 [m][0m
+[1m[32mVelocity: East: -22.06 [m/s], North: -0.41 [m/s], Up = -7.70 [m/s][0m
+Current receiver time: 2 min 7 s
+New GPS NAV message received in channel 6: subframe 1 from satellite GPS PRN 22 (Block IIR) with CN0=31.05 dB-Hz
+New GPS NAV message received in channel 2: subframe 1 from satellite GPS PRN 12 (Block IIR-M) with CN0=30.75 dB-Hz
+New GPS NAV message received in channel 1: subframe 1 from satellite GPS PRN 06 (Block IIF) with CN0=30.75 dB-Hz
+New GPS NAV message received in channel 9: subframe 1 from satellite GPS PRN 31 (Block IIR-M) with CN0=30.81 dB-Hz
+New GPS NAV message received in channel 4: subframe 1 from satellite GPS PRN 17 (Block IIR-M) with CN0=30.93 dB-Hz
+New GPS NAV message received in channel 7: subframe 1 from satellite GPS PRN 26 (Block IIF) with CN0=30.81 dB-Hz
+New GPS NAV message received in channel 3: subframe 1 from satellite GPS PRN 16 (Block IIR) with CN0=30.79 dB-Hz
+[1m[32mPosition at 2026-Mar-02 00:35:48.000000 UTC using 6 observations is Lat = -0.000004 [deg], Long = -0.000112 [deg], Height = -0.54 [m][0m
+[1m[32mVelocity: East: -22.02 [m/s], North: -0.43 [m/s], Up = -7.73 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:35:48.500000 UTC using 7 observations is Lat = -0.000015 [deg], Long = -0.000091 [deg], Height = -2.30 [m][0m
+[1m[32mVelocity: East: -22.48 [m/s], North: 0.25 [m/s], Up = -7.15 [m/s][0m
+Current receiver time: 2 min 8 s
+[1m[32mPosition at 2026-Mar-02 00:35:49.000000 UTC using 7 observations is Lat = -0.000007 [deg], Long = -0.000106 [deg], Height = -1.19 [m][0m
+[1m[32mVelocity: East: -22.58 [m/s], North: 0.28 [m/s], Up = -7.13 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:35:49.500000 UTC using 7 observations is Lat = -0.000008 [deg], Long = -0.000112 [deg], Height = -1.16 [m][0m
+[1m[32mVelocity: East: -22.44 [m/s], North: 0.19 [m/s], Up = -7.19 [m/s][0m
+Current receiver time: 2 min 9 s
+[1m[32mPosition at 2026-Mar-02 00:35:50.000000 UTC using 7 observations is Lat = -0.000002 [deg], Long = -0.000114 [deg], Height = -0.76 [m][0m
+[1m[32mVelocity: East: -22.37 [m/s], North: 0.16 [m/s], Up = -7.23 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:35:50.500000 UTC using 7 observations is Lat = 0.000015 [deg], Long = -0.000124 [deg], Height = -0.08 [m][0m
+[1m[32mVelocity: East: -22.45 [m/s], North: 0.24 [m/s], Up = -7.15 [m/s][0m
+Current receiver time: 2 min 10 s
+[1m[32mPosition at 2026-Mar-02 00:35:51.000000 UTC using 7 observations is Lat = -0.000005 [deg], Long = -0.000121 [deg], Height = -1.22 [m][0m
+[1m[32mVelocity: East: -22.19 [m/s], North: 0.04 [m/s], Up = -7.43 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:35:51.500000 UTC using 7 observations is Lat = 0.000004 [deg], Long = -0.000121 [deg], Height = -0.67 [m][0m
+[1m[32mVelocity: East: -22.36 [m/s], North: 0.13 [m/s], Up = -7.28 [m/s][0m
+Current receiver time: 2 min 11 s
+[1m[32mPosition at 2026-Mar-02 00:35:52.000000 UTC using 7 observations is Lat = -0.000011 [deg], Long = -0.000098 [deg], Height = -1.39 [m][0m
+[1m[32mVelocity: East: -22.29 [m/s], North: 0.15 [m/s], Up = -7.29 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:35:52.500000 UTC using 7 observations is Lat = -0.000010 [deg], Long = -0.000100 [deg], Height = -0.78 [m][0m
+[1m[32mVelocity: East: -22.31 [m/s], North: 0.13 [m/s], Up = -7.29 [m/s][0m
+Current receiver time: 2 min 12 s
+[1m[32mPosition at 2026-Mar-02 00:35:53.000000 UTC using 7 observations is Lat = -0.000018 [deg], Long = -0.000077 [deg], Height = -1.66 [m][0m
+[1m[32mVelocity: East: -21.82 [m/s], North: -0.14 [m/s], Up = -7.85 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:35:53.500000 UTC using 7 observations is Lat = -0.000007 [deg], Long = -0.000106 [deg], Height = -0.64 [m][0m
+[1m[32mVelocity: East: -21.74 [m/s], North: -0.21 [m/s], Up = -7.97 [m/s][0m
+Current receiver time: 2 min 13 s
+New GPS NAV message received in channel 6: subframe 2 from satellite GPS PRN 22 (Block IIR) with CN0=31.11 dB-Hz
+New GPS NAV message received in channel 2: subframe 2 from satellite GPS PRN 12 (Block IIR-M) with CN0=30.98 dB-Hz
+New GPS NAV message received in channel 3: subframe 2 from satellite GPS PRN 16 (Block IIR) with CN0=30.91 dB-Hz
+New GPS NAV message received in channel 1: subframe 2 from satellite GPS PRN 06 (Block IIF) with CN0=30.79 dB-Hz
+New GPS NAV message received in channel 9: subframe 2 from satellite GPS PRN 31 (Block IIR-M) with CN0=30.85 dB-Hz
+New GPS NAV message received in channel 4: subframe 2 from satellite GPS PRN 17 (Block IIR-M) with CN0=31.05 dB-Hz
+[1m[32mPosition at 2026-Mar-02 00:35:54.000000 UTC using 7 observations is Lat = -0.000005 [deg], Long = -0.000115 [deg], Height = -0.33 [m][0m
+[1m[32mVelocity: East: -21.73 [m/s], North: -0.15 [m/s], Up = -7.92 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:35:54.500000 UTC using 7 observations is Lat = 0.000011 [deg], Long = -0.000112 [deg], Height = -0.20 [m][0m
+[1m[32mVelocity: East: -22.36 [m/s], North: 0.23 [m/s], Up = -7.23 [m/s][0m
+Current receiver time: 2 min 14 s
+[1m[32mPosition at 2026-Mar-02 00:35:55.000000 UTC using 7 observations is Lat = 0.000012 [deg], Long = -0.000122 [deg], Height = -0.58 [m][0m
+[1m[32mVelocity: East: -23.99 [m/s], North: 1.11 [m/s], Up = -5.19 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:35:55.500000 UTC using 7 observations is Lat = -0.000002 [deg], Long = -0.000124 [deg], Height = -0.53 [m][0m
+[1m[32mVelocity: East: -24.38 [m/s], North: 1.26 [m/s], Up = -4.76 [m/s][0m
+Current receiver time: 2 min 15 s
+[1m[32mPosition at 2026-Mar-02 00:35:56.000000 UTC using 7 observations is Lat = -0.000013 [deg], Long = -0.000121 [deg], Height = -1.28 [m][0m
+[1m[32mVelocity: East: -21.79 [m/s], North: -0.08 [m/s], Up = -7.87 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:35:56.500000 UTC using 7 observations is Lat = 0.000009 [deg], Long = -0.000134 [deg], Height = 0.26 [m][0m
+[1m[32mVelocity: East: -23.83 [m/s], North: 0.95 [m/s], Up = -5.39 [m/s][0m
+Current receiver time: 2 min 16 s
+[1m[32mPosition at 2026-Mar-02 00:35:57.000000 UTC using 7 observations is Lat = 0.000004 [deg], Long = -0.000122 [deg], Height = 0.64 [m][0m
+[1m[32mVelocity: East: -21.83 [m/s], North: -0.01 [m/s], Up = -7.76 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:35:57.500000 UTC using 7 observations is Lat = -0.000021 [deg], Long = -0.000091 [deg], Height = -1.73 [m][0m
+[1m[32mVelocity: East: -23.94 [m/s], North: 1.07 [m/s], Up = -5.33 [m/s][0m
+Current receiver time: 2 min 17 s
+[1m[32mPosition at 2026-Mar-02 00:35:58.000000 UTC using 7 observations is Lat = -0.000012 [deg], Long = -0.000097 [deg], Height = -1.22 [m][0m
+[1m[32mVelocity: East: -23.83 [m/s], North: 0.99 [m/s], Up = -5.36 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:35:58.500000 UTC using 7 observations is Lat = -0.000007 [deg], Long = -0.000118 [deg], Height = -1.67 [m][0m
+[1m[32mVelocity: East: -23.85 [m/s], North: 1.02 [m/s], Up = -5.35 [m/s][0m
+Current receiver time: 2 min 18 s
+[1m[32mPosition at 2026-Mar-02 00:35:59.000000 UTC using 7 observations is Lat = 0.000004 [deg], Long = -0.000130 [deg], Height = -0.28 [m][0m
+[1m[32mVelocity: East: -23.85 [m/s], North: 1.07 [m/s], Up = -5.28 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:35:59.500000 UTC using 7 observations is Lat = -0.000008 [deg], Long = -0.000116 [deg], Height = -1.34 [m][0m
+[1m[32mVelocity: East: -23.69 [m/s], North: 0.85 [m/s], Up = -5.52 [m/s][0m
+Current receiver time: 2 min 19 s
+New GPS NAV message received in channel 6: subframe 3 from satellite GPS PRN 22 (Block IIR) with CN0=New GPS NAV message received in channel 31.501 dB-Hz
+: subframe 3 from satellite GPS PRN 06 (Block IIF) with CN0=30.92 dB-Hz
+New GPS NAV message received in channel 3: subframe 3 from satellite GPS PRN 16 (Block IIR) with CN0=31.42 dB-Hz
+New GPS NAV message received in channel 9: subframe 3 from satellite GPS PRN 31 (Block IIR-M) with CN0=30.96 dB-Hz
+New GPS NAV message received in channel 2: subframe 3 from satellite GPS PRN 12 (Block IIR-M) with CN0=30.96 dB-Hz
+New GPS NAV message received in channel 4: subframe 3 from satellite GPS PRN 17 (Block IIR-M) with CN0=31.32 dB-Hz
+[1m[32mPosition at 2026-Mar-02 00:36:00.000000 UTC using 7 observations is Lat = -0.000010 [deg], Long = -0.000107 [deg], Height = -1.73 [m][0m
+[1m[32mVelocity: East: -23.77 [m/s], North: 0.91 [m/s], Up = -5.44 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:36:00.500000 UTC using 7 observations is Lat = 0.000009 [deg], Long = -0.000136 [deg], Height = 0.15 [m][0m
+[1m[32mVelocity: East: -23.69 [m/s], North: 0.93 [m/s], Up = -5.45 [m/s][0m
+Current receiver time: 2 min 20 s
+[1m[32mPosition at 2026-Mar-02 00:36:01.000000 UTC using 7 observations is Lat = -0.000010 [deg], Long = -0.000117 [deg], Height = -1.55 [m][0m
+[1m[32mVelocity: East: -23.66 [m/s], North: 0.96 [m/s], Up = -5.45 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:36:01.500000 UTC using 7 observations is Lat = 0.000022 [deg], Long = -0.000134 [deg], Height = 0.93 [m][0m
+[1m[32mVelocity: East: -23.61 [m/s], North: 0.87 [m/s], Up = -5.54 [m/s][0m
+Current receiver time: 2 min 21 s
+[1m[32mPosition at 2026-Mar-02 00:36:02.000000 UTC using 7 observations is Lat = 0.000013 [deg], Long = -0.000120 [deg], Height = 0.59 [m][0m
+[1m[32mVelocity: East: -23.55 [m/s], North: 0.77 [m/s], Up = -5.70 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:36:02.500000 UTC using 7 observations is Lat = 0.000004 [deg], Long = -0.000115 [deg], Height = 0.19 [m][0m
+[1m[32mVelocity: East: -23.54 [m/s], North: 0.86 [m/s], Up = -5.58 [m/s][0m
+Current receiver time: 2 min 22 s
+[1m[32mPosition at 2026-Mar-02 00:36:03.000000 UTC using 7 observations is Lat = -0.000014 [deg], Long = -0.000092 [deg], Height = -1.90 [m][0m
+[1m[32mVelocity: East: -23.74 [m/s], North: 1.03 [m/s], Up = -5.38 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:36:03.500000 UTC using 7 observations is Lat = -0.000028 [deg], Long = -0.000090 [deg], Height = -2.29 [m][0m
+[1m[32mVelocity: East: -23.46 [m/s], North: 0.84 [m/s], Up = -5.71 [m/s][0m
+Current receiver time: 2 min 23 s
+[1m[32mPosition at 2026-Mar-02 00:36:04.000000 UTC using 7 observations is Lat = -0.000035 [deg], Long = -0.000080 [deg], Height = -2.28 [m][0m
+[1m[32mVelocity: East: -23.47 [m/s], North: 0.78 [m/s], Up = -5.71 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:36:04.500000 UTC using 7 observations is Lat = -0.000026 [deg], Long = -0.000095 [deg], Height = -1.99 [m][0m
+[1m[32mVelocity: East: -23.50 [m/s], North: 0.88 [m/s], Up = -5.57 [m/s][0m
+Current receiver time: 2 min 24 s
+[1m[32mPosition at 2026-Mar-02 00:36:05.000000 UTC using 7 observations is Lat = -0.000010 [deg], Long = -0.000105 [deg], Height = -0.95 [m][0m
+[1m[32mVelocity: East: -23.44 [m/s], North: 0.79 [m/s], Up = -5.72 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:36:05.500000 UTC using 7 observations is Lat = 0.000005 [deg], Long = -0.000125 [deg], Height = -0.40 [m][0m
+[1m[32mVelocity: East: -23.51 [m/s], North: 0.84 [m/s], Up = -5.60 [m/s][0m
+New GPS NAV message received in channel 6: subframe 4 from satellite GPS PRN 22 (Block IIR) with CN0=31.27 dB-Hz
+New GPS NAV message received in channel 9: subframe 4 from satellite GPS PRN 31 (Block IIR-M) with CN0=30.88 dB-Hz
+Current receiver time: 2 min 25 s
+New GPS NAV message received in channel 1: subframe 4 from satellite GPS PRN 06 (Block IIF) with CN0=30.82 dB-Hz
+New GPS NAV message received in channel 7: subframe 4 from satellite GPS PRN 26 (Block IIF) with CN0=31.01 dB-Hz
+New GPS NAV message received in channel 4: subframe 4 from satellite GPS PRN 17 (Block IIR-M) with CN0=31.02 dB-Hz
+New GPS NAV message received in channel 2: subframe 4 from satellite GPS PRN 12 (Block IIR-M) with CN0=30.82 dB-Hz
+New GPS NAV message received in channel 3: subframe 4 from satellite GPS PRN 16 (Block IIR) with CN0=31.19 dB-Hz
+[1m[32mPosition at 2026-Mar-02 00:36:06.000000 UTC using 7 observations is Lat = -0.000005 [deg], Long = -0.000111 [deg], Height = -0.65 [m][0m
+[1m[32mVelocity: East: -23.57 [m/s], North: 0.93 [m/s], Up = -5.52 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:36:06.500000 UTC using 7 observations is Lat = -0.000008 [deg], Long = -0.000108 [deg], Height = -1.39 [m][0m
+[1m[32mVelocity: East: -23.51 [m/s], North: 0.92 [m/s], Up = -5.65 [m/s][0m
+Current receiver time: 2 min 26 s
+[1m[32mPosition at 2026-Mar-02 00:36:07.000000 UTC using 7 observations is Lat = -0.000019 [deg], Long = -0.000091 [deg], Height = -2.46 [m][0m
+[1m[32mVelocity: East: -23.41 [m/s], North: 0.85 [m/s], Up = -5.66 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:36:07.500000 UTC using 7 observations is Lat = -0.000011 [deg], Long = -0.000097 [deg], Height = -1.88 [m][0m
+[1m[32mVelocity: East: -23.42 [m/s], North: 0.80 [m/s], Up = -5.68 [m/s][0m
+Current receiver time: 2 min 27 s
+[1m[32mPosition at 2026-Mar-02 00:36:08.000000 UTC using 7 observations is Lat = 0.000012 [deg], Long = -0.000115 [deg], Height = 0.34 [m][0m
+[1m[32mVelocity: East: -23.31 [m/s], North: 0.72 [m/s], Up = -5.78 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:36:08.500000 UTC using 7 observations is Lat = 0.000012 [deg], Long = -0.000124 [deg], Height = 0.45 [m][0m
+[1m[32mVelocity: East: -23.38 [m/s], North: 0.82 [m/s], Up = -5.68 [m/s][0m
+Current receiver time: 2 min 28 s
+[1m[32mPosition at 2026-Mar-02 00:36:09.000000 UTC using 7 observations is Lat = 0.000010 [deg], Long = -0.000116 [deg], Height = 0.19 [m][0m
+[1m[32mVelocity: East: -23.39 [m/s], North: 0.86 [m/s], Up = -5.65 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:36:09.500000 UTC using 7 observations is Lat = 0.000011 [deg], Long = -0.000125 [deg], Height = -0.27 [m][0m
+[1m[32mVelocity: East: -23.28 [m/s], North: 0.76 [m/s], Up = -5.80 [m/s][0m
+Current receiver time: 2 min 29 s
+[1m[32mPosition at 2026-Mar-02 00:36:10.000000 UTC using 7 observations is Lat = 0.000010 [deg], Long = -0.000121 [deg], Height = -0.07 [m][0m
+[1m[32mVelocity: East: -22.61 [m/s], North: -0.86 [m/s], Up = -6.47 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:36:10.500000 UTC using 7 observations is Lat = -0.000002 [deg], Long = -0.000112 [deg], Height = -1.13 [m][0m
+[1m[32mVelocity: East: -22.57 [m/s], North: -0.93 [m/s], Up = -6.53 [m/s][0m
+Current receiver time: 2 min 30 s
+[1m[32mPosition at 2026-Mar-02 00:36:11.000000 UTC using 7 observations is Lat = 0.000001 [deg], Long = -0.000122 [deg], Height = -0.48 [m][0m
+[1m[32mVelocity: East: -22.57 [m/s], North: -0.81 [m/s], Up = -6.51 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:36:11.500000 UTC using 7 observations is Lat = -0.000017 [deg], Long = -0.000096 [deg], Height = -1.51 [m][0m
+[1m[32mVelocity: East: -22.76 [m/s], North: -0.48 [m/s], Up = -6.25 [m/s][0m
+Current receiver time: 2 min 31 s
+New GPS NAV message received in channel 3: subframe 5 from satellite GPS PRN 16 (Block IIR) with CN0=31.10 dB-Hz
+New GPS NAV message received in channel 7: subframe 5 from satellite GPS PRN 26 (Block IIF) with CN0=30.90 dB-Hz
+New GPS NAV message received in channel 1: subframe 5 from satellite GPS PRN 06 (Block IIF) with CN0=30.74 dB-Hz
+New GPS NAV message received in channel 2: subframe 5 from satellite GPS PRN 12 (Block IIR-M) with CN0=30.75 dB-Hz
+New GPS NAV message received in channel 6: subframe 5 from satellite GPS PRN 22 (Block IIR) with CN0=31.18 dB-Hz
+New GPS NAV message received in channel 4: subframe 5 from satellite GPS PRN 17 (Block IIR-M) with CN0=30.82 dB-Hz
+[1m[32mPosition at 2026-Mar-02 00:36:12.000000 UTC using 7 observations is Lat = -0.000006 [deg], Long = -0.000120 [deg], Height = -0.61 [m][0m
+[1m[32mVelocity: East: -22.58 [m/s], North: -0.85 [m/s], Up = -6.44 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:36:12.500000 UTC using 7 observations is Lat = 0.000011 [deg], Long = -0.000117 [deg], Height = 0.16 [m][0m
+[1m[32mVelocity: East: -22.65 [m/s], North: -0.57 [m/s], Up = -6.37 [m/s][0m
+Current receiver time: 2 min 32 s
+[1m[32mPosition at 2026-Mar-02 00:36:13.000000 UTC using 7 observations is Lat = 0.000007 [deg], Long = -0.000142 [deg], Height = 0.01 [m][0m
+[1m[32mVelocity: East: -22.63 [m/s], North: -0.57 [m/s], Up = -6.36 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:36:13.500000 UTC using 7 observations is Lat = -0.000015 [deg], Long = -0.000123 [deg], Height = -1.28 [m][0m
+[1m[32mVelocity: East: -22.56 [m/s], North: -0.65 [m/s], Up = -6.45 [m/s][0m
+Current receiver time: 2 min 33 s
+[1m[32mPosition at 2026-Mar-02 00:36:14.000000 UTC using 7 observations is Lat = -0.000019 [deg], Long = -0.000108 [deg], Height = -1.94 [m][0m
+[1m[32mVelocity: East: -22.58 [m/s], North: -0.55 [m/s], Up = -6.53 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:36:14.500000 UTC using 7 observations is Lat = -0.000024 [deg], Long = -0.000100 [deg], Height = -1.95 [m][0m
+[1m[32mVelocity: East: -22.56 [m/s], North: -0.55 [m/s], Up = -6.49 [m/s][0m
+Current receiver time: 2 min 34 s
+[1m[32mPosition at 2026-Mar-02 00:36:15.000000 UTC using 7 observations is Lat = 0.000010 [deg], Long = -0.000111 [deg], Height = 0.08 [m][0m
+[1m[32mVelocity: East: -22.55 [m/s], North: -0.56 [m/s], Up = -6.53 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:36:15.500000 UTC using 7 observations is Lat = 0.000023 [deg], Long = -0.000135 [deg], Height = 0.75 [m][0m
+[1m[32mVelocity: East: -22.54 [m/s], North: -0.51 [m/s], Up = -6.55 [m/s][0m
+Current receiver time: 2 min 35 s
+[1m[32mPosition at 2026-Mar-02 00:36:16.000000 UTC using 7 observations is Lat = 0.000007 [deg], Long = -0.000141 [deg], Height = 0.26 [m][0m
+[1m[32mVelocity: East: -22.55 [m/s], North: -0.57 [m/s], Up = -6.38 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:36:16.500000 UTC using 7 observations is Lat = -0.000015 [deg], Long = -0.000118 [deg], Height = -1.01 [m][0m
+[1m[32mVelocity: East: -22.54 [m/s], North: -0.57 [m/s], Up = -6.56 [m/s][0m
+Current receiver time: 2 min 36 s
+[1m[32mPosition at 2026-Mar-02 00:36:17.000000 UTC using 7 observations is Lat = 0.000005 [deg], Long = -0.000105 [deg], Height = -0.11 [m][0m
+[1m[32mVelocity: East: -22.46 [m/s], North: -0.62 [m/s], Up = -6.52 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:36:17.500000 UTC using 7 observations is Lat = -0.000016 [deg], Long = -0.000112 [deg], Height = -1.19 [m][0m
+[1m[32mVelocity: East: -22.42 [m/s], North: -0.64 [m/s], Up = -6.52 [m/s][0m
+Current receiver time: 2 min 37 s
+New GPS NAV message received in channel 3: subframe 1 from satellite GPS PRN 16 (Block IIR) with CN0=30.99 dB-Hz
+New GPS NAV message received in channel 1: subframe 1 from satellite GPS PRN 06 (Block IIF) with CN0=30.80 dB-Hz
+New GPS NAV message received in channel 7: subframe 1 from satellite GPS PRN 26 (Block IIF) with CN0=30.96 dB-Hz
+New GPS NAV message received in channel 6: subframe 1 from satellite GPS PRN 22 (Block IIR) with CN0=31.11 dB-Hz
+New GPS NAV message received in channel 2: subframe 1 from satellite GPS PRN 12 (Block IIR-M) with CN0=30.78 dB-Hz
+New GPS NAV message received in channel 4: subframe 1 from satellite GPS PRN 17 (Block IIR-M) with CN0=30.81 dB-Hz
+[1m[32mPosition at 2026-Mar-02 00:36:18.000000 UTC using 7 observations is Lat = -0.000002 [deg], Long = -0.000120 [deg], Height = 0.23 [m][0m
+[1m[32mVelocity: East: -22.40 [m/s], North: -0.65 [m/s], Up = -6.57 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:36:18.500000 UTC using 7 observations is Lat = -0.000015 [deg], Long = -0.000111 [deg], Height = -0.93 [m][0m
+[1m[32mVelocity: East: -22.45 [m/s], North: -0.62 [m/s], Up = -6.52 [m/s][0m
+Current receiver time: 2 min 38 s
+[1m[32mPosition at 2026-Mar-02 00:36:19.000000 UTC using 7 observations is Lat = 0.000002 [deg], Long = -0.000114 [deg], Height = -0.12 [m][0m
+[1m[32mVelocity: East: -22.44 [m/s], North: -0.59 [m/s], Up = -6.48 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:36:19.500000 UTC using 7 observations is Lat = -0.000002 [deg], Long = -0.000110 [deg], Height = -0.54 [m][0m
+[1m[32mVelocity: East: -22.40 [m/s], North: -0.71 [m/s], Up = -6.55 [m/s][0m
+Current receiver time: 2 min 39 s
+[1m[32mPosition at 2026-Mar-02 00:36:20.000000 UTC using 7 observations is Lat = -0.000010 [deg], Long = -0.000110 [deg], Height = -1.69 [m][0m
+[1m[32mVelocity: East: -22.38 [m/s], North: -0.65 [m/s], Up = -6.54 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:36:20.500000 UTC using 7 observations is Lat = 0.000007 [deg], Long = -0.000126 [deg], Height = 0.20 [m][0m
+[1m[32mVelocity: East: -22.23 [m/s], North: -0.77 [m/s], Up = -6.72 [m/s][0m
+Current receiver time: 2 min 40 s
+[1m[32mPosition at 2026-Mar-02 00:36:21.000000 UTC using 7 observations is Lat = -0.000004 [deg], Long = -0.000111 [deg], Height = -0.50 [m][0m
+[1m[32mVelocity: East: -22.36 [m/s], North: -0.62 [m/s], Up = -6.61 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:36:21.500000 UTC using 7 observations is Lat = -0.000015 [deg], Long = -0.000101 [deg], Height = -1.56 [m][0m
+[1m[32mVelocity: East: -22.37 [m/s], North: -0.64 [m/s], Up = -6.57 [m/s][0m
+Current receiver time: 2 min 41 s
+[1m[32mPosition at 2026-Mar-02 00:36:22.000000 UTC using 7 observations is Lat = -0.000025 [deg], Long = -0.000111 [deg], Height = -2.12 [m][0m
+[1m[32mVelocity: East: -22.32 [m/s], North: -0.70 [m/s], Up = -6.65 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:36:22.500000 UTC using 7 observations is Lat = -0.000009 [deg], Long = -0.000116 [deg], Height = -1.99 [m][0m
+[1m[32mVelocity: East: -22.32 [m/s], North: -0.65 [m/s], Up = -6.60 [m/s][0m
+Current receiver time: 2 min 42 s
+[1m[32mPosition at 2026-Mar-02 00:36:23.000000 UTC using 7 observations is Lat = -0.000010 [deg], Long = -0.000096 [deg], Height = -1.42 [m][0m
+[1m[32mVelocity: East: -22.29 [m/s], North: -0.66 [m/s], Up = -6.73 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:36:23.500000 UTC using 7 observations is Lat = -0.000003 [deg], Long = -0.000114 [deg], Height = -0.66 [m][0m
+[1m[32mVelocity: East: -22.42 [m/s], North: -0.50 [m/s], Up = -6.53 [m/s][0m
+New GPS NAV message received in channel 6: subframe 2 from satellite GPS PRN 22 (Block IIR) with CN0=31.14 dB-Hz
+Current receiver time: 2 min 43 s
+New GPS NAV message received in channel 2: subframe 2 from satellite GPS PRN 12 (Block IIR-M) with CN0=31.04 dB-Hz
+New GPS NAV message received in channel 9: subframe 2 from satellite GPS PRN 31 (Block IIR-M) with CN0=31.04 dB-Hz
+New GPS NAV message received in channel 7: subframe 2 from satellite GPS PRN 26 (Block IIF) with CN0=30.99 dB-Hz
+New GPS NAV message received in channel 1: subframe 2 from satellite GPS PRN 06 (Block IIF) with CN0=30.89 dB-Hz
+New GPS NAV message received in channel 4: subframe 2 from satellite GPS PRN 17 (Block IIR-M) with CN0=31.01 dB-Hz
+New GPS NAV message received in channel 3: subframe 2 from satellite GPS PRN 16 (Block IIR) with CN0=31.11 dB-Hz
+[1m[32mPosition at 2026-Mar-02 00:36:24.000000 UTC using 7 observations is Lat = 0.000012 [deg], Long = -0.000126 [deg], Height = -0.08 [m][0m
+[1m[32mVelocity: East: -22.18 [m/s], North: -0.67 [m/s], Up = -6.72 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:36:24.500000 UTC using 7 observations is Lat = 0.000009 [deg], Long = -0.000124 [deg], Height = -0.46 [m][0m
+[1m[32mVelocity: East: -24.32 [m/s], North: 2.16 [m/s], Up = -4.27 [m/s][0m
+Current receiver time: 2 min 44 s
+[1m[32mPosition at 2026-Mar-02 00:36:25.000000 UTC using 7 observations is Lat = -0.000014 [deg], Long = -0.000112 [deg], Height = -1.75 [m][0m
+[1m[32mVelocity: East: -24.41 [m/s], North: 2.25 [m/s], Up = -4.09 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:36:25.500000 UTC using 7 observations is Lat = -0.000015 [deg], Long = -0.000105 [deg], Height = -1.23 [m][0m
+[1m[32mVelocity: East: -24.40 [m/s], North: 2.24 [m/s], Up = -4.14 [m/s][0m
+Current receiver time: 2 min 45 s
+[1m[32mPosition at 2026-Mar-02 00:36:26.000000 UTC using 7 observations is Lat = -0.000018 [deg], Long = -0.000090 [deg], Height = -2.07 [m][0m
+[1m[32mVelocity: East: -25.19 [m/s], North: 2.49 [m/s], Up = -4.76 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:36:26.500000 UTC using 7 observations is Lat = -0.000019 [deg], Long = -0.000112 [deg], Height = -1.47 [m][0m
+[1m[32mVelocity: East: -25.23 [m/s], North: 2.57 [m/s], Up = -4.64 [m/s][0m
+Current receiver time: 2 min 46 s
+[1m[32mPosition at 2026-Mar-02 00:36:27.000000 UTC using 7 observations is Lat = -0.000017 [deg], Long = -0.000105 [deg], Height = -1.43 [m][0m
+[1m[32mVelocity: East: -24.93 [m/s], North: 2.39 [m/s], Up = -4.66 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:36:27.500000 UTC using 7 observations is Lat = -0.000037 [deg], Long = -0.000081 [deg], Height = -2.69 [m][0m
+[1m[32mVelocity: East: -25.08 [m/s], North: 2.51 [m/s], Up = -4.53 [m/s][0m
+Current receiver time: 2 min 47 s
+[1m[32mPosition at 2026-Mar-02 00:36:28.000000 UTC using 7 observations is Lat = 0.000003 [deg], Long = -0.000119 [deg], Height = -0.49 [m][0m
+[1m[32mVelocity: East: -25.05 [m/s], North: 2.59 [m/s], Up = -4.47 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:36:28.500000 UTC using 7 observations is Lat = 0.000013 [deg], Long = -0.000128 [deg], Height = 0.22 [m][0m
+[1m[32mVelocity: East: -24.61 [m/s], North: 2.03 [m/s], Up = -4.96 [m/s][0m
+Current receiver time: 2 min 48 s
+[1m[32mPosition at 2026-Mar-02 00:36:29.000000 UTC using 7 observations is Lat = -0.000006 [deg], Long = -0.000113 [deg], Height = -0.95 [m][0m
+[1m[32mVelocity: East: -25.03 [m/s], North: 2.57 [m/s], Up = -4.48 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:36:29.500000 UTC using 7 observations is Lat = -0.000005 [deg], Long = -0.000110 [deg], Height = -1.03 [m][0m
+[1m[32mVelocity: East: -24.59 [m/s], North: 2.02 [m/s], Up = -5.00 [m/s][0m
+Current receiver time: 2 min 49 s
+New GPS NAV message received in channel 6: subframe 3 from satellite GPS PRN 22 (Block IIR) with CN0=31.50 dB-Hz
+New GPS NAV message received in channel 0: subframe 3 from satellite GPS PRN 01 (Block IIF) with CN0=30.73 dB-Hz
+New GPS NAV message received in channel 1: subframe 3 from satellite GPS PRN 06 (Block IIF) with CN0=30.96 dB-Hz
+New GPS NAV message received in channel 3: subframe 3 from satellite GPS PRN 16 (Block IIR) with CN0=31.53 dB-Hz
+New GPS NAV message received in channel 9: subframe 3 from satellite GPS PRN 31 (Block IIR-M) with CN0=31.11 dB-Hz
+New GPS NAV message received in channel 7: subframe 3 from satellite GPS PRN 26 (Block IIF) with CN0=31.28 dB-Hz
+[1m[32mPosition at 2026-Mar-02 00:36:30.000000 UTC using 8 observations is Lat = 0.000003 [deg], Long = -0.000119 [deg], Height = -1.00 [m][0m
+[1m[32mVelocity: East: -23.59 [m/s], North: 0.64 [m/s], Up = -6.60 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:36:30.500000 UTC using 8 observations is Lat = -0.000014 [deg], Long = -0.000101 [deg], Height = -1.55 [m][0m
+[1m[32mVelocity: East: -23.40 [m/s], North: 0.37 [m/s], Up = -6.95 [m/s][0m
+Current receiver time: 2 min 50 s
+[1m[32mPosition at 2026-Mar-02 00:36:31.000000 UTC using 8 observations is Lat = -0.000012 [deg], Long = -0.000105 [deg], Height = -2.03 [m][0m
+[1m[32mVelocity: East: -23.43 [m/s], North: 0.41 [m/s], Up = -6.83 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:36:31.500000 UTC using 8 observations is Lat = -0.000009 [deg], Long = -0.000125 [deg], Height = -0.94 [m][0m
+[1m[32mVelocity: East: -23.38 [m/s], North: 0.34 [m/s], Up = -6.94 [m/s][0m
+Current receiver time: 2 min 51 s
+[1m[32mPosition at 2026-Mar-02 00:36:32.000000 UTC using 8 observations is Lat = -0.000007 [deg], Long = -0.000122 [deg], Height = -0.63 [m][0m
+[1m[32mVelocity: East: -23.24 [m/s], North: 0.27 [m/s], Up = -6.96 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:36:32.500000 UTC using 8 observations is Lat = 0.000008 [deg], Long = -0.000114 [deg], Height = 0.19 [m][0m
+[1m[32mVelocity: East: -23.39 [m/s], North: 0.35 [m/s], Up = -6.90 [m/s][0m
+Current receiver time: 2 min 52 s
+[1m[32mPosition at 2026-Mar-02 00:36:33.000000 UTC using 8 observations is Lat = -0.000007 [deg], Long = -0.000116 [deg], Height = -1.24 [m][0m
+[1m[32mVelocity: East: -23.37 [m/s], North: 0.39 [m/s], Up = -6.92 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:36:33.500000 UTC using 8 observations is Lat = -0.000008 [deg], Long = -0.000108 [deg], Height = -1.31 [m][0m
+[1m[32mVelocity: East: -23.28 [m/s], North: 0.32 [m/s], Up = -6.93 [m/s][0m
+Current receiver time: 2 min 53 s
+[1m[32mPosition at 2026-Mar-02 00:36:34.000000 UTC using 8 observations is Lat = -0.000002 [deg], Long = -0.000111 [deg], Height = -0.65 [m][0m
+[1m[32mVelocity: East: -23.28 [m/s], North: 0.37 [m/s], Up = -6.86 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:36:34.500000 UTC using 8 observations is Lat = -0.000010 [deg], Long = -0.000102 [deg], Height = -0.92 [m][0m
+[1m[32mVelocity: East: -23.37 [m/s], North: 0.38 [m/s], Up = -6.92 [m/s][0m
+Current receiver time: 2 min 54 s
+[1m[32mPosition at 2026-Mar-02 00:36:35.000000 UTC using 8 observations is Lat = -0.000015 [deg], Long = -0.000109 [deg], Height = -1.29 [m][0m
+[1m[32mVelocity: East: -23.29 [m/s], North: 0.35 [m/s], Up = -6.97 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:36:35.500000 UTC using 8 observations is Lat = -0.000005 [deg], Long = -0.000108 [deg], Height = -0.72 [m][0m
+[1m[32mVelocity: East: -23.31 [m/s], North: 0.38 [m/s], Up = -6.95 [m/s][0m
+Current receiver time: 2 min 55 s
+New GPS NAV message received in channel 1: subframe 4 from satellite GPS PRN 06 (Block IIF) with CN0=30.79 dB-Hz
+New GPS NAV message received in channel 6: subframe 4 from satellite GPS PRN 22 (Block IIR) with CN0=31.24 dB-Hz
+New GPS NAV message received in channel 7: subframe 4 from satellite GPS PRN 26 (Block IIF) with CN0=31.09 dB-Hz
+New GPS NAV message received in channel 9: subframe 4 from satellite GPS PRN 31 (Block IIR-M) with CN0=30.91 dB-Hz
+New GPS NAV message received in channel 0: subframe 4 from satellite GPS PRN 01 (Block IIF) with CN0=30.80 dB-Hz
+New GPS NAV message received in channel 3: subframe 4 from satellite GPS PRN 16 (Block IIR) with CN0=31.25 dB-Hz
+[1m[32mPosition at 2026-Mar-02 00:36:36.000000 UTC using 8 observations is Lat = -0.000007 [deg], Long = -0.000121 [deg], Height = -0.77 [m][0m
+[1m[32mVelocity: East: -23.17 [m/s], North: 0.28 [m/s], Up = -6.97 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:36:36.500000 UTC using 8 observations is Lat = -0.000005 [deg], Long = -0.000137 [deg], Height = -0.26 [m][0m
+[1m[32mVelocity: East: -23.21 [m/s], North: 0.34 [m/s], Up = -6.94 [m/s][0m
+Current receiver time: 2 min 56 s
+[1m[32mPosition at 2026-Mar-02 00:36:37.000000 UTC using 8 observations is Lat = -0.000008 [deg], Long = -0.000121 [deg], Height = -0.89 [m][0m
+[1m[32mVelocity: East: -23.20 [m/s], North: 0.33 [m/s], Up = -7.02 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:36:37.500000 UTC using 8 observations is Lat = -0.000012 [deg], Long = -0.000125 [deg], Height = -1.03 [m][0m
+[1m[32mVelocity: East: -23.29 [m/s], North: 0.39 [m/s], Up = -6.94 [m/s][0m
+Current receiver time: 2 min 57 s
+[1m[32mPosition at 2026-Mar-02 00:36:38.000000 UTC using 8 observations is Lat = -0.000007 [deg], Long = -0.000118 [deg], Height = -0.65 [m][0m
+[1m[32mVelocity: East: -23.15 [m/s], North: 0.30 [m/s], Up = -6.94 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:36:38.500000 UTC using 8 observations is Lat = -0.000010 [deg], Long = -0.000118 [deg], Height = -0.92 [m][0m
+[1m[32mVelocity: East: -23.21 [m/s], North: 0.41 [m/s], Up = -6.95 [m/s][0m
+Current receiver time: 2 min 58 s
+[1m[32mPosition at 2026-Mar-02 00:36:39.000000 UTC using 8 observations is Lat = -0.000004 [deg], Long = -0.000121 [deg], Height = -0.99 [m][0m
+[1m[32mVelocity: East: -23.25 [m/s], North: 0.39 [m/s], Up = -6.96 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:36:39.500000 UTC using 8 observations is Lat = -0.000001 [deg], Long = -0.000122 [deg], Height = -1.17 [m][0m
+[1m[32mVelocity: East: -23.13 [m/s], North: 0.36 [m/s], Up = -6.96 [m/s][0m
+Current receiver time: 2 min 59 s
+[1m[32mPosition at 2026-Mar-02 00:36:40.000000 UTC using 8 observations is Lat = 0.000012 [deg], Long = -0.000134 [deg], Height = 0.48 [m][0m
+[1m[32mVelocity: East: -23.14 [m/s], North: 0.36 [m/s], Up = -7.04 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:36:40.500000 UTC using 8 observations is Lat = 0.000007 [deg], Long = -0.000124 [deg], Height = -0.08 [m][0m
+[1m[32mVelocity: East: -23.19 [m/s], North: 0.40 [m/s], Up = -6.94 [m/s][0m
+Current receiver time: 3 min 0 s
+[1m[32mPosition at 2026-Mar-02 00:36:41.000000 UTC using 8 observations is Lat = -0.000006 [deg], Long = -0.000104 [deg], Height = -1.44 [m][0m
+[1m[32mVelocity: East: -23.14 [m/s], North: 0.43 [m/s], Up = -6.96 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:36:41.500000 UTC using 8 observations is Lat = -0.000008 [deg], Long = -0.000100 [deg], Height = -1.61 [m][0m
+[1m[32mVelocity: East: -23.12 [m/s], North: 0.37 [m/s], Up = -7.05 [m/s][0m
+New GPS NAV message received in channel 0: subframe 5 from satellite GPS PRN 01 (Block IIF) with CN0=30.96 dB-Hz
+New GPS NAV message received in channel 6: subframe 5 from satellite GPS PRN 22 (Block IIR) with CN0=31.09 dB-Hz
+New GPS NAV message received in channel 3: subframe 5 from satellite GPS PRN 16 (Block IIR) with CN0=31.08 dB-Hz
+Current receiver time: 3 min 1 s
+New GPS NAV message received in channel 1: subframe 5 from satellite GPS PRN 06 (Block IIF) with CN0=30.73 dB-Hz
+New GPS NAV message received in channel 9: subframe 5 from satellite GPS PRN 31 (Block IIR-M) with CN0=30.76 dB-Hz
+New GPS NAV message received in channel 7: subframe 5 from satellite GPS PRN 26 (Block IIF) with CN0=31.00 dB-Hz
+[1m[32mPosition at 2026-Mar-02 00:36:42.000000 UTC using 7 observations is Lat = -0.000009 [deg], Long = -0.000089 [deg], Height = -0.87 [m][0m
+[1m[32mVelocity: East: -22.97 [m/s], North: 0.27 [m/s], Up = -6.93 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:36:42.500000 UTC using 7 observations is Lat = 0.000002 [deg], Long = -0.000099 [deg], Height = -0.54 [m][0m
+[1m[32mVelocity: East: -22.89 [m/s], North: 0.29 [m/s], Up = -7.00 [m/s][0m
+Current receiver time: 3 min 2 s
+[1m[32mPosition at 2026-Mar-02 00:36:43.000000 UTC using 7 observations is Lat = -0.000004 [deg], Long = -0.000112 [deg], Height = -1.12 [m][0m
+[1m[32mVelocity: East: -22.92 [m/s], North: 0.31 [m/s], Up = -6.95 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:36:43.500000 UTC using 7 observations is Lat = -0.000011 [deg], Long = -0.000111 [deg], Height = -1.30 [m][0m
+[1m[32mVelocity: East: -22.94 [m/s], North: 0.29 [m/s], Up = -6.95 [m/s][0m
+Current receiver time: 3 min 3 s
+[1m[32mPosition at 2026-Mar-02 00:36:44.000000 UTC using 7 observations is Lat = -0.000005 [deg], Long = -0.000102 [deg], Height = -0.93 [m][0m
+[1m[32mVelocity: East: -22.88 [m/s], North: 0.24 [m/s], Up = -7.01 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:36:44.500000 UTC using 7 observations is Lat = -0.000009 [deg], Long = -0.000113 [deg], Height = -0.90 [m][0m
+[1m[32mVelocity: East: -22.95 [m/s], North: 0.27 [m/s], Up = -6.99 [m/s][0m
+Current receiver time: 3 min 4 s
+[1m[32mPosition at 2026-Mar-02 00:36:45.000000 UTC using 7 observations is Lat = -0.000010 [deg], Long = -0.000101 [deg], Height = -1.32 [m][0m
+[1m[32mVelocity: East: -22.86 [m/s], North: 0.28 [m/s], Up = -6.97 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:36:45.500000 UTC using 7 observations is Lat = -0.000005 [deg], Long = -0.000094 [deg], Height = -0.31 [m][0m
+[1m[32mVelocity: East: -22.89 [m/s], North: 0.27 [m/s], Up = -6.99 [m/s][0m
+Current receiver time: 3 min 5 s
+[1m[32mPosition at 2026-Mar-02 00:36:46.000000 UTC using 7 observations is Lat = -0.000002 [deg], Long = -0.000124 [deg], Height = -0.23 [m][0m
+[1m[32mVelocity: East: -22.88 [m/s], North: 0.31 [m/s], Up = -7.02 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:36:46.500000 UTC using 7 observations is Lat = 0.000011 [deg], Long = -0.000125 [deg], Height = -0.17 [m][0m
+[1m[32mVelocity: East: -22.79 [m/s], North: 0.27 [m/s], Up = -6.97 [m/s][0m
+Current receiver time: 3 min 6 s
+[1m[32mPosition at 2026-Mar-02 00:36:47.000000 UTC using 7 observations is Lat = 0.000009 [deg], Long = -0.000122 [deg], Height = 0.12 [m][0m
+[1m[32mVelocity: East: -22.88 [m/s], North: 0.33 [m/s], Up = -7.06 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:36:47.500000 UTC using 7 observations is Lat = -0.000000 [deg], Long = -0.000125 [deg], Height = 0.02 [m][0m
+[1m[32mVelocity: East: -22.84 [m/s], North: 0.34 [m/s], Up = -7.06 [m/s][0m
+Current receiver time: 3 min 7 s
+New GPS NAV message received in channel 3: subframe 1 from satellite GPS PRN 16 (Block IIR) with CN0=31.01 dB-Hz
+New GPS NAV message received in channel 1: subframe 1 from satellite GPS PRN 06 (Block IIF) with CN0=30.79 dB-Hz
+New GPS NAV message received in channel 0: subframe 1 from satellite GPS PRN 01 (Block IIF) with CN0=31.03 dB-Hz
+New GPS NAV message received in channel 4: subframe 1 from satellite GPS PRN 17 (Block IIR-M) with CN0=30.99 dB-Hz
+New GPS NAV message received in channel 9: subframe 1 from satellite GPS PRN 31 (Block IIR-M) with CN0=30.92 dB-Hz
+New GPS NAV message received in channel 2: subframe 1 from satellite GPS PRN 12 (Block IIR-M) with CN0=30.87 dB-Hz
+New GPS NAV message received in channel 7: subframe 1 from satellite GPS PRN 26 (Block IIF) with CN0=31.06 dB-Hz
+[1m[32mPosition at 2026-Mar-02 00:36:48.000000 UTC using 8 observations is Lat = -0.000005 [deg], Long = -0.000116 [deg], Height = -0.33 [m][0m
+[1m[32mVelocity: East: -22.89 [m/s], North: 0.37 [m/s], Up = -7.03 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:36:48.500000 UTC using 8 observations is Lat = -0.000009 [deg], Long = -0.000126 [deg], Height = -0.47 [m][0m
+[1m[32mVelocity: East: -22.95 [m/s], North: 0.42 [m/s], Up = -7.04 [m/s][0m
+Current receiver time: 3 min 8 s
+[1m[32mPosition at 2026-Mar-02 00:36:49.000000 UTC using 8 observations is Lat = 0.000004 [deg], Long = -0.000121 [deg], Height = -0.47 [m][0m
+[1m[32mVelocity: East: -22.98 [m/s], North: 0.45 [m/s], Up = -7.03 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:36:49.500000 UTC using 8 observations is Lat = -0.000005 [deg], Long = -0.000121 [deg], Height = -1.04 [m][0m
+[1m[32mVelocity: East: -22.98 [m/s], North: 0.45 [m/s], Up = -7.01 [m/s][0m
+Current receiver time: 3 min 9 s
+[1m[32mPosition at 2026-Mar-02 00:36:50.000000 UTC using 8 observations is Lat = -0.000002 [deg], Long = -0.000109 [deg], Height = -0.87 [m][0m
+[1m[32mVelocity: East: -22.95 [m/s], North: 0.45 [m/s], Up = -7.09 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:36:50.500000 UTC using 8 observations is Lat = -0.000007 [deg], Long = -0.000107 [deg], Height = -1.72 [m][0m
+[1m[32mVelocity: East: -22.86 [m/s], North: 0.35 [m/s], Up = -7.08 [m/s][0m
+Current receiver time: 3 min 10 s
+[1m[32mPosition at 2026-Mar-02 00:36:51.000000 UTC using 8 observations is Lat = -0.000013 [deg], Long = -0.000109 [deg], Height = -1.33 [m][0m
+[1m[32mVelocity: East: -22.84 [m/s], North: 0.35 [m/s], Up = -7.15 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:36:51.500000 UTC using 8 observations is Lat = -0.000003 [deg], Long = -0.000111 [deg], Height = -1.20 [m][0m
+[1m[32mVelocity: East: -22.91 [m/s], North: 0.42 [m/s], Up = -7.11 [m/s][0m
+Current receiver time: 3 min 11 s
+[1m[32mPosition at 2026-Mar-02 00:36:52.000000 UTC using 8 observations is Lat = -0.000002 [deg], Long = -0.000111 [deg], Height = -0.43 [m][0m
+[1m[32mVelocity: East: -22.91 [m/s], North: 0.45 [m/s], Up = -7.07 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:36:52.500000 UTC using 8 observations is Lat = 0.000002 [deg], Long = -0.000112 [deg], Height = -0.24 [m][0m
+[1m[32mVelocity: East: -22.87 [m/s], North: 0.42 [m/s], Up = -7.11 [m/s][0m
+Current receiver time: 3 min 12 s
+[1m[32mPosition at 2026-Mar-02 00:36:53.000000 UTC using 8 observations is Lat = -0.000005 [deg], Long = -0.000121 [deg], Height = -0.66 [m][0m
+[1m[32mVelocity: East: -22.86 [m/s], North: 0.39 [m/s], Up = -7.08 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:36:53.500000 UTC using 8 observations is Lat = -0.000008 [deg], Long = -0.000113 [deg], Height = -0.93 [m][0m
+[1m[32mVelocity: East: -22.88 [m/s], North: 0.43 [m/s], Up = -7.00 [m/s][0m
+Current receiver time: 3 min 13 s
+New GPS NAV message received in channel 0: subframe 2 from satellite GPS PRN 01 (Block IIF) with CN0=31.18 dB-Hz
+New GPS NAV message received in channel 1: subframe 2 from satellite GPS PRN 06 (Block IIF) with CN0=30.86 dB-Hz
+New GPS NAV message received in channel 4: subframe 2 from satellite GPS PRN 17 (Block IIR-M) with CN0=31.23 dB-Hz
+New GPS NAV message received in channel 7: subframe 2 from satellite GPS PRN 26 (Block IIF) with CN0=31.11 dB-Hz
+New GPS NAV message received in channel 2: subframe 2 from satellite GPS PRN 12 (Block IIR-M) with CN0=31.10 dB-Hz
+New GPS NAV message received in channel 9: subframe 2 from satellite GPS PRN 31 (Block IIR-M) with CN0=31.08 dB-Hz
+[1m[32mPosition at 2026-Mar-02 00:36:54.000000 UTC using 8 observations is Lat = -0.000002 [deg], Long = -0.000120 [deg], Height = -0.08 [m][0m
+[1m[32mVelocity: East: -22.74 [m/s], North: 0.42 [m/s], Up = -7.15 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:36:54.500000 UTC using 8 observations is Lat = 0.000005 [deg], Long = -0.000125 [deg], Height = -0.55 [m][0m
+[1m[32mVelocity: East: -21.49 [m/s], North: 0.34 [m/s], Up = -7.12 [m/s][0m
+Current receiver time: 3 min 14 s
+[1m[32mPosition at 2026-Mar-02 00:36:55.000000 UTC using 8 observations is Lat = 0.000011 [deg], Long = -0.000114 [deg], Height = -0.36 [m][0m
+[1m[32mVelocity: East: -22.85 [m/s], North: 0.44 [m/s], Up = -7.05 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:36:55.500000 UTC using 8 observations is Lat = 0.000010 [deg], Long = -0.000112 [deg], Height = -0.78 [m][0m
+[1m[32mVelocity: East: -22.77 [m/s], North: 0.47 [m/s], Up = -7.11 [m/s][0m
+Current receiver time: 3 min 15 s
+[1m[32mPosition at 2026-Mar-02 00:36:56.000000 UTC using 8 observations is Lat = -0.000004 [deg], Long = -0.000116 [deg], Height = -0.39 [m][0m
+[1m[32mVelocity: East: -22.77 [m/s], North: 0.45 [m/s], Up = -7.19 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:36:56.500000 UTC using 8 observations is Lat = -0.000013 [deg], Long = -0.000109 [deg], Height = -0.54 [m][0m
+[1m[32mVelocity: East: -23.17 [m/s], North: 0.49 [m/s], Up = -7.11 [m/s][0m
+Current receiver time: 3 min 16 s
+[1m[32mPosition at 2026-Mar-02 00:36:57.000000 UTC using 8 observations is Lat = -0.000012 [deg], Long = -0.000107 [deg], Height = -0.90 [m][0m
+[1m[32mVelocity: East: -23.05 [m/s], North: 0.19 [m/s], Up = -8.00 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:36:57.500000 UTC using 8 observations is Lat = -0.000001 [deg], Long = -0.000117 [deg], Height = -0.10 [m][0m
+[1m[32mVelocity: East: -24.60 [m/s], North: 0.74 [m/s], Up = -5.60 [m/s][0m
+Current receiver time: 3 min 17 s
+[1m[32mPosition at 2026-Mar-02 00:36:58.000000 UTC using 8 observations is Lat = -0.000007 [deg], Long = -0.000109 [deg], Height = -0.17 [m][0m
+[1m[32mVelocity: East: -20.65 [m/s], North: 0.23 [m/s], Up = -7.45 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:36:58.500000 UTC using 8 observations is Lat = -0.000019 [deg], Long = -0.000094 [deg], Height = -0.84 [m][0m
+[1m[32mVelocity: East: -22.10 [m/s], North: 0.52 [m/s], Up = -5.86 [m/s][0m
+Current receiver time: 3 min 18 s
+[1m[32mPosition at 2026-Mar-02 00:36:59.000000 UTC using 8 observations is Lat = -0.000005 [deg], Long = -0.000114 [deg], Height = -0.26 [m][0m
+[1m[32mVelocity: East: -20.63 [m/s], North: 0.18 [m/s], Up = -7.45 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:36:59.500000 UTC using 8 observations is Lat = -0.000010 [deg], Long = -0.000111 [deg], Height = -0.82 [m][0m
+[1m[32mVelocity: East: -22.43 [m/s], North: 0.31 [m/s], Up = -6.80 [m/s][0m
+Current receiver time: 3 min 19 s
+New GPS NAV message received in channel 0: subframe 3 from satellite GPS PRN 01 (Block IIF) with CN0=31.29 dB-Hz
+New GPS NAV message received in channel 1: subframe 3 from satellite GPS PRN 06 (Block IIF) with CN0=31.00 dB-Hz
+New GPS NAV message received in channel 4: subframe 3 from satellite GPS PRN 17 (Block IIR-M) with CN0=31.60 dB-Hz
+New GPS NAV message received in channel 2: subframe 3 from satellite GPS PRN 12 (Block IIR-M) with CN0=31.07 dB-Hz
+[1m[32mPosition at 2026-Mar-02 00:37:00.000000 UTC using 7 observations is Lat = 0.000001 [deg], Long = -0.000118 [deg], Height = -1.86 [m][0m
+[1m[32mVelocity: East: -20.88 [m/s], North: -0.23 [m/s], Up = -6.86 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:37:00.500000 UTC using 7 observations is Lat = 0.000006 [deg], Long = -0.000135 [deg], Height = -1.10 [m][0m
+[1m[32mVelocity: East: -21.16 [m/s], North: 0.23 [m/s], Up = -7.66 [m/s][0m
+Current receiver time: 3 min 20 s
+[1m[32mPosition at 2026-Mar-02 00:37:01.000000 UTC using 7 observations is Lat = 0.000004 [deg], Long = -0.000118 [deg], Height = -0.99 [m][0m
+[1m[32mVelocity: East: -22.29 [m/s], North: 0.15 [m/s], Up = -5.48 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:37:01.500000 UTC using 7 observations is Lat = -0.000005 [deg], Long = -0.000120 [deg], Height = -0.56 [m][0m
+[1m[32mVelocity: East: -22.24 [m/s], North: 0.16 [m/s], Up = -5.39 [m/s][0m
+Current receiver time: 3 min 21 s
+[1m[32mPosition at 2026-Mar-02 00:37:02.000000 UTC using 7 observations is Lat = -0.000004 [deg], Long = -0.000107 [deg], Height = -1.07 [m][0m
+[1m[32mVelocity: East: -22.74 [m/s], North: 0.21 [m/s], Up = -5.60 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:37:02.500000 UTC using 7 observations is Lat = -0.000011 [deg], Long = -0.000107 [deg], Height = -1.00 [m][0m
+[1m[32mVelocity: East: -22.63 [m/s], North: 0.19 [m/s], Up = -5.43 [m/s][0m
+Current receiver time: 3 min 22 s
+[1m[32mPosition at 2026-Mar-02 00:37:03.000000 UTC using 7 observations is Lat = -0.000017 [deg], Long = -0.000107 [deg], Height = -0.87 [m][0m
+[1m[32mVelocity: East: -22.65 [m/s], North: 0.23 [m/s], Up = -5.41 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:37:03.500000 UTC using 7 observations is Lat = -0.000004 [deg], Long = -0.000110 [deg], Height = -0.33 [m][0m
+[1m[32mVelocity: East: -22.73 [m/s], North: 0.22 [m/s], Up = -5.60 [m/s][0m
+Current receiver time: 3 min 23 s
+[1m[32mPosition at 2026-Mar-02 00:37:04.000000 UTC using 7 observations is Lat = -0.000007 [deg], Long = -0.000100 [deg], Height = -1.15 [m][0m
+[1m[32mVelocity: East: -22.64 [m/s], North: 0.16 [m/s], Up = -5.65 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:37:04.500000 UTC using 7 observations is Lat = -0.000008 [deg], Long = -0.000113 [deg], Height = -0.93 [m][0m
+[1m[32mVelocity: East: -22.60 [m/s], North: 0.21 [m/s], Up = -5.43 [m/s][0m
+Current receiver time: 3 min 24 s
+[1m[32mPosition at 2026-Mar-02 00:37:05.000000 UTC using 7 observations is Lat = -0.000000 [deg], Long = -0.000124 [deg], Height = -0.26 [m][0m
+[1m[32mVelocity: East: -22.55 [m/s], North: 0.18 [m/s], Up = -5.54 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:37:05.500000 UTC using 7 observations is Lat = -0.000010 [deg], Long = -0.000123 [deg], Height = -1.24 [m][0m
+[1m[32mVelocity: East: -22.59 [m/s], North: 0.20 [m/s], Up = -5.45 [m/s][0m
+New GPS NAV message received in channel 0: subframe 4 from satellite GPS PRN 01 (Block IIF) with CN0=31.30 dB-Hz
+Current receiver time: 3 min 25 s
+New GPS NAV message received in channel 4: subframe 4 from satellite GPS PRN 17 (Block IIR-M) with CN0=31.40 dB-Hz
+New GPS NAV message received in channel 1: subframe 4 from satellite GPS PRN 06 (Block IIF) with CN0=30.91 dB-Hz
+New GPS NAV message received in channel 2: subframe 4 from satellite GPS PRN 12 (Block IIR-M) with CN0=30.95 dB-Hz
+Current receiver time: 3 min 26 s
+Current receiver time: 3 min 27 s
+Current receiver time: 3 min 28 s
+Current receiver time: 3 min 29 s
+Current receiver time: 3 min 30 s
+Current receiver time: 3 min 31 s
+New GPS NAV message received in channel 1: subframe 5 from satellite GPS PRN 06 (Block IIF) with CN0=30.73 dB-Hz
+New GPS NAV message received in channel 4: subframe 5 from satellite GPS PRN 17 (Block IIR-M) with CN0=31.11 dB-Hz
+New GPS NAV message received in channel 7: subframe 5 from satellite GPS PRN 26 (Block IIF) with CN0=31.03 dB-Hz
+New GPS NAV message received in channel 0: subframe 5 from satellite GPS PRN 01 (Block IIF) with CN0=31.10 dB-Hz
+New GPS NAV message received in channel 2: subframe 5 from satellite GPS PRN 12 (Block IIR-M) with CN0=30.80 dB-Hz
+Current receiver time: 3 min 32 s
+Current receiver time: 3 min 33 s
+Current receiver time: 3 min 34 s
+Current receiver time: 3 min 35 s
+Current receiver time: 3 min 36 s
+Current receiver time: 3 min 37 s
+New GPS NAV message received in channel 9: subframe 1 from satellite GPS PRN 31 (Block IIR-M) with CN0=30.98 dB-Hz
+New GPS NAV message received in channel 1: subframe 1 from satellite GPS PRN 06 (Block IIF) with CN0=30.79 dB-Hz
+New GPS NAV message received in channel 4: subframe 1 from satellite GPS PRN 17 (Block IIR-M) with CN0=31.10 dB-Hz
+New GPS NAV message received in channel 2: subframe 1 from satellite GPS PRN 12 (Block IIR-M) with CN0=30.86 dB-Hz
+New GPS NAV message received in channel 7: subframe 1 from satellite GPS PRN 26 (Block IIF) with CN0=30.95 dB-Hz
+New GPS NAV message received in channel 3: subframe 1 from satellite GPS PRN 16 (Block IIR) with CN0=31.00 dB-Hz
+[1m[32mPosition at 2026-Mar-02 00:37:18.500000 UTC using 7 observations is Lat = -0.000006 [deg], Long = -0.000128 [deg], Height = -0.90 [m][0m
+[1m[32mVelocity: East: -21.50 [m/s], North: -1.00 [m/s], Up = -7.15 [m/s][0m
+Current receiver time: 3 min 38 s
+[1m[32mPosition at 2026-Mar-02 00:37:19.000000 UTC using 7 observations is Lat = -0.000001 [deg], Long = -0.000117 [deg], Height = -0.61 [m][0m
+[1m[32mVelocity: East: -21.39 [m/s], North: -1.11 [m/s], Up = -7.27 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:37:19.500000 UTC using 7 observations is Lat = 0.000009 [deg], Long = -0.000111 [deg], Height = -0.30 [m][0m
+[1m[32mVelocity: East: -21.37 [m/s], North: -1.06 [m/s], Up = -7.21 [m/s][0m
+Current receiver time: 3 min 39 s
+[1m[32mPosition at 2026-Mar-02 00:37:20.000000 UTC using 7 observations is Lat = -0.000001 [deg], Long = -0.000119 [deg], Height = -0.49 [m][0m
+[1m[32mVelocity: East: -21.44 [m/s], North: -1.06 [m/s], Up = -7.16 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:37:20.500000 UTC using 7 observations is Lat = 0.000002 [deg], Long = -0.000132 [deg], Height = 0.10 [m][0m
+[1m[32mVelocity: East: -21.57 [m/s], North: -0.96 [m/s], Up = -7.08 [m/s][0m
+Current receiver time: 3 min 40 s
+[1m[32mPosition at 2026-Mar-02 00:37:21.000000 UTC using 7 observations is Lat = 0.000006 [deg], Long = -0.000136 [deg], Height = 0.22 [m][0m
+[1m[32mVelocity: East: -21.48 [m/s], North: -0.98 [m/s], Up = -7.24 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:37:21.500000 UTC using 7 observations is Lat = 0.000005 [deg], Long = -0.000119 [deg], Height = 0.10 [m][0m
+[1m[32mVelocity: East: -21.36 [m/s], North: -1.06 [m/s], Up = -7.20 [m/s][0m
+Current receiver time: 3 min 41 s
+[1m[32mPosition at 2026-Mar-02 00:37:22.000000 UTC using 7 observations is Lat = 0.000003 [deg], Long = -0.000128 [deg], Height = -0.31 [m][0m
+[1m[32mVelocity: East: -21.33 [m/s], North: -1.09 [m/s], Up = -7.22 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:37:22.500000 UTC using 7 observations is Lat = 0.000003 [deg], Long = -0.000126 [deg], Height = -0.93 [m][0m
+[1m[32mVelocity: East: -21.28 [m/s], North: -1.06 [m/s], Up = -7.19 [m/s][0m
+Current receiver time: 3 min 42 s
+[1m[32mPosition at 2026-Mar-02 00:37:23.000000 UTC using 7 observations is Lat = -0.000003 [deg], Long = -0.000125 [deg], Height = -1.04 [m][0m
+[1m[32mVelocity: East: -21.15 [m/s], North: -1.04 [m/s], Up = -7.02 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:37:23.500000 UTC using 7 observations is Lat = -0.000008 [deg], Long = -0.000128 [deg], Height = -1.05 [m][0m
+[1m[32mVelocity: East: -21.39 [m/s], North: -0.90 [m/s], Up = -7.20 [m/s][0m
+Current receiver time: 3 min 43 s
+New GPS NAV message received in channel 1: subframe 2 from satellite GPS PRN 06 (Block IIF) with CN0=30.84 dB-Hz
+New GPS NAV message received in channel 9: subframe 2 from satellite GPS PRN 31 (Block IIR-M) with CN0=30.95 dB-Hz
+New GPS NAV message received in channel 3: subframe 2 from satellite GPS PRN 16 (Block IIR) with CN0=31.02 dB-Hz
+New GPS NAV message received in channel 7: subframe 2 from satellite GPS PRN 26 (Block IIF) with CN0=30.91 dB-Hz
+New GPS NAV message received in channel 4: subframe 2 from satellite GPS PRN 17 (Block IIR-M) with CN0=31.21 dB-Hz
+[1m[32mPosition at 2026-Mar-02 00:37:24.000000 UTC using 7 observations is Lat = -0.000003 [deg], Long = -0.000131 [deg], Height = -0.36 [m][0m
+[1m[32mVelocity: East: -22.66 [m/s], North: -0.40 [m/s], Up = -7.78 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:37:24.500000 UTC using 7 observations is Lat = -0.000004 [deg], Long = -0.000124 [deg], Height = -0.46 [m][0m
+[1m[32mVelocity: East: -22.57 [m/s], North: -0.44 [m/s], Up = -7.75 [m/s][0m
+Current receiver time: 3 min 44 s
+[1m[32mPosition at 2026-Mar-02 00:37:25.000000 UTC using 7 observations is Lat = 0.000006 [deg], Long = -0.000127 [deg], Height = -0.35 [m][0m
+[1m[32mVelocity: East: -21.05 [m/s], North: -1.14 [m/s], Up = -7.11 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:37:25.500000 UTC using 7 observations is Lat = 0.000002 [deg], Long = -0.000115 [deg], Height = -0.40 [m][0m
+[1m[32mVelocity: East: -22.18 [m/s], North: -0.60 [m/s], Up = -7.72 [m/s][0m
+Current receiver time: 3 min 45 s
+[1m[32mPosition at 2026-Mar-02 00:37:26.000000 UTC using 7 observations is Lat = 0.000001 [deg], Long = -0.000107 [deg], Height = -0.85 [m][0m
+[1m[32mVelocity: East: -22.30 [m/s], North: -0.52 [m/s], Up = -7.57 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:37:26.500000 UTC using 7 observations is Lat = -0.000002 [deg], Long = -0.000108 [deg], Height = -1.51 [m][0m
+[1m[32mVelocity: East: -22.19 [m/s], North: -0.58 [m/s], Up = -7.68 [m/s][0m
+Current receiver time: 3 min 46 s
+[1m[32mPosition at 2026-Mar-02 00:37:27.000000 UTC using 7 observations is Lat = -0.000008 [deg], Long = -0.000110 [deg], Height = -1.22 [m][0m
+[1m[32mVelocity: East: -22.30 [m/s], North: -0.48 [m/s], Up = -7.63 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:37:27.500000 UTC using 7 observations is Lat = -0.000004 [deg], Long = -0.000116 [deg], Height = -0.53 [m][0m
+[1m[32mVelocity: East: -22.29 [m/s], North: -0.45 [m/s], Up = -7.58 [m/s][0m
+Current receiver time: 3 min 47 s
+[1m[32mPosition at 2026-Mar-02 00:37:28.000000 UTC using 7 observations is Lat = -0.000006 [deg], Long = -0.000123 [deg], Height = -0.81 [m][0m
+[1m[32mVelocity: East: -22.14 [m/s], North: -0.57 [m/s], Up = -7.73 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:37:28.500000 UTC using 7 observations is Lat = -0.000012 [deg], Long = -0.000110 [deg], Height = -0.80 [m][0m
+[1m[32mVelocity: East: -22.15 [m/s], North: -0.55 [m/s], Up = -7.64 [m/s][0m
+Current receiver time: 3 min 48 s
+[1m[32mPosition at 2026-Mar-02 00:37:29.000000 UTC using 7 observations is Lat = 0.000006 [deg], Long = -0.000115 [deg], Height = 0.05 [m][0m
+[1m[32mVelocity: East: -22.13 [m/s], North: -0.55 [m/s], Up = -7.67 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:37:29.500000 UTC using 7 observations is Lat = 0.000009 [deg], Long = -0.000130 [deg], Height = 0.35 [m][0m
+[1m[32mVelocity: East: -22.11 [m/s], North: -0.56 [m/s], Up = -7.69 [m/s][0m
+Current receiver time: 3 min 49 s
+New GPS NAV message received in channel 9: subframe 3 from satellite GPS PRN 31 (Block IIR-M) with CN0=30.89 dB-Hz
+New GPS NAV message received in channel 4: subframe 3 from satellite GPS PRN 17 (Block IIR-M) with CN0=31.39 dB-Hz
+New GPS NAV message received in channel 1: subframe 3 from satellite GPS PRN 06 (Block IIF) with CN0=30.92 dB-Hz
+New GPS NAV message received in channel 3: subframe 3 from satellite GPS PRN 16 (Block IIR) with CN0=31.26 dB-Hz
+New GPS NAV message received in channel 6: subframe 3 from satellite GPS PRN 22 (Block IIR) with CN0=31.18 dB-Hz
+New GPS NAV message received in channel 7: subframe 3 from satellite GPS PRN 26 (Block IIF) with CN0=31.20 dB-Hz
+[1m[32mPosition at 2026-Mar-02 00:37:30.000000 UTC using 6 observations is Lat = -0.000013 [deg], Long = -0.000110 [deg], Height = -0.90 [m][0m
+[1m[32mVelocity: East: -20.75 [m/s], North: -2.82 [m/s], Up = -10.52 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:37:30.500000 UTC using 7 observations is Lat = 0.000018 [deg], Long = -0.000119 [deg], Height = 0.82 [m][0m
+[1m[32mVelocity: East: -21.22 [m/s], North: -1.91 [m/s], Up = -9.46 [m/s][0m
+Current receiver time: 3 min 50 s
+[1m[32mPosition at 2026-Mar-02 00:37:31.000000 UTC using 7 observations is Lat = 0.000012 [deg], Long = -0.000121 [deg], Height = 0.98 [m][0m
+[1m[32mVelocity: East: -21.19 [m/s], North: -1.97 [m/s], Up = -9.48 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:37:31.500000 UTC using 7 observations is Lat = 0.000023 [deg], Long = -0.000134 [deg], Height = 1.43 [m][0m
+[1m[32mVelocity: East: -21.48 [m/s], North: -1.60 [m/s], Up = -9.06 [m/s][0m
+Current receiver time: 3 min 51 s
+[1m[32mPosition at 2026-Mar-02 00:37:32.000000 UTC using 7 observations is Lat = 0.000012 [deg], Long = -0.000124 [deg], Height = 0.61 [m][0m
+[1m[32mVelocity: East: -20.84 [m/s], North: -2.39 [m/s], Up = -9.82 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:37:32.500000 UTC using 7 observations is Lat = -0.000022 [deg], Long = -0.000108 [deg], Height = -0.92 [m][0m
+[1m[32mVelocity: East: -21.29 [m/s], North: -1.90 [m/s], Up = -9.39 [m/s][0m
+Current receiver time: 3 min 52 s
+[1m[32mPosition at 2026-Mar-02 00:37:33.000000 UTC using 7 observations is Lat = -0.000003 [deg], Long = -0.000124 [deg], Height = -0.50 [m][0m
+[1m[32mVelocity: East: -21.37 [m/s], North: -1.75 [m/s], Up = -9.21 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:37:33.500000 UTC using 7 observations is Lat = 0.000009 [deg], Long = -0.000133 [deg], Height = 0.33 [m][0m
+[1m[32mVelocity: East: -20.89 [m/s], North: -2.36 [m/s], Up = -9.82 [m/s][0m
+Current receiver time: 3 min 53 s
+[1m[32mPosition at 2026-Mar-02 00:37:34.000000 UTC using 7 observations is Lat = -0.000022 [deg], Long = -0.000100 [deg], Height = -2.39 [m][0m
+[1m[32mVelocity: East: -20.90 [m/s], North: -2.32 [m/s], Up = -9.73 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:37:34.500000 UTC using 7 observations is Lat = -0.000021 [deg], Long = -0.000090 [deg], Height = -2.09 [m][0m
+[1m[32mVelocity: East: -20.81 [m/s], North: -2.37 [m/s], Up = -9.85 [m/s][0m
+Current receiver time: 3 min 54 s
+[1m[32mPosition at 2026-Mar-02 00:37:35.000000 UTC using 7 observations is Lat = -0.000006 [deg], Long = -0.000109 [deg], Height = -0.94 [m][0m
+[1m[32mVelocity: East: -20.83 [m/s], North: -2.30 [m/s], Up = -9.76 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:37:35.500000 UTC using 7 observations is Lat = 0.000001 [deg], Long = -0.000109 [deg], Height = -0.77 [m][0m
+[1m[32mVelocity: East: -20.74 [m/s], North: -2.44 [m/s], Up = -9.94 [m/s][0m
+Current receiver time: 3 min 55 s
+New GPS NAV message received in channel 9: subframe 4 from satellite GPS PRN 31 (Block IIR-M) with CN0=30.96 dB-Hz
+New GPS NAV message received in channel 1: subframe 4 from satellite GPS PRN 06 (Block IIF) with CN0=31.38 dB-Hz
+New GPS NAV message received in channel 6: subframe 4 from satellite GPS PRN 22 (Block IIR) with CN0=31.49 dB-Hz
+New GPS NAV message received in channel 7: subframe 4 from satellite GPS PRN 26 (Block IIF) with CN0=31.46 dB-Hz
+New GPS NAV message received in channel 3: subframe 4 from satellite GPS PRN 16 (Block IIR) with CN0=31.66 dB-Hz
+[1m[32mPosition at 2026-Mar-02 00:37:36.000000 UTC using 7 observations is Lat = -0.000005 [deg], Long = -0.000103 [deg], Height = -1.00 [m][0m
+[1m[32mVelocity: East: -20.65 [m/s], North: -2.53 [m/s], Up = -9.99 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:37:36.500000 UTC using 7 observations is Lat = -0.000020 [deg], Long = -0.000110 [deg], Height = -2.12 [m][0m
+[1m[32mVelocity: East: -20.72 [m/s], North: -2.44 [m/s], Up = -10.01 [m/s][0m
+Current receiver time: 3 min 56 s
+[1m[32mPosition at 2026-Mar-02 00:37:37.000000 UTC using 7 observations is Lat = 0.000042 [deg], Long = -0.000138 [deg], Height = 1.72 [m][0m
+[1m[32mVelocity: East: -22.98 [m/s], North: 0.73 [m/s], Up = -7.18 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:37:37.500000 UTC using 7 observations is Lat = 0.000017 [deg], Long = -0.000130 [deg], Height = 0.53 [m][0m
+[1m[32mVelocity: East: -22.99 [m/s], North: 0.73 [m/s], Up = -7.23 [m/s][0m
+Current receiver time: 3 min 57 s
+[1m[32mPosition at 2026-Mar-02 00:37:38.000000 UTC using 7 observations is Lat = 0.000007 [deg], Long = -0.000140 [deg], Height = 0.02 [m][0m
+[1m[32mVelocity: East: -20.65 [m/s], North: -2.47 [m/s], Up = -9.96 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:37:38.500000 UTC using 7 observations is Lat = -0.000003 [deg], Long = -0.000118 [deg], Height = -0.78 [m][0m
+[1m[32mVelocity: East: -22.94 [m/s], North: 0.61 [m/s], Up = -7.33 [m/s][0m
+Current receiver time: 3 min 58 s
+[1m[32mPosition at 2026-Mar-02 00:37:39.000000 UTC using 7 observations is Lat = -0.000021 [deg], Long = -0.000117 [deg], Height = -1.29 [m][0m
+[1m[32mVelocity: East: -20.59 [m/s], North: -2.60 [m/s], Up = -10.14 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:37:39.500000 UTC using 7 observations is Lat = -0.000011 [deg], Long = -0.000114 [deg], Height = -1.28 [m][0m
+[1m[32mVelocity: East: -20.65 [m/s], North: -2.39 [m/s], Up = -9.95 [m/s][0m
+Current receiver time: 3 min 59 s
+[1m[32mPosition at 2026-Mar-02 00:37:40.000000 UTC using 7 observations is Lat = 0.000001 [deg], Long = -0.000120 [deg], Height = -1.06 [m][0m
+[1m[32mVelocity: East: -20.51 [m/s], North: -2.60 [m/s], Up = -10.25 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:37:40.500000 UTC using 7 observations is Lat = 0.000020 [deg], Long = -0.000123 [deg], Height = 0.52 [m][0m
+[1m[32mVelocity: East: -22.87 [m/s], North: 0.74 [m/s], Up = -7.22 [m/s][0m
+Current receiver time: 4 min 0 s
+[1m[32mPosition at 2026-Mar-02 00:37:41.000000 UTC using 7 observations is Lat = 0.000025 [deg], Long = -0.000130 [deg], Height = 0.49 [m][0m
+[1m[32mVelocity: East: -22.75 [m/s], North: 0.48 [m/s], Up = -7.37 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:37:41.500000 UTC using 7 observations is Lat = 0.000014 [deg], Long = -0.000128 [deg], Height = 0.33 [m][0m
+[1m[32mVelocity: East: -22.81 [m/s], North: 0.69 [m/s], Up = -7.29 [m/s][0m
+Current receiver time: 4 min 1 s
+New GPS NAV message received in channel 2: subframe 5 from satellite GPS PRN 12 (Block IIR-M) with CN0=31.03 dB-Hz
+New GPS NAV message received in channel 9: subframe 5 from satellite GPS PRN 31 (Block IIR-M) with CN0=30.75 dB-Hz
+New GPS NAV message received in channel 1: subframe 5 from satellite GPS PRN 06 (Block IIF) with CN0=31.04 dB-Hz
+New GPS NAV message received in channel 7: subframe 5 from satellite GPS PRN 26 (Block IIF) with CN0=30.99 dB-Hz
+New GPS NAV message received in channel 6: subframe 5 from satellite GPS PRN 22 (Block IIR) with CN0=31.07 dB-Hz
+New GPS NAV message received in channel 3: subframe 5 from satellite GPS PRN 16 (Block IIR) with CN0=31.20 dB-Hz
+[1m[32mPosition at 2026-Mar-02 00:37:42.000000 UTC using 7 observations is Lat = -0.000002 [deg], Long = -0.000119 [deg], Height = -0.20 [m][0m
+[1m[32mVelocity: East: -22.77 [m/s], North: 0.60 [m/s], Up = -7.39 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:37:42.500000 UTC using 7 observations is Lat = -0.000022 [deg], Long = -0.000098 [deg], Height = -1.51 [m][0m
+[1m[32mVelocity: East: -21.56 [m/s], North: -1.07 [m/s], Up = -8.83 [m/s][0m
+Current receiver time: 4 min 2 s
+[1m[32mPosition at 2026-Mar-02 00:37:43.000000 UTC using 7 observations is Lat = -0.000011 [deg], Long = -0.000124 [deg], Height = -0.82 [m][0m
+[1m[32mVelocity: East: -22.81 [m/s], North: 0.68 [m/s], Up = -7.30 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:37:43.500000 UTC using 7 observations is Lat = -0.000036 [deg], Long = -0.000109 [deg], Height = -2.27 [m][0m
+[1m[32mVelocity: East: -22.94 [m/s], North: 0.80 [m/s], Up = -7.19 [m/s][0m
+Current receiver time: 4 min 3 s
+[1m[32mPosition at 2026-Mar-02 00:37:44.000000 UTC using 7 observations is Lat = -0.000012 [deg], Long = -0.000121 [deg], Height = -1.95 [m][0m
+[1m[32mVelocity: East: -22.87 [m/s], North: 0.73 [m/s], Up = -7.19 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:37:44.500000 UTC using 7 observations is Lat = 0.000021 [deg], Long = -0.000128 [deg], Height = -0.44 [m][0m
+[1m[32mVelocity: East: -22.76 [m/s], North: 0.65 [m/s], Up = -7.29 [m/s][0m
+Current receiver time: 4 min 4 s
+[1m[32mPosition at 2026-Mar-02 00:37:45.000000 UTC using 7 observations is Lat = 0.000037 [deg], Long = -0.000138 [deg], Height = 1.08 [m][0m
+[1m[32mVelocity: East: -22.77 [m/s], North: 0.67 [m/s], Up = -7.20 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:37:45.500000 UTC using 7 observations is Lat = 0.000001 [deg], Long = -0.000121 [deg], Height = -1.35 [m][0m
+[1m[32mVelocity: East: -22.68 [m/s], North: 0.57 [m/s], Up = -7.37 [m/s][0m
+Current receiver time: 4 min 5 s
+[1m[32mPosition at 2026-Mar-02 00:37:46.000000 UTC using 7 observations is Lat = 0.000017 [deg], Long = -0.000130 [deg], Height = 0.50 [m][0m
+[1m[32mVelocity: East: -22.69 [m/s], North: 0.65 [m/s], Up = -7.39 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:37:46.500000 UTC using 7 observations is Lat = 0.000020 [deg], Long = -0.000123 [deg], Height = 1.59 [m][0m
+[1m[32mVelocity: East: -22.74 [m/s], North: 0.64 [m/s], Up = -7.33 [m/s][0m
+Current receiver time: 4 min 6 s
+[1m[32mPosition at 2026-Mar-02 00:37:47.000000 UTC using 7 observations is Lat = 0.000006 [deg], Long = -0.000122 [deg], Height = 0.86 [m][0m
+[1m[32mVelocity: East: -22.53 [m/s], North: 0.49 [m/s], Up = -7.59 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:37:47.500000 UTC using 7 observations is Lat = -0.000024 [deg], Long = -0.000099 [deg], Height = -1.81 [m][0m
+[1m[32mVelocity: East: -22.51 [m/s], North: 0.50 [m/s], Up = -7.59 [m/s][0m
+Current receiver time: 4 min 7 s
+New GPS NAV message received in channel 1: subframe 1 from satellite GPS PRN 06 (Block IIF) with CN0=30.99 dB-Hz
+New GPS NAV message received in channel 2: subframe 1 from satellite GPS PRN 12 (Block IIR-M) with CN0=30.91 dB-Hz
+New GPS NAV message received in channel 3: subframe 1 from satellite GPS PRN 16 (Block IIR) with CN0=31.06 dB-Hz
+New GPS NAV message received in channel 6: subframe 1 from satellite GPS PRN 22 (Block IIR) with CN0=31.00 dB-Hz
+New GPS NAV message received in channel 7: subframe 1 from satellite GPS PRN 26 (Block IIF) with CN0=30.87 dB-Hz
+[1m[32mPosition at 2026-Mar-02 00:37:48.000000 UTC using 7 observations is Lat = -0.000020 [deg], Long = -0.000111 [deg], Height = -1.75 [m][0m
+[1m[32mVelocity: East: -21.94 [m/s], North: -1.10 [m/s], Up = -8.19 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:37:48.500000 UTC using 6 observations is Lat = -0.000033 [deg], Long = -0.000109 [deg], Height = -2.81 [m][0m
+[1m[32mVelocity: East: -20.85 [m/s], North: -2.33 [m/s], Up = -9.56 [m/s][0m
+Current receiver time: 4 min 8 s
+[1m[32mPosition at 2026-Mar-02 00:37:49.000000 UTC using 6 observations is Lat = -0.000051 [deg], Long = -0.000090 [deg], Height = -2.90 [m][0m
+[1m[32mVelocity: East: -22.19 [m/s], North: 0.04 [m/s], Up = -7.98 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:37:49.500000 UTC using 6 observations is Lat = -0.000019 [deg], Long = -0.000102 [deg], Height = -1.46 [m][0m
+[1m[32mVelocity: East: -20.67 [m/s], North: -2.82 [m/s], Up = -9.73 [m/s][0m
+Current receiver time: 4 min 9 s
+[1m[32mPosition at 2026-Mar-02 00:37:50.000000 UTC using 6 observations is Lat = -0.000017 [deg], Long = -0.000100 [deg], Height = -1.38 [m][0m
+[1m[32mVelocity: East: -20.59 [m/s], North: -2.87 [m/s], Up = -9.83 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:37:50.500000 UTC using 6 observations is Lat = -0.000022 [deg], Long = -0.000078 [deg], Height = -2.37 [m][0m
+[1m[32mVelocity: East: -21.12 [m/s], North: -1.95 [m/s], Up = -9.22 [m/s][0m
+Current receiver time: 4 min 10 s
+[1m[32mPosition at 2026-Mar-02 00:37:51.000000 UTC using 6 observations is Lat = 0.000020 [deg], Long = -0.000120 [deg], Height = 0.47 [m][0m
+[1m[32mVelocity: East: -20.99 [m/s], North: -2.09 [m/s], Up = -9.31 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:37:51.500000 UTC using 6 observations is Lat = 0.000031 [deg], Long = -0.000125 [deg], Height = 0.79 [m][0m
+[1m[32mVelocity: East: -20.84 [m/s], North: -2.35 [m/s], Up = -9.55 [m/s][0m
+Current receiver time: 4 min 11 s
+[1m[32mPosition at 2026-Mar-02 00:37:52.000000 UTC using 6 observations is Lat = 0.000020 [deg], Long = -0.000130 [deg], Height = 0.99 [m][0m
+[1m[32mVelocity: East: -20.79 [m/s], North: -2.36 [m/s], Up = -9.53 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:37:52.500000 UTC using 6 observations is Lat = 0.000011 [deg], Long = -0.000119 [deg], Height = 0.58 [m][0m
+[1m[32mVelocity: East: -20.83 [m/s], North: -2.30 [m/s], Up = -9.57 [m/s][0m
+Current receiver time: 4 min 12 s
+[1m[32mPosition at 2026-Mar-02 00:37:53.000000 UTC using 6 observations is Lat = -0.000018 [deg], Long = -0.000084 [deg], Height = -1.93 [m][0m
+[1m[32mVelocity: East: -21.05 [m/s], North: -1.96 [m/s], Up = -9.19 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:37:53.500000 UTC using 6 observations is Lat = -0.000012 [deg], Long = -0.000102 [deg], Height = -1.68 [m][0m
+[1m[32mVelocity: East: -21.00 [m/s], North: -1.96 [m/s], Up = -9.18 [m/s][0m
+Current receiver time: 4 min 13 s
+New GPS NAV message received in channel 1: subframe 2 from satellite GPS PRN 06 (Block IIF) with CN0=30.97 dB-Hz
+New GPS NAV message received in channel 3: subframe 2 from satellite GPS PRN 16 (Block IIR) with CN0=31.05 dB-Hz
+New GPS NAV message received in channel 2: subframe 2 from satellite GPS PRN 12 (Block IIR-M) with CN0=31.07 dB-Hz
+New GPS NAV message received in channel 7: subframe 2 from satellite GPS PRN 26 (Block IIF) with CN0=30.81 dB-Hz
+New GPS NAV message received in channel 6: subframe 2 from satellite GPS PRN 22 (Block IIR) with CN0=30.98 dB-Hz
+New GPS NAV message received in channel 4: subframe 2 from satellite GPS PRN 17 (Block IIR-M) with CN0=30.96 dB-Hz
+[1m[32mPosition at 2026-Mar-02 00:37:54.000000 UTC using 6 observations is Lat = 0.000008 [deg], Long = -0.000118 [deg], Height = -1.20 [m][0m
+[1m[32mVelocity: East: -21.08 [m/s], North: -1.91 [m/s], Up = -9.18 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:37:54.500000 UTC using 7 observations is Lat = 0.000009 [deg], Long = -0.000132 [deg], Height = -0.52 [m][0m
+[1m[32mVelocity: East: -21.90 [m/s], North: -0.77 [m/s], Up = -8.25 [m/s][0m
+Current receiver time: 4 min 14 s
+[1m[32mPosition at 2026-Mar-02 00:37:55.000000 UTC using 7 observations is Lat = -0.000013 [deg], Long = -0.000126 [deg], Height = -1.24 [m][0m
+[1m[32mVelocity: East: -21.82 [m/s], North: -0.79 [m/s], Up = -8.23 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:37:55.500000 UTC using 7 observations is Lat = -0.000012 [deg], Long = -0.000113 [deg], Height = -0.84 [m][0m
+[1m[32mVelocity: East: -21.73 [m/s], North: -0.89 [m/s], Up = -8.34 [m/s][0m
+Current receiver time: 4 min 15 s
+[1m[32mPosition at 2026-Mar-02 00:37:56.000000 UTC using 7 observations is Lat = -0.000001 [deg], Long = -0.000116 [deg], Height = -0.74 [m][0m
+[1m[32mVelocity: East: -21.87 [m/s], North: -0.70 [m/s], Up = -8.07 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:37:56.500000 UTC using 7 observations is Lat = -0.000016 [deg], Long = -0.000110 [deg], Height = -1.96 [m][0m
+[1m[32mVelocity: East: -21.74 [m/s], North: -0.87 [m/s], Up = -8.33 [m/s][0m
+Current receiver time: 4 min 16 s
+[1m[32mPosition at 2026-Mar-02 00:37:57.000000 UTC using 7 observations is Lat = 0.000018 [deg], Long = -0.000129 [deg], Height = 0.54 [m][0m
+[1m[32mVelocity: East: -22.06 [m/s], North: -0.56 [m/s], Up = -7.92 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:37:57.500000 UTC using 7 observations is Lat = -0.000029 [deg], Long = -0.000115 [deg], Height = -1.57 [m][0m
+[1m[32mVelocity: East: -21.80 [m/s], North: -0.77 [m/s], Up = -8.27 [m/s][0m
+Current receiver time: 4 min 17 s
+[1m[32mPosition at 2026-Mar-02 00:37:58.000000 UTC using 7 observations is Lat = -0.000003 [deg], Long = -0.000119 [deg], Height = -0.44 [m][0m
+[1m[32mVelocity: East: -23.73 [m/s], North: 0.35 [m/s], Up = -5.70 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:37:58.500000 UTC using 7 observations is Lat = -0.000010 [deg], Long = -0.000117 [deg], Height = -0.45 [m][0m
+[1m[32mVelocity: East: -21.69 [m/s], North: -0.85 [m/s], Up = -8.31 [m/s][0m
+Current receiver time: 4 min 18 s
+[1m[32mPosition at 2026-Mar-02 00:37:59.000000 UTC using 7 observations is Lat = -0.000002 [deg], Long = -0.000112 [deg], Height = -0.33 [m][0m
+[1m[32mVelocity: East: -21.65 [m/s], North: -0.84 [m/s], Up = -8.28 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:37:59.500000 UTC using 7 observations is Lat = -0.000016 [deg], Long = -0.000099 [deg], Height = -1.70 [m][0m
+[1m[32mVelocity: East: -21.15 [m/s], North: -1.21 [m/s], Up = -9.00 [m/s][0m
+Current receiver time: 4 min 19 s
+New GPS NAV message received in channel 2: subframe 3 from satellite GPS PRN 12 (Block IIR-M) with CN0=30.98 dB-Hz
+New GPS NAV message received in channel 1: subframe 3 from satellite GPS PRN 06 (Block IIF) with CN0=31.10 dB-Hz
+New GPS NAV message received in channel 3: subframe 3 from satellite GPS PRN 16 (Block IIR) with CN0=31.28 dB-Hz
+New GPS NAV message received in channel 6: subframe 3 from satellite GPS PRN 22 (Block IIR) with CN0=31.17 dB-Hz
+New GPS NAV message received in channel 4: subframe 3 from satellite GPS PRN 17 (Block IIR-M) with CN0=31.14 dB-Hz
+[1m[32mPosition at 2026-Mar-02 00:38:00.000000 UTC using 6 observations is Lat = -0.000025 [deg], Long = -0.000107 [deg], Height = -1.00 [m][0m
+[1m[32mVelocity: East: -22.01 [m/s], North: 0.03 [m/s], Up = -7.96 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:38:00.500000 UTC using 6 observations is Lat = -0.000024 [deg], Long = -0.000104 [deg], Height = -0.25 [m][0m
+[1m[32mVelocity: East: -21.69 [m/s], North: 0.11 [m/s], Up = -8.42 [m/s][0m
+Current receiver time: 4 min 20 s
+[1m[32mPosition at 2026-Mar-02 00:38:01.000000 UTC using 6 observations is Lat = 0.000004 [deg], Long = -0.000125 [deg], Height = 0.24 [m][0m
+[1m[32mVelocity: East: -21.53 [m/s], North: -0.17 [m/s], Up = -8.64 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:38:01.500000 UTC using 6 observations is Lat = 0.000027 [deg], Long = -0.000132 [deg], Height = 0.13 [m][0m
+[1m[32mVelocity: East: -21.54 [m/s], North: -0.04 [m/s], Up = -8.55 [m/s][0m
+Current receiver time: 4 min 21 s
+[1m[32mPosition at 2026-Mar-02 00:38:02.000000 UTC using 6 observations is Lat = 0.000017 [deg], Long = -0.000123 [deg], Height = -0.29 [m][0m
+[1m[32mVelocity: East: -21.64 [m/s], North: 0.05 [m/s], Up = -8.47 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:38:02.500000 UTC using 6 observations is Lat = -0.000020 [deg], Long = -0.000110 [deg], Height = -1.93 [m][0m
+[1m[32mVelocity: East: -23.01 [m/s], North: -0.44 [m/s], Up = -6.64 [m/s][0m
+Current receiver time: 4 min 22 s
+[1m[32mPosition at 2026-Mar-02 00:38:03.000000 UTC using 6 observations is Lat = 0.000004 [deg], Long = -0.000100 [deg], Height = -0.67 [m][0m
+[1m[32mVelocity: East: -21.49 [m/s], North: -0.17 [m/s], Up = -8.64 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:38:03.500000 UTC using 6 observations is Lat = -0.000048 [deg], Long = -0.000074 [deg], Height = -2.89 [m][0m
+[1m[32mVelocity: East: -21.61 [m/s], North: -0.04 [m/s], Up = -8.42 [m/s][0m
+Current receiver time: 4 min 23 s
+[1m[32mPosition at 2026-Mar-02 00:38:04.000000 UTC using 6 observations is Lat = -0.000021 [deg], Long = -0.000098 [deg], Height = -1.66 [m][0m
+[1m[32mVelocity: East: -22.99 [m/s], North: -0.31 [m/s], Up = -6.53 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:38:04.500000 UTC using 6 observations is Lat = -0.000025 [deg], Long = -0.000089 [deg], Height = -2.41 [m][0m
+[1m[32mVelocity: East: -22.88 [m/s], North: -0.56 [m/s], Up = -6.71 [m/s][0m
+Current receiver time: 4 min 24 s
+[1m[32mPosition at 2026-Mar-02 00:38:05.000000 UTC using 6 observations is Lat = 0.000001 [deg], Long = -0.000116 [deg], Height = -0.77 [m][0m
+[1m[32mVelocity: East: -22.80 [m/s], North: -0.50 [m/s], Up = -6.79 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:38:05.500000 UTC using 6 observations is Lat = 0.000000 [deg], Long = -0.000111 [deg], Height = -1.44 [m][0m
+[1m[32mVelocity: East: -22.80 [m/s], North: -0.54 [m/s], Up = -6.74 [m/s][0m
+Current receiver time: 4 min 25 s
+New GPS NAV message received in channel 3: subframe 4 from satellite GPS PRN 16 (Block IIR) with CN0=31.04 dB-Hz
+New GPS NAV message received in channel 2: subframe 4 from satellite GPS PRN 12 (Block IIR-M) with CN0=30.74 dB-Hz
+New GPS NAV message received in channel 1: subframe 4 from satellite GPS PRN 06 (Block IIF) with CN0=30.90 dB-Hz
+New GPS NAV message received in channel 6: subframe 4 from satellite GPS PRN 22 (Block IIR) with CN0=30.92 dB-Hz
+New GPS NAV message received in channel 9: subframe 4 from satellite GPS PRN 31 (Block IIR-M) with CN0=30.88 dB-Hz
+New GPS NAV message received in channel 4: subframe 4 from satellite GPS PRN 17 (Block IIR-M) with CN0=30.73 dB-Hz
+[1m[32mPosition at 2026-Mar-02 00:38:06.000000 UTC using 7 observations is Lat = 0.000040 [deg], Long = -0.000147 [deg], Height = 0.86 [m][0m
+[1m[32mVelocity: East: -22.96 [m/s], North: -0.00 [m/s], Up = -6.55 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:38:06.500000 UTC using 7 observations is Lat = -0.000016 [deg], Long = -0.000111 [deg], Height = -1.57 [m][0m
+[1m[32mVelocity: East: -23.02 [m/s], North: -0.02 [m/s], Up = -6.48 [m/s][0m
+Current receiver time: 4 min 26 s
+[1m[32mPosition at 2026-Mar-02 00:38:07.000000 UTC using 7 observations is Lat = -0.000023 [deg], Long = -0.000102 [deg], Height = -2.22 [m][0m
+[1m[32mVelocity: East: -22.91 [m/s], North: -0.20 [m/s], Up = -6.68 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:38:07.500000 UTC using 7 observations is Lat = -0.000004 [deg], Long = -0.000105 [deg], Height = -0.89 [m][0m
+[1m[32mVelocity: East: -22.92 [m/s], North: -0.21 [m/s], Up = -6.69 [m/s][0m
+Current receiver time: 4 min 27 s
+[1m[32mPosition at 2026-Mar-02 00:38:08.000000 UTC using 7 observations is Lat = -0.000002 [deg], Long = -0.000092 [deg], Height = -1.37 [m][0m
+[1m[32mVelocity: East: -22.96 [m/s], North: 0.02 [m/s], Up = -6.54 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:38:08.500000 UTC using 7 observations is Lat = -0.000051 [deg], Long = -0.000080 [deg], Height = -4.17 [m][0m
+[1m[32mVelocity: East: -22.70 [m/s], North: -0.37 [m/s], Up = -6.80 [m/s][0m
+Current receiver time: 4 min 28 s
+[1m[32mPosition at 2026-Mar-02 00:38:09.000000 UTC using 7 observations is Lat = -0.000025 [deg], Long = -0.000112 [deg], Height = -2.07 [m][0m
+[1m[32mVelocity: East: -22.72 [m/s], North: -0.31 [m/s], Up = -6.78 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:38:09.500000 UTC using 7 observations is Lat = 0.000037 [deg], Long = -0.000128 [deg], Height = 0.99 [m][0m
+[1m[32mVelocity: East: -22.75 [m/s], North: -0.26 [m/s], Up = -6.81 [m/s][0m
+Current receiver time: 4 min 29 s
+[1m[32mPosition at 2026-Mar-02 00:38:10.000000 UTC using 7 observations is Lat = 0.000011 [deg], Long = -0.000118 [deg], Height = -0.14 [m][0m
+[1m[32mVelocity: East: -22.69 [m/s], North: -0.36 [m/s], Up = -6.97 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:38:10.500000 UTC using 7 observations is Lat = -0.000037 [deg], Long = -0.000101 [deg], Height = -2.78 [m][0m
+[1m[32mVelocity: East: -22.78 [m/s], North: -0.30 [m/s], Up = -6.82 [m/s][0m
+New GPS NAV message received in channel 5: subframe 2 from satellite GPS PRN 21 (Block IIR) with CN0=34.23 dB-Hz
+Current receiver time: 4 min 30 s
+[1m[32mPosition at 2026-Mar-02 00:38:11.000000 UTC using 7 observations is Lat = -0.000055 [deg], Long = -0.000081 [deg], Height = -4.52 [m][0m
+[1m[32mVelocity: East: -22.65 [m/s], North: -0.33 [m/s], Up = -6.91 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:38:11.500000 UTC using 7 observations is Lat = -0.000020 [deg], Long = -0.000095 [deg], Height = -1.47 [m][0m
+[1m[32mVelocity: East: -22.64 [m/s], North: -0.44 [m/s], Up = -6.99 [m/s][0m
+Current receiver time: 4 min 31 s
+New GPS NAV message received in channel 2: subframe 5 from satellite GPS PRN 12 (Block IIR-M) with CN0=30.66 dB-Hz
+New GPS NAV message received in channel 9: subframe 5 from satellite GPS PRN 31 (Block IIR-M) with CN0=30.85 dB-Hz
+New GPS NAV message received in channel 3: subframe 5 from satellite GPS PRN 16 (Block IIR) with CN0=30.94 dB-Hz
+New GPS NAV message received in channel 1: subframe 5 from satellite GPS PRN 06 (Block IIF) with CN0=30.86 dB-Hz
+New GPS NAV message received in channel 6: subframe 5 from satellite GPS PRN 22 (Block IIR) with CN0=30.85 dB-Hz
+New GPS NAV message received in channel 4: subframe 5 from satellite GPS PRN 17 (Block IIR-M) with CN0=30.59 dB-Hz
+New GPS NAV message received in channel 7: subframe 5 from satellite GPS PRN 26 (Block IIF) with CN0=30.81 dB-Hz
+[1m[32mPosition at 2026-Mar-02 00:38:12.000000 UTC using 7 observations is Lat = 0.000004 [deg], Long = -0.000115 [deg], Height = -0.27 [m][0m
+[1m[32mVelocity: East: -22.76 [m/s], North: -0.23 [m/s], Up = -6.71 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:38:12.500000 UTC using 7 observations is Lat = 0.000014 [deg], Long = -0.000134 [deg], Height = 0.92 [m][0m
+[1m[32mVelocity: East: -22.63 [m/s], North: -0.39 [m/s], Up = -6.89 [m/s][0m
+Current receiver time: 4 min 32 s
+[1m[32mPosition at 2026-Mar-02 00:38:13.000000 UTC using 7 observations is Lat = -0.000003 [deg], Long = -0.000114 [deg], Height = -1.11 [m][0m
+[1m[32mVelocity: East: -22.54 [m/s], North: -0.52 [m/s], Up = -7.06 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:38:13.500000 UTC using 7 observations is Lat = -0.000047 [deg], Long = -0.000070 [deg], Height = -3.26 [m][0m
+[1m[32mVelocity: East: -22.49 [m/s], North: -0.55 [m/s], Up = -7.11 [m/s][0m
+Current receiver time: 4 min 33 s
+[1m[32mPosition at 2026-Mar-02 00:38:14.000000 UTC using 7 observations is Lat = -0.000032 [deg], Long = -0.000095 [deg], Height = -2.03 [m][0m
+[1m[32mVelocity: East: -22.53 [m/s], North: -0.34 [m/s], Up = -6.94 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:38:14.500000 UTC using 7 observations is Lat = -0.000003 [deg], Long = -0.000115 [deg], Height = -1.17 [m][0m
+[1m[32mVelocity: East: -22.61 [m/s], North: -0.38 [m/s], Up = -6.97 [m/s][0m
+Current receiver time: 4 min 34 s
+[1m[32mPosition at 2026-Mar-02 00:38:15.000000 UTC using 7 observations is Lat = 0.000009 [deg], Long = -0.000123 [deg], Height = -0.40 [m][0m
+[1m[32mVelocity: East: -22.59 [m/s], North: -0.35 [m/s], Up = -6.89 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:38:15.500000 UTC using 7 observations is Lat = 0.000008 [deg], Long = -0.000147 [deg], Height = 1.31 [m][0m
+[1m[32mVelocity: East: -22.39 [m/s], North: -0.50 [m/s], Up = -7.12 [m/s][0m
+Current receiver time: 4 min 35 s
+[1m[32mPosition at 2026-Mar-02 00:38:16.000000 UTC using 7 observations is Lat = 0.000020 [deg], Long = -0.000144 [deg], Height = 0.88 [m][0m
+[1m[32mVelocity: East: -22.57 [m/s], North: -0.35 [m/s], Up = -6.90 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:38:16.500000 UTC using 7 observations is Lat = -0.000002 [deg], Long = -0.000127 [deg], Height = -0.06 [m][0m
+[1m[32mVelocity: East: -22.48 [m/s], North: -0.41 [m/s], Up = -7.05 [m/s][0m
+Current receiver time: 4 min 36 s
+[1m[32mPosition at 2026-Mar-02 00:38:17.000000 UTC using 7 observations is Lat = -0.000044 [deg], Long = -0.000098 [deg], Height = -2.59 [m][0m
+[1m[32mVelocity: East: -22.55 [m/s], North: -0.31 [m/s], Up = -6.83 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:38:17.500000 UTC using 7 observations is Lat = -0.000031 [deg], Long = -0.000087 [deg], Height = -2.23 [m][0m
+[1m[32mVelocity: East: -22.53 [m/s], North: -0.35 [m/s], Up = -6.96 [m/s][0m
+Current receiver time: 4 min 37 s
+New GPS NAV message received in channel 9: subframe 1 from satellite GPS PRN 31 (Block IIR-M) with CN0=30.93 dB-Hz
+New GPS NAV message received in channel 1: subframe 1 from satellite GPS PRN 06 (Block IIF) with CN0=30.86 dB-Hz
+New GPS NAV message received in channel 2: subframe 1 from satellite GPS PRN 12 (Block IIR-M) with CN0=30.78 dB-Hz
+New GPS NAV message received in channel 7: subframe 1 from satellite GPS PRN 26 (Block IIF) with CN0=30.79 dB-Hz
+New GPS NAV message received in channel 4: subframe 1 from satellite GPS PRN 17 (Block IIR-M) with CN0=30.67 dB-Hz
+New GPS NAV message received in channel 6: subframe 1 from satellite GPS PRN 22 (Block IIR) with CN0=30.84 dB-Hz
+New GPS NAV message received in channel 3: subframe 1 from satellite GPS PRN 16 (Block IIR) with CN0=30.93 dB-Hz
+[1m[32mPosition at 2026-Mar-02 00:38:18.000000 UTC using 7 observations is Lat = -0.000012 [deg], Long = -0.000114 [deg], Height = -1.44 [m][0m
+[1m[32mVelocity: East: -22.43 [m/s], North: -0.45 [m/s], Up = -7.06 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:38:18.500000 UTC using 7 observations is Lat = -0.000008 [deg], Long = -0.000120 [deg], Height = -1.27 [m][0m
+[1m[32mVelocity: East: -22.41 [m/s], North: -0.49 [m/s], Up = -7.12 [m/s][0m
+Current receiver time: 4 min 38 s
+[1m[32mPosition at 2026-Mar-02 00:38:19.000000 UTC using 7 observations is Lat = 0.000013 [deg], Long = -0.000139 [deg], Height = 0.40 [m][0m
+[1m[32mVelocity: East: -22.50 [m/s], North: -0.27 [m/s], Up = -6.87 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:38:19.500000 UTC using 7 observations is Lat = 0.000024 [deg], Long = -0.000126 [deg], Height = 1.17 [m][0m
+[1m[32mVelocity: East: -22.33 [m/s], North: -0.51 [m/s], Up = -7.19 [m/s][0m
+Current receiver time: 4 min 39 s
+[1m[32mPosition at 2026-Mar-02 00:38:20.000000 UTC using 7 observations is Lat = -0.000023 [deg], Long = -0.000107 [deg], Height = -1.84 [m][0m
+[1m[32mVelocity: East: -22.39 [m/s], North: -0.41 [m/s], Up = -7.08 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:38:20.500000 UTC using 7 observations is Lat = 0.000039 [deg], Long = -0.000143 [deg], Height = 2.18 [m][0m
+[1m[32mVelocity: East: -22.05 [m/s], North: -0.65 [m/s], Up = -7.11 [m/s][0m
+Current receiver time: 4 min 40 s
+[1m[32mPosition at 2026-Mar-02 00:38:21.000000 UTC using 7 observations is Lat = 0.000037 [deg], Long = -0.000144 [deg], Height = 1.65 [m][0m
+[1m[32mVelocity: East: -22.94 [m/s], North: -0.26 [m/s], Up = -7.55 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:38:21.500000 UTC using 7 observations is Lat = -0.000003 [deg], Long = -0.000123 [deg], Height = -1.03 [m][0m
+[1m[32mVelocity: East: -23.01 [m/s], North: -0.45 [m/s], Up = -7.98 [m/s][0m
+Current receiver time: 4 min 41 s
+[1m[32mPosition at 2026-Mar-02 00:38:22.000000 UTC using 7 observations is Lat = -0.000041 [deg], Long = -0.000090 [deg], Height = -3.97 [m][0m
+[1m[32mVelocity: East: -23.04 [m/s], North: -0.17 [m/s], Up = -7.53 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:38:22.500000 UTC using 7 observations is Lat = -0.000030 [deg], Long = -0.000097 [deg], Height = -2.86 [m][0m
+[1m[32mVelocity: East: -22.15 [m/s], North: -0.48 [m/s], Up = -6.99 [m/s][0m
+Current receiver time: 4 min 42 s
+[1m[32mPosition at 2026-Mar-02 00:38:23.000000 UTC using 7 observations is Lat = -0.000012 [deg], Long = -0.000113 [deg], Height = -1.25 [m][0m
+[1m[32mVelocity: East: -22.70 [m/s], North: -0.57 [m/s], Up = -7.85 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:38:23.500000 UTC using 7 observations is Lat = 0.000011 [deg], Long = -0.000128 [deg], Height = 0.29 [m][0m
+[1m[32mVelocity: East: -22.74 [m/s], North: -0.45 [m/s], Up = -7.82 [m/s][0m
+Current receiver time: 4 min 43 s
+New GPS NAV message received in channel 7: subframe 2 from satellite GPS PRN 26 (Block IIF) with CN0=30.83 dB-Hz
+New GPS NAV message received in channel 3: subframe 2 from satellite GPS PRN 16 (Block IIR) with CN0=31.00 dB-Hz
+New GPS NAV message received in channel 0: subframe 2 from satellite GPS PRN 01 (Block IIF) with CN0=30.84 dB-Hz
+New GPS NAV message received in channel 4: subframe 2 from satellite GPS PRN 17 (Block IIR-M) with CN0=30.76 dB-Hz
+New GPS NAV message received in channel 1: subframe 2 from satellite GPS PRN 06 (Block IIF) with CN0=30.96 dB-Hz
+New GPS NAV message received in channel 6: subframe 2 from satellite GPS PRN 22 (Block IIR) with CN0=30.93 dB-Hz
+New GPS NAV message received in channel 9: subframe 2 from satellite GPS PRN 31 (Block IIR-M) with CN0=31.05 dB-Hz
+[1m[32mPosition at 2026-Mar-02 00:38:24.000000 UTC using 8 observations is Lat = 0.000006 [deg], Long = -0.000123 [deg], Height = 0.60 [m][0m
+[1m[32mVelocity: East: -23.01 [m/s], North: -0.02 [m/s], Up = -7.40 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:38:24.500000 UTC using 8 observations is Lat = -0.000024 [deg], Long = -0.000093 [deg], Height = -0.87 [m][0m
+[1m[32mVelocity: East: -22.76 [m/s], North: -0.42 [m/s], Up = -7.79 [m/s][0m
+Current receiver time: 4 min 44 s
+[1m[32mPosition at 2026-Mar-02 00:38:25.000000 UTC using 8 observations is Lat = -0.000004 [deg], Long = -0.000107 [deg], Height = 0.01 [m][0m
+[1m[32mVelocity: East: -22.78 [m/s], North: -0.49 [m/s], Up = -7.87 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:38:25.500000 UTC using 8 observations is Lat = -0.000023 [deg], Long = -0.000100 [deg], Height = -1.15 [m][0m
+[1m[32mVelocity: East: -22.78 [m/s], North: -0.36 [m/s], Up = -7.78 [m/s][0m
+Current receiver time: 4 min 45 s
+[1m[32mPosition at 2026-Mar-02 00:38:26.000000 UTC using 8 observations is Lat = -0.000011 [deg], Long = -0.000099 [deg], Height = -0.70 [m][0m
+[1m[32mVelocity: East: -22.71 [m/s], North: -0.47 [m/s], Up = -7.80 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:38:26.500000 UTC using 8 observations is Lat = -0.000007 [deg], Long = -0.000114 [deg], Height = -0.95 [m][0m
+[1m[32mVelocity: East: -22.74 [m/s], North: -0.45 [m/s], Up = -7.85 [m/s][0m
+Current receiver time: 4 min 46 s
+[1m[32mPosition at 2026-Mar-02 00:38:27.000000 UTC using 8 observations is Lat = -0.000016 [deg], Long = -0.000109 [deg], Height = -1.27 [m][0m
+[1m[32mVelocity: East: -23.57 [m/s], North: 0.74 [m/s], Up = -7.17 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:38:27.500000 UTC using 8 observations is Lat = -0.000036 [deg], Long = -0.000084 [deg], Height = -1.37 [m][0m
+[1m[32mVelocity: East: -23.66 [m/s], North: 0.86 [m/s], Up = -7.16 [m/s][0m
+Current receiver time: 4 min 47 s
+[1m[32mPosition at 2026-Mar-02 00:38:28.000000 UTC using 8 observations is Lat = -0.000015 [deg], Long = -0.000101 [deg], Height = -1.08 [m][0m
+[1m[32mVelocity: East: -22.68 [m/s], North: -0.46 [m/s], Up = -7.88 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:38:28.500000 UTC using 8 observations is Lat = -0.000016 [deg], Long = -0.000104 [deg], Height = -1.45 [m][0m
+[1m[32mVelocity: East: -23.30 [m/s], North: 0.35 [m/s], Up = -7.44 [m/s][0m
+Current receiver time: 4 min 48 s
+[1m[32mPosition at 2026-Mar-02 00:38:29.000000 UTC using 8 observations is Lat = 0.000007 [deg], Long = -0.000112 [deg], Height = -0.35 [m][0m
+[1m[32mVelocity: East: -22.64 [m/s], North: -0.48 [m/s], Up = -7.90 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:38:29.500000 UTC using 8 observations is Lat = 0.000021 [deg], Long = -0.000120 [deg], Height = 0.04 [m][0m
+[1m[32mVelocity: East: -23.64 [m/s], North: 0.83 [m/s], Up = -7.24 [m/s][0m
+Current receiver time: 4 min 49 s
+New GPS NAV message received in channel 1: subframe 3 from satellite GPS PRN 06 (Block IIF) with CN0=31.02 dB-Hz
+New GPS NAV message received in channel 0: subframe 3 from satellite GPS PRN 01 (Block IIF) with CN0=31.06 dB-Hz
+New GPS NAV message received in channel 7: subframe 3 from satellite GPS PRN 26 (Block IIF) with CN0=31.17 dB-Hz
+New GPS NAV message received in channel 6: subframe 3 from satellite GPS PRN 22 (Block IIR) with CN0=31.13 dB-Hz
+New GPS NAV message received in channel 3: subframe 3 from satellite GPS PRN 16 (Block IIR) with CN0=31.32 dB-Hz
+New GPS NAV message received in channel 9: subframe 3 from satellite GPS PRN 31 (Block IIR-M) with CN0=31.15 dB-Hz
+[1m[32mPosition at 2026-Mar-02 00:38:30.000000 UTC using 8 observations is Lat = 0.000010 [deg], Long = -0.000118 [deg], Height = -0.29 [m][0m
+[1m[32mVelocity: East: -22.61 [m/s], North: -0.44 [m/s], Up = -7.85 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:38:30.500000 UTC using 8 observations is Lat = 0.000009 [deg], Long = -0.000132 [deg], Height = -0.78 [m][0m
+[1m[32mVelocity: East: -23.61 [m/s], North: 0.83 [m/s], Up = -7.20 [m/s][0m
+Current receiver time: 4 min 50 s
+[1m[32mPosition at 2026-Mar-02 00:38:31.000000 UTC using 8 observations is Lat = 0.000017 [deg], Long = -0.000133 [deg], Height = -0.30 [m][0m
+[1m[32mVelocity: East: -23.58 [m/s], North: 0.81 [m/s], Up = -7.29 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:38:31.500000 UTC using 8 observations is Lat = 0.000000 [deg], Long = -0.000128 [deg], Height = -0.14 [m][0m
+[1m[32mVelocity: East: -22.62 [m/s], North: -0.41 [m/s], Up = -7.85 [m/s][0m
+Current receiver time: 4 min 51 s
+[1m[32mPosition at 2026-Mar-02 00:38:32.000000 UTC using 8 observations is Lat = 0.000005 [deg], Long = -0.000137 [deg], Height = -0.19 [m][0m
+[1m[32mVelocity: East: -23.37 [m/s], North: 0.59 [m/s], Up = -7.28 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:38:32.500000 UTC using 8 observations is Lat = 0.000013 [deg], Long = -0.000126 [deg], Height = -0.12 [m][0m
+[1m[32mVelocity: East: -23.69 [m/s], North: 0.94 [m/s], Up = -7.20 [m/s][0m
+Current receiver time: 4 min 52 s
+[1m[32mPosition at 2026-Mar-02 00:38:33.000000 UTC using 8 observations is Lat = -0.000001 [deg], Long = -0.000114 [deg], Height = -0.37 [m][0m
+[1m[32mVelocity: East: -23.46 [m/s], North: 0.61 [m/s], Up = -7.41 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:38:33.500000 UTC using 8 observations is Lat = -0.000009 [deg], Long = -0.000114 [deg], Height = -1.06 [m][0m
+[1m[32mVelocity: East: -23.25 [m/s], North: 0.54 [m/s], Up = -7.38 [m/s][0m
+Current receiver time: 4 min 53 s
+[1m[32mPosition at 2026-Mar-02 00:38:34.000000 UTC using 8 observations is Lat = -0.000014 [deg], Long = -0.000118 [deg], Height = -1.69 [m][0m
+[1m[32mVelocity: East: -23.59 [m/s], North: 0.88 [m/s], Up = -7.16 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:38:34.500000 UTC using 8 observations is Lat = -0.000010 [deg], Long = -0.000121 [deg], Height = -0.95 [m][0m
+[1m[32mVelocity: East: -23.38 [m/s], North: 0.65 [m/s], Up = -7.40 [m/s][0m
+Current receiver time: 4 min 54 s
+[1m[32mPosition at 2026-Mar-02 00:38:35.000000 UTC using 8 observations is Lat = -0.000008 [deg], Long = -0.000109 [deg], Height = -0.95 [m][0m
+[1m[32mVelocity: East: -23.41 [m/s], North: 0.67 [m/s], Up = -7.33 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:38:35.500000 UTC using 8 observations is Lat = -0.000001 [deg], Long = -0.000117 [deg], Height = -0.45 [m][0m
+[1m[32mVelocity: East: -23.41 [m/s], North: 0.67 [m/s], Up = -7.30 [m/s][0m
+Current receiver time: 4 min 55 s
+New GPS NAV message received in channel 7: subframe 4 from satellite GPS PRN 26 (Block IIF) with CN0=30.87 dB-Hz
+New GPS NAV message received in channel 6: subframe 4 from satellite GPS PRN 22 (Block IIR) with CN0=30.90 dB-Hz
+New GPS NAV message received in channel 3: subframe 4 from satellite GPS PRN 16 (Block IIR) with CN0=31.06 dB-Hz
+New GPS NAV message received in channel 0: subframe 4 from satellite GPS PRN 01 (Block IIF) with CN0=30.94 dB-Hz
+New GPS NAV message received in channel 1: subframe 4 from satellite GPS PRN 06 (Block IIF) with CN0=30.75 dB-Hz
+[1m[32mPosition at 2026-Mar-02 00:38:36.000000 UTC using 7 observations is Lat = 0.000000 [deg], Long = -0.000121 [deg], Height = 0.29 [m][0m
+[1m[32mVelocity: East: -23.35 [m/s], North: 0.61 [m/s], Up = -7.31 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:38:36.500000 UTC using 7 observations is Lat = -0.000002 [deg], Long = -0.000113 [deg], Height = -0.06 [m][0m
+[1m[32mVelocity: East: -23.54 [m/s], North: 0.30 [m/s], Up = -6.59 [m/s][0m
+Current receiver time: 4 min 56 s
+[1m[32mPosition at 2026-Mar-02 00:38:37.000000 UTC using 7 observations is Lat = 0.000015 [deg], Long = -0.000125 [deg], Height = -0.87 [m][0m
+[1m[32mVelocity: East: -23.39 [m/s], North: 0.78 [m/s], Up = -7.59 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:38:37.500000 UTC using 7 observations is Lat = 0.000020 [deg], Long = -0.000129 [deg], Height = -0.40 [m][0m
+[1m[32mVelocity: East: -23.62 [m/s], North: 0.34 [m/s], Up = -6.55 [m/s][0m
+Current receiver time: 4 min 57 s
+[1m[32mPosition at 2026-Mar-02 00:38:38.000000 UTC using 7 observations is Lat = 0.000020 [deg], Long = -0.000129 [deg], Height = -1.28 [m][0m
+[1m[32mVelocity: East: -23.22 [m/s], North: 0.70 [m/s], Up = -7.55 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:38:38.500000 UTC using 7 observations is Lat = 0.000011 [deg], Long = -0.000122 [deg], Height = -0.59 [m][0m
+[1m[32mVelocity: East: -23.59 [m/s], North: 0.46 [m/s], Up = -6.76 [m/s][0m
+Current receiver time: 4 min 58 s
+[1m[32mPosition at 2026-Mar-02 00:38:39.000000 UTC using 7 observations is Lat = -0.000004 [deg], Long = -0.000127 [deg], Height = -1.76 [m][0m
+[1m[32mVelocity: East: -23.56 [m/s], North: 0.46 [m/s], Up = -6.72 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:38:39.500000 UTC using 7 observations is Lat = 0.000007 [deg], Long = -0.000140 [deg], Height = 0.36 [m][0m
+[1m[32mVelocity: East: -23.40 [m/s], North: 0.37 [m/s], Up = -6.84 [m/s][0m
+Current receiver time: 4 min 59 s
+[1m[32mPosition at 2026-Mar-02 00:38:40.000000 UTC using 7 observations is Lat = 0.000012 [deg], Long = -0.000134 [deg], Height = -0.32 [m][0m
+[1m[32mVelocity: East: -23.46 [m/s], North: 0.36 [m/s], Up = -6.79 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:38:40.500000 UTC using 7 observations is Lat = 0.000008 [deg], Long = -0.000119 [deg], Height = -0.46 [m][0m
+[1m[32mVelocity: East: -23.50 [m/s], North: 0.43 [m/s], Up = -6.82 [m/s][0m
+Current receiver time: 5 min 0 s
+[1m[32mPosition at 2026-Mar-02 00:38:41.000000 UTC using 7 observations is Lat = 0.000005 [deg], Long = -0.000110 [deg], Height = -0.23 [m][0m
+[1m[32mVelocity: East: -23.40 [m/s], North: 0.37 [m/s], Up = -6.83 [m/s][0m
+[1m[32mPosition at 2026-Mar-02 00:38:41.500000 UTC using 7 observations is Lat = -0.000008 [deg], Long = -0.000092 [deg], Height = -1.52 [m][0m
+[1m[32mVelocity: East: -23.47 [m/s], North: 0.43 [m/s], Up = -6.81 [m/s][0m
+Stopping GNSS-SDR, please wait!
+Total GNSS-SDR run time: 172.24 [seconds]
+GNSS-SDR program ended.

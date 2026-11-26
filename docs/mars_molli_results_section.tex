@@ -1,0 +1,125 @@
+\section{Results}
+\label{sec:mars_molli_results}
+
+This section reports the navigation performance obtained over the first
+\(180~\mathrm{s}\) of the Mars Molli 32-SV simulation using GPS L1 C/A-like signals.
+The receiver was operated in single-frequency code-based 3D PVT mode, with RAIM/FDE
+enabled and without the fixed-height 2D surface constraint. All receiver timing and
+time-to-first-fix calculations use GPS time. The truth position used for the error
+calculation was the Mars surface point \(\phi = 0^\circ\), \(\lambda = 0^\circ\),
+\(h = 0~\mathrm{m}\), evaluated on the Mars ellipsoid used by the receiver
+error-analysis pipeline \((a = 3396190~\mathrm{m}, b = 3376200~\mathrm{m})\).
+
+For this run, the satellite-position calculation used by RTKLIB was modified to
+include a Mars orbit-matching correction inside the broadcast-orbit extrapolation
+path. The correction is applied during satellite state propagation, before the
+least-squares PVT solution is formed, so the receiver still uses the normal decoded
+telemetry, observables, pseudorange residual computation, RAIM/FDE screening, and
+RTKLIB positioning chain. The purpose of the correction is not to prescribe the user
+position, but to make the satellite positions computed from the Mars broadcast-like
+ephemerides consistent with the simulator/SPICE orbit frame and time-tag convention.
+This removes the dominant broadcast-orbit frame-fit mismatch while preserving the
+receiver-side measurement and PVT estimation problem.
+
+Within the reported \(0\)--\(180~\mathrm{s}\) interval, the receiver produced
+\(326\) valid 3D PVT epochs. Valid PVT output begins at \(17.5~\mathrm{s}\), which is
+the measured TTFF, and continues through the end of the reported interval at
+\(180.0~\mathrm{s}\). The number of satellites used per solution varied from 6 to 9,
+and the post-fit residual log contained \(2520\) used-satellite residual samples.
+The first valid 3D solution was obtained at GPS TOW \(88458.5~\mathrm{s}\). Since the
+simulator satellite-data record begins at GPS TOW \(88441.0~\mathrm{s}\), the
+measured time-to-first-fix was \(17.5~\mathrm{s}\).
+Table~\ref{tab:mars_molli_navigation_performance} summarizes the navigation
+performance metrics for this first-\(180~\mathrm{s}\) window.
+
+\begin{table}[t]
+    \centering
+    \caption{Navigation performance for the first \(180~\mathrm{s}\) of the Mars Molli 32-SV 3D PVT validation run.}
+    \label{tab:mars_molli_navigation_performance}
+    \begin{tabular}{lll}
+        \toprule
+        Metric & Result & Definition \\
+        \midrule
+        Pseudorange residual RMS
+            & \(0.402~\mathrm{m}\) mean; \(0.750~\mathrm{m}\) 95\%
+            & Per-epoch RMS of RTKLIB post-fit code residuals over used SVs. \\
+        3D position error
+            & \(7.178~\mathrm{m}\) RMS; \(8.326~\mathrm{m}\) 95\%
+            & Euclidean 3D error with respect to the Mars truth position. \\
+        Vertical error
+            & \(1.257~\mathrm{m}\) RMS; \(2.409~\mathrm{m}\) 95\%
+            & Absolute Up/radial error with respect to the Mars truth height. \\
+        Receiver clock bias stability
+            & \(12.87~\mathrm{ns}\) std; \(49.46~\mathrm{ns}\) peak-to-peak
+            & Variation of the solved receiver clock bias over valid PVT epochs. \\
+        Time-to-first-fix
+            & \(17.5~\mathrm{s}\)
+            & First valid 3D PVT epoch relative to the first simulator GPS TOW. \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+The post-fit pseudorange residuals remained tightly bounded during the reported
+interval. The mean per-epoch residual RMS was \(0.402~\mathrm{m}\), the 95th
+percentile was \(0.750~\mathrm{m}\), and the maximum observed per-epoch RMS was
+\(1.108~\mathrm{m}\). This indicates that, once the satellite state representation is
+made consistent with the simulator trajectory, the receiver observables are mutually
+consistent at the sub-meter residual level. The residual mean over used satellites was
+close to zero at each epoch, which is expected because the receiver clock bias is
+estimated jointly with position and absorbs the common-mode range component.
+
+The resulting 3D position error was \(7.178~\mathrm{m}\) RMS with a 95th-percentile
+value of \(8.326~\mathrm{m}\) and a maximum of \(10.111~\mathrm{m}\). The vertical
+component was smaller than the full 3D error, with a 95th-percentile absolute error of
+\(2.409~\mathrm{m}\). The remaining error is therefore dominated by the horizontal
+components rather than by a height bias. This distinction is important for the Mars
+surface case because an apparently acceptable height solution can still mask a
+longitude/east component caused by satellite geometry, broadcast-frame alignment, or
+residual orbit-model mismatch.
+
+The receiver clock estimate was stable over the valid solution interval. The standard
+deviation of the solved clock bias was \(12.87~\mathrm{ns}\), equivalent to
+\(3.858~\mathrm{m}\) in range, with a peak-to-peak variation of \(49.46~\mathrm{ns}\)
+\((14.828~\mathrm{m})\). A linear fit to the clock-bias time history gives a drift of
+\(-0.075~\mathrm{m/s}\). The absolute clock bias itself is not expected to be zero,
+because the receiver clock state includes the arbitrary receiver time offset; the
+reported metric is therefore the stability of the estimated clock bias during the
+validated PVT interval.
+
+Inspection of the per-SV post-fit residuals shows that the clock-bias time history is
+mainly driven by small geometry-dependent redistributions of common-mode range error,
+rather than by a loss of receiver timing. The largest discontinuity in the clock-bias
+trace occurs at approximately \(71~\mathrm{s}\), where the solved clock changes by
+\(-4.58~\mathrm{m}\) (\(-15.27~\mathrm{ns}\)) between consecutive PVT epochs. This
+event coincides with a change in the used satellite set in which PRN16 is removed and
+PRN12 is reintroduced. PRN16 is also the most biased low-elevation satellite in the
+solution set over the reported interval, with a mean post-fit residual of
+\(+0.268~\mathrm{m}\), an RMS residual of \(0.532~\mathrm{m}\), and an average
+elevation of only \(3.4^\circ\). Immediately before the \(71~\mathrm{s}\) transition,
+PRN16 has residuals of \(+1.6\)--\(+1.9~\mathrm{m}\), while PRN6 has simultaneous
+negative residuals near \(-2.1~\mathrm{m}\). When PRN16 is removed, the least-squares
+solution absorbs the changed residual geometry primarily through the receiver clock
+state and the post-fit residual RMS falls from \(1.108~\mathrm{m}\) to
+\(0.599~\mathrm{m}\).
+
+Other satellites contribute smaller residual structure. PRN6 is present for the
+entire interval and has one of the largest residual RMS values
+\((0.529~\mathrm{m})\), making it a persistent contributor to the common-mode fit.
+PRN31 is the satellite most frequently associated with the largest absolute post-fit
+residual in an epoch, although its mean residual remains modest
+\((-0.119~\mathrm{m})\). PRN26 and PRN31 also have low apparent elevations in the
+receiver geometry, so their residuals are expected to couple more strongly into the
+clock and horizontal components of the solution. These SV-specific diagnostics
+indicate that the remaining clock-bias pattern is dominated by low-elevation and
+changing-geometry satellites---especially PRN16 and PRN6 around the \(71~\mathrm{s}\)
+transition---rather than by a systematic GPS-time error.
+
+Overall, the orbit-matched RTKLIB propagation run demonstrates that the Mars-adapted
+receiver can produce stable meter-level 3D code-based PVT once the satellite
+positions extrapolated from the broadcast-like ephemerides are made consistent with
+the simulator reference geometry. The result also separates two effects that were
+coupled in earlier broadcast-only runs: the receiver tracking/telemetry/PVT chain is
+capable of producing a well-conditioned solution, but the broadcast-orbit
+interpretation must match the Mars simulator frame and time-tag conventions before
+that performance can be obtained without a large orbit-model-induced positioning
+bias.

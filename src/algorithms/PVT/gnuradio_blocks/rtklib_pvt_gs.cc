@@ -184,6 +184,78 @@ std::string mars_ssat_summary(const std::array<ssat_t, MAXSAT>& ssat)
         }
     return os.str();
 }
+
+void mars_export_pvt_metrics_csv(uint32_t rx_time_ms, const Rtklib_Solver& solver)
+{
+    const char* metrics_path = std::getenv("GNSS_SDR_MARS_PVT_METRICS_CSV");
+    if (metrics_path == nullptr || metrics_path[0] == '\0')
+        {
+            return;
+        }
+
+    static std::ofstream metrics_file;
+    static std::string open_path;
+    if (!metrics_file.is_open() || open_path != metrics_path)
+        {
+            if (metrics_file.is_open())
+                {
+                    metrics_file.close();
+                }
+            open_path = metrics_path;
+            metrics_file.open(open_path, std::ios::out);
+            if (!metrics_file.is_open())
+                {
+                    std::cerr << "GNSS-SDR cannot create Mars PVT metrics CSV file " << open_path << '\n';
+                    open_path.clear();
+                    return;
+                }
+            metrics_file << "rx_time_ms,gps_week,gps_tow_s,solution_status,valid_sats,"
+                         << "lat_deg,lon_deg,height_m,clock_bias_s,clock_bias_m,"
+                         << "sat,prn,used,az_deg,el_deg,snr_dbhz,pseudorange_residual_m\n";
+        }
+
+    int gps_week = 0;
+    const double gps_tow_s = time2gpst(solver.pvt_sol.time, &gps_week);
+    double pos[3] = {};
+    ecef2pos(solver.pvt_sol.rr, pos);
+    const double clock_bias_s = solver.pvt_sol.dtr[0];
+    const double clock_bias_m = clock_bias_s * SPEED_OF_LIGHT_M_S;
+
+    metrics_file << std::setprecision(15);
+    for (int sat = 1; sat <= MAXSAT; ++sat)
+        {
+            const auto& sat_status = solver.pvt_ssat[sat - 1];
+            if (!sat_status.vs)
+                {
+                    continue;
+                }
+
+            int prn = 0;
+            const int sys = satsys(sat, &prn);
+            if (sys == 0)
+                {
+                    continue;
+                }
+
+            metrics_file << rx_time_ms << ','
+                         << gps_week << ','
+                         << gps_tow_s << ','
+                         << static_cast<int>(solver.pvt_sol.stat) << ','
+                         << static_cast<int>(solver.pvt_sol.ns) << ','
+                         << pos[0] * R2D << ','
+                         << pos[1] * R2D << ','
+                         << pos[2] << ','
+                         << clock_bias_s << ','
+                         << clock_bias_m << ','
+                         << sat << ','
+                         << prn << ','
+                         << static_cast<int>(sat_status.vs) << ','
+                         << sat_status.azel[0] * R2D << ','
+                         << sat_status.azel[1] * R2D << ','
+                         << sat_status.snr[0] * 0.25F << ','
+                         << sat_status.resp[0] << '\n';
+        }
+}
 }  // namespace
 
 rtklib_pvt_gs_sptr rtklib_make_pvt_gs(uint32_t nchannels,
@@ -2474,6 +2546,10 @@ int rtklib_pvt_gs::work(int noutput_items, gr_vector_const_void_star& input_item
                                     LOG(INFO) << "MARS_PVT_USER_RESULT rx_ms=" << current_RX_time_ms
                                               << " valid=" << flag_pvt_valid
                                               << " used={" << mars_ssat_summary(d_user_pvt_solver->pvt_ssat) << "}";
+                                }
+                            if (flag_pvt_valid)
+                                {
+                                    mars_export_pvt_metrics_csv(current_RX_time_ms, *d_user_pvt_solver);
                                 }
                         }
 

@@ -12,13 +12,17 @@
       <canvas id="sceneCanvas"></canvas>
       <div class="scene-top">
         <div>
-          <h1>Mars Orbit Viewer</h1>
+          <h1>Mars Molli 32-SV Orbit Geometry</h1>
           <p id="statusLine">Loading scenario data...</p>
         </div>
-        <div class="mode-tabs" role="tablist" aria-label="View mode">
-          <button class="mode active" data-mode="mars">Mars</button>
-          <button class="mode" data-mode="earth">Earth</button>
+        <div class="scene-actions">
+          <button id="paperView" type="button">Paper view</button>
         </div>
+      </div>
+      <div class="scene-meta" aria-label="Current simulation epoch">
+        <span id="sceneEpoch">T+0 s</span>
+        <span id="sceneTow">GPS TOW -</span>
+        <span id="scenePrns">- PRNs</span>
       </div>
       <div class="legend" aria-label="Scene legend">
         <span><i class="dot captured"></i>Captured PRN</span>
@@ -26,6 +30,9 @@
         <span><i class="dot receiver"></i>Receiver</span>
         <span><i class="dot pvt"></i>PVT</span>
       </div>
+      <p class="scene-caption">
+        Mars-centered orbit visualization for the Molli 32-SV simulation. Captured GPS L1 C/A-like PRNs are shown with colored orbit traces, the receiver truth location is marked on the Mars surface, and the reconstructed PVT trajectory is overlaid in green.
+      </p>
     </section>
 
     <aside class="side">

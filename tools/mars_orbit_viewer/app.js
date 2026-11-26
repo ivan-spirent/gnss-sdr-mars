@@ -45,7 +45,6 @@ const DEFAULT_SCENARIO_SOURCES = {
 };
 
 const state = {
-  mode: "mars",
   playing: false,
   currentIndex: 0,
   selectedPrn: 1,
@@ -67,10 +66,14 @@ const els = {
   canvas: document.getElementById("sceneCanvas"),
   statusLine: document.getElementById("statusLine"),
   loadDefaults: document.getElementById("loadDefaults"),
+  paperView: document.getElementById("paperView"),
   playButton: document.getElementById("playButton"),
   timeSlider: document.getElementById("timeSlider"),
   epochLabel: document.getElementById("epochLabel"),
   towLabel: document.getElementById("towLabel"),
+  sceneEpoch: document.getElementById("sceneEpoch"),
+  sceneTow: document.getElementById("sceneTow"),
+  scenePrns: document.getElementById("scenePrns"),
   xmlCount: document.getElementById("xmlCount"),
   capturedCount: document.getElementById("capturedCount"),
   earthRange: document.getElementById("earthRange"),
@@ -470,7 +473,7 @@ function makeLabel(text, color = COLORS.text) {
   canvas.width = 256;
   canvas.height = 96;
   const ctx = canvas.getContext("2d");
-  ctx.font = "700 34px system-ui, sans-serif";
+  ctx.font = '700 34px "Times New Roman", Times, serif';
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
   ctx.fillStyle = "rgba(8, 9, 9, 0.62)";
@@ -554,7 +557,7 @@ function createOrbitLines() {
     orbitGroup.add(line);
     meshes.orbits.set(orbit.prn, line);
 
-    const marker = makeSphere(captured.has(orbit.prn) ? 88 : 44, captured.has(orbit.prn) ? colorForPrn(orbit.prn) : COLORS.orbitDim, 20);
+    const marker = makeSphere(76, captured.has(orbit.prn) ? colorForPrn(orbit.prn) : COLORS.orbitDim, 20);
     markerGroup.add(marker);
     meshes.satMarkers.set(orbit.prn, marker);
     if (captured.has(orbit.prn)) {
@@ -667,9 +670,7 @@ function updateMarsScene() {
       marker.position.copy(pos);
       marker.visible = captured.has(orbit.prn) ? state.showCaptured : state.showXml;
       const satRow = visibleRows.get(orbit.prn);
-      const isSelected = orbit.prn === state.selectedPrn;
-      const baseScale = captured.has(orbit.prn) ? 1 : 0.72;
-      marker.scale.setScalar(isSelected ? 1.8 : baseScale);
+      marker.scale.setScalar(1);
       if (satRow) {
         marker.material.color.set(satRow.antennaElevationRad >= 0 ? colorForPrn(orbit.prn) : COLORS.orbitDim);
       }
@@ -716,10 +717,9 @@ function updateEarthScene() {
 }
 
 function updateScene() {
-  marsGroup.visible = state.mode === "mars";
-  earthGroup.visible = state.mode === "earth";
+  marsGroup.visible = true;
+  earthGroup.visible = false;
   updateMarsScene();
-  updateEarthScene();
   renderHud();
 }
 
@@ -737,6 +737,9 @@ function renderHud() {
   const selected = epoch?.sats.find((sat) => sat.prn === state.selectedPrn);
   els.epochLabel.textContent = epoch ? `T+${fmt(epoch.seconds, 0)} s` : "-";
   els.towLabel.textContent = epoch ? `TOW ${fmtTow(epoch.towMs)}` : "-";
+  els.sceneEpoch.textContent = epoch ? `T+${fmt(epoch.seconds, 0)} s` : "T+0 s";
+  els.sceneTow.textContent = epoch ? `GPS TOW ${fmtTow(epoch.towMs)}` : "GPS TOW -";
+  els.scenePrns.textContent = epoch ? `${epoch.sats.length} visible PRNs` : "- PRNs";
   els.timeSlider.max = String(Math.max(0, state.data.epochs.length - 1));
   els.timeSlider.value = String(state.currentIndex);
   els.xmlCount.textContent = state.data.orbits.length || "-";
@@ -805,25 +808,6 @@ function pvtMeanOffset() {
   return { meanLat, meanLon, eastM, northM, radialM: Math.hypot(eastM, northM) };
 }
 
-function setMode(mode) {
-  state.mode = mode;
-  document.querySelectorAll(".mode").forEach((button) => {
-    button.classList.toggle("active", button.dataset.mode === mode);
-  });
-  if (mode === "mars") {
-    controls.target.set(0, 0, 0);
-    controls.distance = 22000;
-    controls.yaw = -0.72;
-    controls.pitch = 0.42;
-  } else {
-    controls.target.set(EARTH_CONTEXT_SEPARATION * 0.52, 0, 0);
-    controls.distance = 36000;
-    controls.yaw = -0.55;
-    controls.pitch = 0.36;
-  }
-  updateScene();
-}
-
 function updateCamera() {
   const cosPitch = Math.cos(controls.pitch);
   const offset = new THREE.Vector3(
@@ -879,9 +863,6 @@ function installHandlers() {
     controls.distance = Math.max(3500, Math.min(70000, controls.distance * (event.deltaY > 0 ? 1.1 : 0.9)));
   }, { passive: false });
 
-  document.querySelectorAll(".mode").forEach((button) => {
-    button.addEventListener("click", () => setMode(button.dataset.mode));
-  });
   els.loadDefaults.addEventListener("click", loadDefaults);
   els.playButton.addEventListener("click", () => {
     state.playing = !state.playing;
@@ -904,6 +885,19 @@ function installHandlers() {
   els.togglePvt.addEventListener("change", () => {
     state.showPvt = els.togglePvt.checked;
     updateScene();
+  });
+  els.paperView.addEventListener("click", () => {
+    const enabled = !document.body.classList.contains("paper-shot");
+    document.body.classList.toggle("paper-shot", enabled);
+    els.paperView.textContent = enabled ? "Controls" : "Paper view";
+    setTimeout(resize, 0);
+  });
+  window.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && document.body.classList.contains("paper-shot")) {
+      document.body.classList.remove("paper-shot");
+      els.paperView.textContent = "Paper view";
+      setTimeout(resize, 0);
+    }
   });
 }
 
@@ -929,7 +923,7 @@ async function loadDefaults() {
   state.data = { orbits, epochs, motion, pvt, capturedPrns, nmeaUsed, receiverFixes };
   state.currentIndex = Math.max(0, Math.min(state.currentIndex, epochs.length - 1));
   state.selectedPrn = capturedPrns.includes(state.selectedPrn) ? state.selectedPrn : capturedPrns[0];
-  const scenarioName = "Molli 32-SV 5 min, true dynamic orbit corrected, frame offsets off";
+  const scenarioName = "Molli 32-SV 5 min, RTKLIB orbit-matched satellite propagation";
   els.statusLine.textContent = `${scenarioName}: ${orbits.length} XML satellites, ${capturedPrns.length} captured PRNs, ${epochs.length} scenario epochs`;
   createSceneObjects();
   resize();
